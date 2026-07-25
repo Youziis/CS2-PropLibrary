@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CS2 职业道具库 - 收录职业选手比赛中的道具投掷">
+    <title>Yuuko CS2 道具库</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🎯 Yuuko CS2 道具库</h1>
+            <p class="subtitle">收录职业比赛中的道具投掷</p>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main">
+        <div class="container">
+            
+            <!-- 加载状态 -->
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>加载中...</p>
+            </div>
+
+            <!-- 筛选器 -->
+            <div id="filters" class="filters" style="display: none;">
+                <!-- 地图选择 -->
+                <div class="filter-section">
+                    <label>地图：</label>
+                    <div id="map-filters" class="filter-buttons"></div>
+                </div>
+
+                <!-- 道具类型选择 -->
+                <div class="filter-section">
+                    <label>类型：</label>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-type="all">全部</button>
+                        <button class="filter-btn" data-type="smoke">💨 烟雾</button>
+                        <button class="filter-btn" data-type="flashbang">⚡ 闪光</button>
+                        <button class="filter-btn" data-type="hegrenade">💣 手雷</button>
+                        <button class="filter-btn" data-type="molotov">🔥 燃烧</button>
+                        <button class="filter-btn" data-type="incendiary">🔥 燃烧</button>
+                    </div>
+                </div>
+
+                <!-- 队伍选择 -->
+                <div class="filter-section">
+                    <label>队伍：</label>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-team="all">全部</button>
+                        <button class="filter-btn" data-team="T">T侧</button>
+                        <button class="filter-btn" data-team="CT">CT侧</button>
+                    </div>
+                </div>
+
+                <!-- 搜索框 -->
+                <div class="filter-section">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        class="search-input" 
+                        placeholder="搜索道具名称或投掷者..."
+                    >
+                </div>
+
+                <!-- 统计信息 -->
+                <div class="stats" id="stats"></div>
+            </div>
+
+            <!-- 道具网格 -->
+            <div id="utilities-grid" class="utilities-grid"></div>
+
+            <!-- 空状态 -->
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <p>😢 没有找到符合条件的道具</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>数据来源于职业比赛 Demo | 最后更新：<span id="last-update">-</span></p>
+            <p>
+                <a href="https://github.com/yourusername/yuuko-cs2" target="_blank">GitHub</a> | 
+                <a href="#about">关于</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- 详情模态框 -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="detail-content"></div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
