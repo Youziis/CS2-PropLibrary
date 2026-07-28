@@ -387,3 +387,214 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* ==================== 详情页面样式 ==================== */
+body.detail-page {
+    background: var(--background);
+}
+
+#detail-view {
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.btn-back:hover {
+    border-color: var(--primary-color);
+    transform: translateX(-5px);
+}
+
+.detail-header {
+    margin-bottom: 30px;
+}
+
+.detail-title {
+    font-size: 2.5rem;
+    margin: 20px 0;
+    color: var(--text-primary);
+}
+
+.detail-badges {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.badge-type {
+    background: var(--primary-color);
+    color: white;
+}
+
+.badge-team {
+    color: white;
+}
+
+.badge-throw {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 2px solid var(--border);
+}
+
+.detail-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+}
+
+.detail-images-section h3,
+.detail-info-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.detail-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.detail-image-item h4 {
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.detail-image {
+    width: 100%;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    border: 2px solid var(--border);
+}
+
+.detail-image:hover {
+    transform: scale(1.05);
+    border-color: var(--primary-color);
+}
+
+.detail-section {
+    background: var(--surface);
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.detail-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.info-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.info-value {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.command-hint {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 15px;
+}
+
+.command-hint kbd {
+    background: var(--background);
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    font-family: monospace;
+}
+
+.coordinates {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.coord-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.coord-item strong {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.coord-item span {
+    color: var(--text-primary);
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+}
+
+/* 响应式设计 */
+@media (min-width: 1024px) {
+    .detail-body {
+        grid-template-columns: 2fr 1fr;
+    }
+    
+    .detail-images-section {
+        grid-column: 1;
+    }
+    
+    .detail-info-section {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .detail-title {
+        font-size: 1.8rem;
+    }
+    
+    .detail-images {
+        grid-template-columns: 1fr;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}

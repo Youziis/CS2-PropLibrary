@@ -6,14 +6,81 @@ const state = {
     currentType: 'all',
     currentTeam: 'all',
     searchQuery: '',
-    maps: []
+    maps: [],
+    currentView: 'list' // 'list' 或 'detail'
+};
+
+// ==================== 路由系统 ====================
+const router = {
+    routes: {},
+    currentRoute: null,
+    
+    // 注册路由
+    register(path, handler) {
+        this.routes[path] = handler;
+    },
+    
+    // 导航到指定路由
+    navigate(path) {
+        window.location.hash = path;
+    },
+    
+    // 处理路由变化
+    handleRoute() {
+        const hash = window.location.hash.slice(1) || '/';
+        
+        // 匹配路由
+        if (hash === '/' || hash === '') {
+            this.routes['/']();
+        } else if (hash.startsWith('/utility/')) {
+            const utilityId = hash.split('/')[2];
+            this.routes['/utility/:id'](utilityId);
+        } else {
+            this.routes['/'](); // 默认返回首页
+        }
+    },
+    
+    // 初始化路由
+    init() {
+        window.addEventListener('hashchange', () => this.handleRoute());
+        window.addEventListener('load', () => this.handleRoute());
+    }
 };
 
 // ==================== 初始化 ====================
 document.addEventListener('DOMContentLoaded', async () => {
     await loadData();
     setupEventListeners();
+    initRouter();
 });
+
+// 初始化路由
+function initRouter() {
+    // 注册路由
+    router.register('/', showListView);
+    router.register('/utility/:id', showDetailView);
+    
+    // 启动路由
+    router.init();
+}
+
+// 显示列表视图
+function showListView() {
+    state.currentView = 'list';
+    document.getElementById('list-view').style.display = 'block';
+    document.getElementById('detail-view').style.display = 'none';
+    document.body.classList.remove('detail-page');
+}
+
+// 显示详情视图
+function showDetailView(utilityId) {
+    state.currentView = 'detail';
+    document.getElementById('list-view').style.display = 'none';
+    document.getElementById('detail-view').style.display = 'block';
+    document.body.classList.add('detail-page');
+    
+    renderDetailPage(utilityId);
+}
 
 // ==================== 数据加载 ====================
 async function loadData() {
@@ -212,7 +279,7 @@ function renderUtilities() {
     emptyState.style.display = 'none';
     
     grid.innerHTML = state.filteredUtilities.map(utility => `
-        <div class="utility-card" onclick="showDetail('${utility.id}')">
+        <div class="utility-card" onclick="router.navigate('/utility/${utility.id}')">
             <img 
                 class="utility-image" 
                 src="${utility.screenshots.position || 'images/placeholder.jpg'}" 
@@ -257,69 +324,128 @@ function updateStats() {
     stats.textContent = `显示 ${state.filteredUtilities.length} 个道具 / 共 ${state.allUtilities.length} 个`;
 }
 
-// ==================== 显示详情 ====================
-function showDetail(utilityId) {
-    const utility = state.filteredUtilities.find(u => u.id === utilityId);
-    if (!utility) return;
+// ==================== 渲染详情页面 ====================
+function renderDetailPage(utilityId) {
+    const utility = state.allUtilities.find(u => u.id === utilityId);
     
-    const modal = document.getElementById('detail-modal');
+    if (!utility) {
+        document.getElementById('detail-content').innerHTML = `
+            <div style="text-align: center; padding: 60px 20px;">
+                <h2>😔 道具未找到</h2>
+                <p style="color: var(--text-secondary); margin: 20px 0;">该道具可能已被删除或ID不正确</p>
+                <button class="btn-back" onclick="router.navigate('/')">← 返回列表</button>
+            </div>
+        `;
+        return;
+    }
+    
     const content = document.getElementById('detail-content');
     
     content.innerHTML = `
-        <h2>${getUtilityIcon(utility.type)} ${utility.name}</h2>
-        
-        <div class="detail-images">
-            <div>
-                <h4>站位图</h4>
-                <img class="detail-image" src="${utility.screenshots.position}" alt="站位图" onclick="openFullImage('${utility.screenshots.position}')">
-            </div>
-            <div>
-                <h4>准星位置</h4>
-                <img class="detail-image" src="${utility.screenshots.crosshair}" alt="准星图" onclick="openFullImage('${utility.screenshots.crosshair}')">
-            </div>
-            <div>
-                <h4>落点位置</h4>
-                <img class="detail-image" src="${utility.screenshots.landing}" alt="落点图" onclick="openFullImage('${utility.screenshots.landing}')">
+        <div class="detail-header">
+            <button class="btn-back" onclick="router.navigate('/')">← 返回列表</button>
+            <h1 class="detail-title">${getUtilityIcon(utility.type)} ${utility.name}</h1>
+            <div class="detail-badges">
+                <span class="badge badge-type">${getUtilityTypeName(utility.type)}</span>
+                <span class="badge badge-team team-${utility.team.toLowerCase()}">${utility.team}</span>
+                <span class="badge badge-throw">${getThrowTypeName(utility.throw_type)}</span>
             </div>
         </div>
         
-        <div class="detail-section">
-            <h3>📋 基本信息</h3>
-            <p><strong>道具名称:</strong> ${utility.name}</p>
-            <p><strong>类型:</strong> ${getUtilityTypeName(utility.type)}</p>
-            <p><strong>队伍:</strong> ${utility.team}</p>
-            <p><strong>投掷方式:</strong> ${getThrowTypeName(utility.throw_type)}</p>
-            <p><strong>飞行时间:</strong> ${utility.flight_time} 秒</p>
-            <p><strong>投掷距离:</strong> ${utility.distance} 单位</p>
-            <p><strong>投掷者:</strong> ${utility.thrower}</p>
-            ${utility.notes ? `<p><strong>备注:</strong> ${utility.notes}</p>` : ''}
-        </div>
-        
-        <div class="detail-section">
-            <h3>🎮 控制台命令</h3>
-            <div class="command-box">
-                <code id="command-text">${utility.command}</code>
-                <button class="copy-btn" onclick="copyCommand()">📋 复制</button>
+        <div class="detail-body">
+            <div class="detail-images-section">
+                <h3>📸 截图预览</h3>
+                <div class="detail-images">
+                    <div class="detail-image-item">
+                        <h4>站位图</h4>
+                        <img class="detail-image" src="${utility.screenshots.position}" alt="站位图" onclick="openFullImage('${utility.screenshots.position}')">
+                    </div>
+                    <div class="detail-image-item">
+                        <h4>准星位置</h4>
+                        <img class="detail-image" src="${utility.screenshots.crosshair}" alt="准星图" onclick="openFullImage('${utility.screenshots.crosshair}')">
+                    </div>
+                    <div class="detail-image-item">
+                        <h4>落点位置</h4>
+                        <img class="detail-image" src="${utility.screenshots.landing}" alt="落点图" onclick="openFullImage('${utility.screenshots.landing}')">
+                    </div>
+                </div>
             </div>
-            <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                在CS2游戏中按 <kbd>~</kbd> 打开控制台，粘贴命令后按回车即可传送到投掷位置
-            </p>
-        </div>
-        
-        <div class="detail-section">
-            <h3>📍 坐标信息</h3>
-            <p><strong>投掷位置:</strong> X: ${utility.position.x.toFixed(2)}, Y: ${utility.position.y.toFixed(2)}, Z: ${utility.position.z.toFixed(2)}</p>
-            <p><strong>准星角度:</strong> Pitch: ${utility.angles.pitch.toFixed(2)}°, Yaw: ${utility.angles.yaw.toFixed(2)}°</p>
-            <p><strong>落点位置:</strong> X: ${utility.land_position.x.toFixed(2)}, Y: ${utility.land_position.y.toFixed(2)}, Z: ${utility.land_position.z.toFixed(2)}</p>
+            
+            <div class="detail-info-section">
+                <div class="detail-section">
+                    <h3>📋 基本信息</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">道具名称</span>
+                            <span class="info-value">${utility.name}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">类型</span>
+                            <span class="info-value">${getUtilityTypeName(utility.type)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">队伍</span>
+                            <span class="info-value">${utility.team}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">投掷方式</span>
+                            <span class="info-value">${getThrowTypeName(utility.throw_type)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">飞行时间</span>
+                            <span class="info-value">${utility.flight_time} 秒</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">投掷距离</span>
+                            <span class="info-value">${utility.distance} 单位</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">投掷者</span>
+                            <span class="info-value">${utility.thrower}</span>
+                        </div>
+                        ${utility.notes ? `
+                        <div class="info-item" style="grid-column: 1 / -1;">
+                            <span class="info-label">备注</span>
+                            <span class="info-value">${utility.notes}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h3>🎮 控制台命令</h3>
+                    <div class="command-box">
+                        <code id="command-text">${utility.command}</code>
+                        <button class="copy-btn" onclick="copyCommand()">📋 复制</button>
+                    </div>
+                    <p class="command-hint">
+                        在CS2游戏中按 <kbd>~</kbd> 打开控制台，粘贴命令后按回车即可传送到投掷位置
+                    </p>
+                </div>
+                
+                <div class="detail-section">
+                    <h3>📍 坐标信息</h3>
+                    <div class="coordinates">
+                        <div class="coord-item">
+                            <strong>投掷位置:</strong>
+                            <span>X: ${utility.position.x.toFixed(2)}, Y: ${utility.position.y.toFixed(2)}, Z: ${utility.position.z.toFixed(2)}</span>
+                        </div>
+                        <div class="coord-item">
+                            <strong>准星角度:</strong>
+                            <span>Pitch: ${utility.angles.pitch.toFixed(2)}°, Yaw: ${utility.angles.yaw.toFixed(2)}°</span>
+                        </div>
+                        <div class="coord-item">
+                            <strong>落点位置:</strong>
+                            <span>X: ${utility.land_position.x.toFixed(2)}, Y: ${utility.land_position.y.toFixed(2)}, Z: ${utility.land_position.z.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
-    
-    modal.style.display = 'block';
 }
 
-function closeModal() {
-    document.getElementById('detail-modal').style.display = 'none';
-}
+// 原来的 showDetail 函数已被 renderDetailPage 替代，移除 closeModal 和 modal 相关代码
 
 function getUtilityTypeName(type) {
     const names = {
