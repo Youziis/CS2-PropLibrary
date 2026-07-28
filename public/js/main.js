@@ -285,12 +285,14 @@ function showDetail(utilityId) {
         
         <div class="detail-section">
             <h3>📋 基本信息</h3>
+            <p><strong>道具名称:</strong> ${utility.name}</p>
             <p><strong>类型:</strong> ${getUtilityTypeName(utility.type)}</p>
             <p><strong>队伍:</strong> ${utility.team}</p>
             <p><strong>投掷方式:</strong> ${getThrowTypeName(utility.throw_type)}</p>
             <p><strong>飞行时间:</strong> ${utility.flight_time} 秒</p>
             <p><strong>投掷距离:</strong> ${utility.distance} 单位</p>
             <p><strong>投掷者:</strong> ${utility.thrower}</p>
+            ${utility.notes ? `<p><strong>备注:</strong> ${utility.notes}</p>` : ''}
         </div>
         
         <div class="detail-section">

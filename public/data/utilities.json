@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "last_updated": "2026-07-28T16:07:32.243618",
+  "last_updated": "2026-07-28T21:00:53.205820",
   "maps": [
     {
       "name": "de_dust2",
       "display_name": "Dust2",
-      "utility_count": 1,
+      "utility_count": 2,
       "data_file": "data/de_dust2.json"
     }
   ],
   "statistics": {
-    "total_utilities": 1,
+    "total_utilities": 2,
     "by_type": {}
   }
 }
