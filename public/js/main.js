@@ -20,7 +20,31 @@ async function loadData() {
     try {
         // 加载索引文件
         const indexResponse = await fetch('data/utilities.json');
+        
+        if (!indexResponse.ok) {
+            if (indexResponse.status === 404) {
+                // 文件不存在，显示没有道具
+                document.getElementById('loading').innerHTML = 
+                    '<div style="text-align: center; padding: 40px;">' +
+                    '<h3 style="color: #888;">📭 暂无道具数据</h3>' +
+                    '<p style="color: #666; margin-top: 15px;">管理员正在整理道具，请稍后再来...</p>' +
+                    '</div>';
+                return;
+            }
+            throw new Error(`HTTP ${indexResponse.status}`);
+        }
+        
         const indexData = await indexResponse.json();
+        
+        if (!indexData.maps || indexData.maps.length === 0) {
+            // 文件存在但没有数据
+            document.getElementById('loading').innerHTML = 
+                '<div style="text-align: center; padding: 40px;">' +
+                '<h3 style="color: #888;">📭 暂无道具数据</h3>' +
+                '<p style="color: #666; margin-top: 15px;">当前没有已发布的道具...</p>' +
+                '</div>';
+            return;
+        }
         
         state.maps = indexData.maps;
         
@@ -43,7 +67,10 @@ async function loadData() {
     } catch (error) {
         console.error('加载数据失败:', error);
         document.getElementById('loading').innerHTML = 
-            '<p style="color: #ff4655;">❌ 加载失败，请刷新页面重试</p>';
+            '<div style="text-align: center; padding: 40px;">' +
+            '<h3 style="color: #ff4655;">❌ 加载失败</h3>' +
+            '<p style="color: #666; margin-top: 15px;">请刷新页面重试</p>' +
+            '</div>';
     }
 }
 
