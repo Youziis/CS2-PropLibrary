@@ -115,6 +115,102 @@
         </div>
     </div>
 
+    <!-- 图片查看器模态框 -->
+    <div id="image-viewer-modal" class="image-viewer-modal">
+        <div class="image-viewer-header">
+            <span class="image-viewer-title" id="viewer-title">图片查看</span>
+            <button class="image-viewer-close" onclick="closeImageViewer()">&times;</button>
+        </div>
+        
+        <div class="image-viewer-body">
+            <!-- 左侧：图片显示区域 -->
+            <div class="image-viewer-canvas">
+                <div class="image-container" id="image-container">
+                    <img id="viewer-image" src="" alt="">
+                    <!-- 准星覆盖层（仅落点图显示） -->
+                    <div id="crosshair-overlay" class="crosshair-overlay">
+                        <svg id="crosshair-svg" width="100" height="100">
+                            <!-- 准星将通过 JS 动态生成 -->
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- 缩放控制 -->
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="zoomOut()">-</button>
+                    <span class="zoom-level" id="zoom-level">100%</span>
+                    <button class="zoom-btn" onclick="zoomIn()">+</button>
+                    <button class="zoom-btn" onclick="resetZoom()">重置</button>
+                </div>
+            </div>
+            
+            <!-- 右侧：准星设置面板（仅落点图显示） -->
+            <div class="crosshair-settings" id="crosshair-settings">
+                <h3>准星设置</h3>
+                
+                <div class="setting-group">
+                    <label>准星样式</label>
+                    <div class="crosshair-style-picker">
+                        <button class="style-btn active" data-style="dot" onclick="setCrosshairStyle('dot')" title="点状">
+                            <span class="style-icon">●</span>
+                        </button>
+                        <button class="style-btn" data-style="small" onclick="setCrosshairStyle('small')" title="小型">
+                            <span class="style-icon">+</span>
+                        </button>
+                        <button class="style-btn" data-style="fullscreen" onclick="setCrosshairStyle('fullscreen')" title="全屏">
+                            <span class="style-icon">✚</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <label>准星大小: <span id="size-value">20</span></label>
+                    <input type="range" id="crosshair-size" min="10" max="50" value="20" oninput="updateCrosshair()">
+                </div>
+                
+                <div class="setting-group">
+                    <label>准星厚度: <span id="thickness-value">2</span></label>
+                    <input type="range" id="crosshair-thickness" min="1" max="6" value="2" oninput="updateCrosshair()">
+                </div>
+                
+                <div class="setting-group">
+                    <label>准星间隙: <span id="gap-value">4</span></label>
+                    <input type="range" id="crosshair-gap" min="0" max="20" value="4" oninput="updateCrosshair()">
+                </div>
+                
+                <div class="setting-group">
+                    <label>
+                        <input type="checkbox" id="crosshair-dot" onchange="updateCrosshair()" checked>
+                        显示中心点
+                    </label>
+                </div>
+                
+                <div class="setting-group">
+                    <label>中心点大小: <span id="dot-size-value">2</span></label>
+                    <input type="range" id="dot-size" min="1" max="8" value="2" oninput="updateCrosshair()">
+                </div>
+                
+                <div class="setting-group">
+                    <label>准星颜色</label>
+                    <div class="color-picker">
+                        <button class="color-btn active" data-color="#00FF00" style="background: #00FF00" onclick="setCrosshairColor('#00FF00')"></button>
+                        <button class="color-btn" data-color="#FF0000" style="background: #FF0000" onclick="setCrosshairColor('#FF0000')"></button>
+                        <button class="color-btn" data-color="#FFFF00" style="background: #FFFF00" onclick="setCrosshairColor('#FFFF00')"></button>
+                        <button class="color-btn" data-color="#00FFFF" style="background: #00FFFF" onclick="setCrosshairColor('#00FFFF')"></button>
+                        <button class="color-btn" data-color="#FFFFFF" style="background: #FFFFFF" onclick="setCrosshairColor('#FFFFFF')"></button>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <label>
+                        <input type="checkbox" id="crosshair-outline" onchange="updateCrosshair()" checked>
+                        显示轮廓
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 页脚 -->
     <footer class="footer">
         <p>数据来源于职业比赛 Demo | 最后更新：<span id="last-update">-</span></p>

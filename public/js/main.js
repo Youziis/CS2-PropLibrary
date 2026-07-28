@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadData();
     initRouter();
     setupHomeSearch();
+    imageViewer.init();
 });
 
 function initRouter() {
@@ -356,15 +357,15 @@ function renderDetailPage(utilityId) {
                 <div class="detail-images">
                     <div class="detail-image-item">
                         <h4>站位图</h4>
-                        <img class="detail-image" src="${utility.screenshots.position}" alt="站位图" onclick="openFullImage('${utility.screenshots.position}')">
+                        <img class="detail-image" src="${utility.screenshots.position}" alt="站位图" onclick="openImageViewer('${utility.screenshots.position}', '站位图', 'position')">
                     </div>
                     <div class="detail-image-item">
                         <h4>准星位置</h4>
-                        <img class="detail-image" src="${utility.screenshots.crosshair}" alt="准星图" onclick="openFullImage('${utility.screenshots.crosshair}')">
+                        <img class="detail-image" src="${utility.screenshots.crosshair}" alt="准星图" onclick="openImageViewer('${utility.screenshots.crosshair}', '准星位置', 'crosshair')">
                     </div>
                     <div class="detail-image-item">
                         <h4>落点位置</h4>
-                        <img class="detail-image" src="${utility.screenshots.landing}" alt="落点图" onclick="openFullImage('${utility.screenshots.landing}')">
+                        <img class="detail-image" src="${utility.screenshots.landing}" alt="落点图" onclick="openImageViewer('${utility.screenshots.landing}', '落点位置', 'landing')">
                     </div>
                 </div>
             </div>
@@ -473,6 +474,296 @@ function copyCommand() {
         console.error('复制失败:', err);
         alert('复制失败，请手动复制');
     });
+}
+
+// ==================== 图片查看器 ====================
+const imageViewer = {
+    modal: null,
+    image: null,
+    container: null,
+    currentScale: 1,
+    currentImageType: null, // 'position', 'crosshair', 'landing'
+    crosshairSettings: {
+        style: 'dot',
+        size: 20,
+        thickness: 2,
+        gap: 4,
+        showDot: true,
+        dotSize: 2,
+        color: '#00FF00',
+        outline: true
+    },
+    
+    init() {
+        this.modal = document.getElementById('image-viewer-modal');
+        this.image = document.getElementById('viewer-image');
+        this.container = document.getElementById('image-container');
+        
+        // 添加拖拽功能
+        this.setupDrag();
+        
+        // ESC 键关闭
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.modal.style.display === 'block') {
+                this.close();
+            }
+        });
+    },
+    
+    open(src, title, imageType) {
+        this.currentImageType = imageType;
+        this.currentScale = 1;
+        
+        const modal = document.getElementById('image-viewer-modal');
+        const image = document.getElementById('viewer-image');
+        const titleEl = document.getElementById('viewer-title');
+        const crosshairOverlay = document.getElementById('crosshair-overlay');
+        const crosshairSettings = document.getElementById('crosshair-settings');
+        
+        image.src = src;
+        titleEl.textContent = title;
+        modal.style.display = 'block';
+        
+        // 只有准星位置图才显示准星
+        if (imageType === 'crosshair') {
+            crosshairOverlay.classList.add('active');
+            crosshairSettings.classList.add('active');
+            
+            // 等待图片加载完成后绘制准星
+            image.onload = () => {
+                // 延迟一帧确保图片完全渲染
+                requestAnimationFrame(() => {
+                    this.updateCrosshair();
+                });
+            };
+        } else {
+            crosshairOverlay.classList.remove('active');
+            crosshairSettings.classList.remove('active');
+        }
+        
+        this.updateZoomLevel();
+    },
+    
+    close() {
+        const modal = document.getElementById('image-viewer-modal');
+        modal.style.display = 'none';
+        this.currentScale = 1;
+        this.image.style.transform = 'scale(1)';
+    },
+    
+    zoom(delta) {
+        this.currentScale = Math.max(0.5, Math.min(5, this.currentScale + delta));
+        this.image.style.transform = `scale(${this.currentScale})`;
+        this.updateZoomLevel();
+        
+        // 如果有准星，更新准星位置
+        if (this.currentImageType === 'crosshair') {
+            requestAnimationFrame(() => {
+                this.updateCrosshair();
+            });
+        }
+    },
+    
+    reset() {
+        this.currentScale = 1;
+        this.image.style.transform = 'scale(1)';
+        this.updateZoomLevel();
+        
+        // 如果有准星，更新准星位置
+        if (this.currentImageType === 'crosshair') {
+            requestAnimationFrame(() => {
+                this.updateCrosshair();
+            });
+        }
+    },
+    
+    updateZoomLevel() {
+        document.getElementById('zoom-level').textContent = `${Math.round(this.currentScale * 100)}%`;
+    },
+    
+    setupDrag() {
+        // 鼠标滚轮缩放
+        this.container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            this.zoom(delta);
+        });
+    },
+    
+    updateCrosshair() {
+        const svg = document.getElementById('crosshair-svg');
+        const overlay = document.getElementById('crosshair-overlay');
+        const settings = this.crosshairSettings;
+        
+        // 更新显示的数值
+        document.getElementById('size-value').textContent = settings.size;
+        document.getElementById('thickness-value').textContent = settings.thickness;
+        document.getElementById('gap-value').textContent = settings.gap;
+        document.getElementById('dot-size-value').textContent = settings.dotSize;
+        
+        // 清空 SVG
+        svg.innerHTML = '';
+        
+        // 获取图片实际渲染尺寸（考虑缩放）
+        const image = document.getElementById('viewer-image');
+        const imageWidth = image.offsetWidth;
+        const imageHeight = image.offsetHeight;
+        
+        // 如果图片还没有渲染完成，延迟执行
+        if (!imageWidth || !imageHeight) {
+            requestAnimationFrame(() => this.updateCrosshair());
+            return;
+        }
+        
+        // 对于全屏准星，SVG 尺寸需要覆盖整个图片
+        let svgSize, center;
+        
+        if (settings.style === 'fullscreen') {
+            // 全屏模式：SVG 覆盖整个图片
+            overlay.classList.add('fullscreen');
+            svg.setAttribute('width', imageWidth);
+            svg.setAttribute('height', imageHeight);
+            center = { x: imageWidth / 2, y: imageHeight / 2 };
+        } else {
+            // 普通模式
+            overlay.classList.remove('fullscreen');
+            svgSize = settings.size * 2 + 40;
+            svg.setAttribute('width', svgSize);
+            svg.setAttribute('height', svgSize);
+            center = { x: svgSize / 2, y: svgSize / 2 };
+        }
+        
+        const lineLength = settings.size;
+        const gap = settings.gap;
+        const thickness = settings.thickness;
+        const color = settings.color;
+        const outline = settings.outline;
+        
+        // 绘制准星线条的函数
+        const drawLine = (x1, y1, x2, y2) => {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', color);
+            line.setAttribute('stroke-width', thickness);
+            line.setAttribute('stroke-linecap', 'square');
+            
+            if (outline) {
+                line.setAttribute('stroke', '#000000');
+                line.setAttribute('stroke-width', thickness + 2);
+                svg.appendChild(line.cloneNode());
+                line.setAttribute('stroke', color);
+                line.setAttribute('stroke-width', thickness);
+            }
+            
+            svg.appendChild(line);
+        };
+        
+        // 根据样式绘制准星
+        switch (settings.style) {
+            case 'fullscreen':
+                // 全屏十字准星：延伸到图片边缘
+                drawLine(center.x, 0, center.x, imageHeight); // 竖线
+                drawLine(0, center.y, imageWidth, center.y); // 横线
+                break;
+                
+            case 'small':
+                const smallLength = lineLength * 0.6;
+                // 上
+                drawLine(center.x, center.y - gap, center.x, center.y - gap - smallLength);
+                // 下
+                drawLine(center.x, center.y + gap, center.x, center.y + gap + smallLength);
+                // 左
+                drawLine(center.x - gap, center.y, center.x - gap - smallLength, center.y);
+                // 右
+                drawLine(center.x + gap, center.y, center.x + gap + smallLength, center.y);
+                break;
+                
+            case 'dot':
+                // 只显示中心点，不绘制线条
+                break;
+        }
+        
+        // 中心点
+        if (settings.showDot) {
+            const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            dot.setAttribute('cx', center.x);
+            dot.setAttribute('cy', center.y);
+            dot.setAttribute('r', settings.dotSize);
+            
+            if (outline) {
+                dot.setAttribute('fill', '#000000');
+                dot.setAttribute('r', settings.dotSize + 1);
+                svg.appendChild(dot.cloneNode());
+                dot.setAttribute('fill', color);
+                dot.setAttribute('r', settings.dotSize);
+            } else {
+                dot.setAttribute('fill', color);
+            }
+            
+            svg.appendChild(dot);
+        }
+    }
+};
+
+// 全局函数供 HTML 调用
+function openImageViewer(src, title, type) {
+    imageViewer.open(src, title, type);
+}
+
+function closeImageViewer() {
+    imageViewer.close();
+}
+
+function zoomIn() {
+    imageViewer.zoom(0.2);
+}
+
+function zoomOut() {
+    imageViewer.zoom(-0.2);
+}
+
+function resetZoom() {
+    imageViewer.reset();
+}
+
+function updateCrosshair() {
+    const settings = imageViewer.crosshairSettings;
+    
+    settings.size = parseInt(document.getElementById('crosshair-size').value);
+    settings.thickness = parseInt(document.getElementById('crosshair-thickness').value);
+    settings.gap = parseInt(document.getElementById('crosshair-gap').value);
+    settings.showDot = document.getElementById('crosshair-dot').checked;
+    settings.dotSize = parseInt(document.getElementById('dot-size').value);
+    settings.outline = document.getElementById('crosshair-outline').checked;
+    
+    imageViewer.updateCrosshair();
+}
+
+function setCrosshairStyle(style) {
+    imageViewer.crosshairSettings.style = style;
+    
+    // 更新按钮状态
+    document.querySelectorAll('.style-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-style="${style}"]`).classList.add('active');
+    
+    imageViewer.updateCrosshair();
+}
+
+function setCrosshairColor(color) {
+    imageViewer.crosshairSettings.color = color;
+    
+    // 更新按钮状态
+    document.querySelectorAll('.color-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-color="${color}"]`).classList.add('active');
+    
+    imageViewer.updateCrosshair();
 }
 
 function openFullImage(src) {
