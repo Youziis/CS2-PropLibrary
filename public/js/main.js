@@ -215,19 +215,13 @@ function setupEventListeners() {
     });
     
     // 搜索
-    document.getElementById('search-input').addEventListener('input', (e) => {
-        state.searchQuery = e.target.value.toLowerCase();
-        applyFilters();
-    });
-    
-    // 模态框关闭
-    document.querySelector('.close').addEventListener('click', closeModal);
-    window.addEventListener('click', (e) => {
-        const modal = document.getElementById('detail-modal');
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            state.searchQuery = e.target.value.toLowerCase();
+            applyFilters();
+        });
+    }
 }
 
 function setActiveButton(container, activeBtn) {
