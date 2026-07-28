@@ -282,19 +282,11 @@ function renderUtilities() {
             >
             <div class="utility-info">
                 <div class="utility-header">
-                    <span class="utility-type">${getUtilityIcon(utility.type)}</span>
                     <span class="utility-team team-${utility.team.toLowerCase()}">${utility.team}</span>
                 </div>
                 <div class="utility-name">${utility.name}</div>
                 <div class="utility-meta">
                     ${utility.description}
-                </div>
-                <div class="utility-meta">
-                    投掷者: ${utility.thrower}
-                </div>
-                <div class="utility-tags">
-                    ${utility.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                    <span class="tag">${'⭐'.repeat(utility.quality)}</span>
                 </div>
             </div>
         </div>
@@ -338,7 +330,7 @@ function renderDetailPage(utilityId) {
     content.innerHTML = `
         <div class="detail-header">
             <button class="btn-back" onclick="router.navigate('/')">← 返回列表</button>
-            <h1 class="detail-title">${getUtilityIcon(utility.type)} ${utility.name}</h1>
+            <h1 class="detail-title">${utility.name}</h1>
             <div class="detail-badges">
                 <span class="badge badge-type">${getUtilityTypeName(utility.type)}</span>
                 <span class="badge badge-team team-${utility.team.toLowerCase()}">${utility.team}</span>
@@ -388,14 +380,6 @@ function renderDetailPage(utilityId) {
                         <div class="info-item">
                             <span class="info-label">飞行时间</span>
                             <span class="info-value">${utility.flight_time} 秒</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">投掷距离</span>
-                            <span class="info-value">${utility.distance} 单位</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">投掷者</span>
-                            <span class="info-value">${utility.thrower}</span>
                         </div>
                         ${utility.notes ? `
                         <div class="info-item" style="grid-column: 1 / -1;">
