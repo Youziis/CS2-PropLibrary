@@ -4,71 +4,38 @@
     {
       "id": "de_dust2_smoke_001",
       "type": "smoke",
-      "team": "CT",
+      "team": "T",
       "name": "中门挂门烟",
-      "description": "站投，飞行时间 1.3 秒",
+      "description": "投掷，飞行时间 4.5 秒",
       "position": {
-        "x": 1179.734375,
-        "y": 2632.706298828125,
-        "z": 96.54376983642578
+        "x": 572.0532836914062,
+        "y": -395.96875,
+        "z": 9.164999999999992
       },
       "angles": {
-        "pitch": 25.841217041015625,
-        "yaw": -50.04615783691406
+        "pitch": -17.789947509765625,
+        "yaw": 116.90484619140625
       },
       "land_position": {
-        "x": 1252.478759765625,
-        "y": 2555.63037109375,
-        "z": 101.20318603515625
+        "x": -459.970458984375,
+        "y": 1603.8778076171875,
+        "z": 50.012939453125
       },
-      "throw_type": "stand",
-      "flight_time": 1.31,
-      "distance": 106.1,
-      "command": "setpos 1179.73 2632.71 96.54; setang 25.84 -50.05 0",
+      "throw_type": "左键跳投",
+      "flight_time": 4.55,
+      "distance": 2250.6,
+      "command": "setpos 572.05 -395.97 9.16; setang -17.79 116.90 0",
       "quality": 3,
-      "tags": [],
-      "notes": "",
+      "tags": [
+        "远投"
+      ],
+      "notes": "站在蓝色棚子下拐角处投掷。",
       "screenshots": {
         "position": "images/de_dust2/smoke/de_dust2_smoke_001_position.jpg",
         "crosshair": "images/de_dust2/smoke/de_dust2_smoke_001_crosshair.jpg",
         "landing": "images/de_dust2/smoke/de_dust2_smoke_001_landing.jpg"
       },
-      "thrower": "KSCERATO",
-      "demo_source": "9z-vs-furia-m1-dust2.dem"
-    },
-    {
-      "id": "de_dust2_smoke_002",
-      "type": "smoke",
-      "team": "T",
-      "name": "警家烟",
-      "description": "投掷，飞行时间 1.7 秒",
-      "position": {
-        "x": 321.9100036621094,
-        "y": 1465.0704345703125,
-        "z": 0.592473030090332
-      },
-      "angles": {
-        "pitch": -14.6959228515625,
-        "yaw": 72.59010314941406
-      },
-      "land_position": {
-        "x": 620.66455078125,
-        "y": 2378.1162109375,
-        "z": 87.17098999023438
-      },
-      "throw_type": "左键站立投掷222",
-      "flight_time": 1.73,
-      "distance": 964.6,
-      "command": "setpos 321.91 1465.07 0.59; setang -14.70 72.59 0",
-      "quality": 3,
-      "tags": [],
-      "notes": "",
-      "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_002_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_002_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_002_landing.jpg"
-      },
-      "thrower": "max",
+      "thrower": "HUASOPEEK",
       "demo_source": "9z-vs-furia-m1-dust2.dem"
     }
   ]
