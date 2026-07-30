@@ -491,7 +491,12 @@ const imageViewer = {
         showDot: true,
         dotSize: 2,
         color: '#00FF00',
-        outline: true
+        outline: true,
+        // 准星偏移量（适配不同屏幕比例）
+        offsetX: 0,      // 水平偏移（屏幕宽度的百分比），0 = 居中
+        offsetY: -0.02   // 垂直偏移（屏幕高度的百分比），负数向上
+                         // 4:3 建议 -0.02 到 0
+                         // 16:9 建议 -0.03 到 -0.02
     },
     
     init() {
@@ -623,7 +628,11 @@ const imageViewer = {
             overlay.classList.add('fullscreen');
             svg.setAttribute('width', imageWidth);
             svg.setAttribute('height', imageHeight);
-            center = { x: imageWidth / 2, y: imageHeight / 2 };
+            // 应用偏移量（适配不同屏幕比例）
+            center = { 
+                x: imageWidth / 2 + (imageWidth * settings.offsetX), 
+                y: imageHeight / 2 + (imageHeight * settings.offsetY)
+            };
         } else {
             // 普通模式
             overlay.classList.remove('fullscreen');

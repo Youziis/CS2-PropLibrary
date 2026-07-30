@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 测试页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            border-left-color: #10b981;
+        }
+        .error {
+            border-left-color: #ef4444;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .status.ok {
+            background: #10b981;
+            color: white;
+        }
+        .status.fail {
+            background: #ef4444;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔌 后端 API 测试</h1>
+        <p style="color: #666; margin-bottom: 30px;">测试后端服务器是否正常运行。请确保后端服务器已启动（http://localhost:5000）</p>
+
+        <!-- 统计信息 -->
+        <div class="section">
+            <h2>📊 统计信息</h2>
+            <button onclick="testAPI('/api/stats', 'stats-result')">GET /api/stats</button>
+            <div id="stats-result" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- Demo 管理 -->
+        <div class="section">
+            <h2>🎬 Demo 管理</h2>
+            <button onclick="testAPI('/api/demos', 'demos-result')">GET /api/demos</button>
+            <div id="demos-result" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 道具管理 -->
+        <div class="section">
+            <h2>🎯 道具管理</h2>
+            <button onclick="testAPI('/api/all_pending', 'pending-result')">GET /api/all_pending (待选择)</button>
+            <button onclick="testAPI('/api/pending', 'review-result')">GET /api/pending (待审核)</button>
+            <button onclick="testAPI('/api/utilities?status=parsed', 'parsed-result')">GET /api/utilities?status=parsed</button>
+            <button onclick="testAPI('/api/utilities?status=selected', 'selected-result')">GET /api/utilities?status=selected</button>
+            <button onclick="testAPI('/api/utilities?status=approved', 'approved-result')">GET /api/utilities?status=approved</button>
+            <div id="pending-result" class="result" style="display:none;"></div>
+            <div id="review-result" class="result" style="display:none;"></div>
+            <div id="parsed-result" class="result" style="display:none;"></div>
+            <div id="selected-result" class="result" style="display:none;"></div>
+            <div id="approved-result" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 截图管理 -->
+        <div class="section">
+            <h2>📸 截图管理</h2>
+            <button onclick="testAPI('/api/screenshot/selected', 'screenshot-selected-result')">GET /api/screenshot/selected</button>
+            <button onclick="testAPI('/api/screenshot/export_for_script', 'screenshot-export-result')">GET /api/screenshot/export_for_script</button>
+            <div id="screenshot-selected-result" class="result" style="display:none;"></div>
+            <div id="screenshot-export-result" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 导出管理 -->
+        <div class="section">
+            <h2>📤 导出管理</h2>
+            <button onclick="testAPI('/api/export/approved', 'export-approved-result')">GET /api/export/approved</button>
+            <button onclick="testAPI('/api/export/exported', 'export-exported-result')">GET /api/export/exported</button>
+            <div id="export-approved-result" class="result" style="display:none;"></div>
+            <div id="export-exported-result" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 一键测试所有 -->
+        <div class="section" style="background: #667eea; color: white;">
+            <h2 style="color: white;">🚀 批量测试</h2>
+            <button style="background: white; color: #667eea;" onclick="testAllAPIs()">测试所有 API</button>
+            <div id="all-result" class="result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        async function testAPI(endpoint, resultId) {
+            const resultEl = document.getElementById(resultId);
+            resultEl.style.display = 'block';
+            resultEl.innerHTML = '<span class="status">⏳</span>请求中...';
+            resultEl.className = 'result';
+
+            const startTime = Date.now();
+
+            try {
+                const response = await fetch(`http://localhost:5000${endpoint}`);
+                const elapsed = Date.now() - startTime;
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultEl.className = 'result success';
+                    resultEl.innerHTML = `
+                        <span class="status ok">✅ ${response.status}</span>
+                        <span style="color: #666;">响应时间: ${elapsed}ms</span>
+                        <pre style="margin-top: 10px; white-space: pre-wrap; word-wrap: break-word;">${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultEl.className = 'result error';
+                    resultEl.innerHTML = `
+                        <span class="status fail">❌ ${response.status}</span>
+                        <span style="color: #666;">响应时间: ${elapsed}ms</span>
+                        <pre style="margin-top: 10px; white-space: pre-wrap; word-wrap: break-word;">${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                const elapsed = Date.now() - startTime;
+                resultEl.className = 'result error';
+                resultEl.innerHTML = `
+                    <span class="status fail">❌ 连接失败</span>
+                    <span style="color: #666;">${elapsed}ms</span>
+                    <pre style="margin-top: 10px;">错误: ${error.message}\n\n请确认：\n1. 后端服务器是否已启动？\n2. 地址是否正确（http://localhost:5000）？\n3. 是否允许跨域访问（CORS）？</pre>
+                `;
+            }
+        }
+
+        async function testAllAPIs() {
+            const endpoints = [
+                '/api/stats',
+                '/api/demos',
+                '/api/all_pending',
+                '/api/pending',
+                '/api/utilities?status=parsed',
+                '/api/utilities?status=selected',
+                '/api/utilities?status=approved',
+                '/api/screenshot/selected',
+                '/api/export/approved',
+                '/api/export/exported'
+            ];
+
+            const resultEl = document.getElementById('all-result');
+            resultEl.style.display = 'block';
+            resultEl.innerHTML = '<span class="status">⏳</span>测试中...';
+
+            const results = [];
+
+            for (const endpoint of endpoints) {
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(`http://localhost:5000${endpoint}`);
+                    const elapsed = Date.now() - startTime;
+                    
+                    results.push({
+                        endpoint,
+                        status: response.status,
+                        ok: response.ok,
+                        elapsed
+                    });
+                } catch (error) {
+                    results.push({
+                        endpoint,
+                        status: 'ERROR',
+                        ok: false,
+                        elapsed: 0,
+                        error: error.message
+                    });
+                }
+            }
+
+            const allOk = results.every(r => r.ok);
+            resultEl.className = allOk ? 'result success' : 'result error';
+
+            let html = allOk 
+                ? '<span class="status ok">✅ 全部通过</span>\n\n' 
+                : '<span class="status fail">❌ 部分失败</span>\n\n';
+
+            results.forEach(r => {
+                const icon = r.ok ? '✅' : '❌';
+                const status = r.ok ? 'ok' : 'fail';
+                html += `<div style="margin-bottom: 8px;">
+                    <span class="status ${status}">${icon} ${r.status}</span>
+                    <span style="color: #666;">${r.elapsed}ms</span>
+                    <strong>${r.endpoint}</strong>
+                    ${r.error ? `<br><span style="color: #ef4444;">错误: ${r.error}</span>` : ''}
+                </div>`;
+            });
+
+            resultEl.innerHTML = html;
+        }
+
+        // 页面加载时自动测试连接
+        window.onload = () => {
+            setTimeout(() => {
+                testAPI('/api/stats', 'stats-result');
+            }, 500);
+        };
+    </script>
+</body>
+</html>
