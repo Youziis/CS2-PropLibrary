@@ -1,0 +1,40 @@
+{
+  "map": "de_mirage",
+  "utilities": [
+    {
+      "id": "de_mirage_smoke_001",
+      "type": "smoke",
+      "team": "TERRORIST",
+      "name": "跳台烟",
+      "description": "jump，飞行时间 4.3 秒",
+      "position": {
+        "x": 814.8005981445312,
+        "y": -1549.1134033203125,
+        "z": -98.234375
+      },
+      "angles": {
+        "pitch": -3.52008056640625,
+        "yaw": -178.92333984375
+      },
+      "land_position": {
+        "x": -478.8943176269531,
+        "y": -1573.42919921875,
+        "z": -37.96875
+      },
+      "throw_type": "jump",
+      "flight_time": 4.34,
+      "distance": 1295.3,
+      "command": "setpos 814.80 -1549.11 -98.23; setang -3.52 -178.92 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_001_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_001_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_001_landing.jpg"
+      },
+      "thrower": "FalleN",
+      "demo_source": "9z-vs-furia-m2-mirage-p1.dem"
+    }
+  ]
+}
