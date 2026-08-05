@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>准星位置测试工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f0f1e;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ff4655;
+        }
+
+        .instructions {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #2a2a3e;
+        }
+
+        .instructions h2 {
+            color: #ff4655;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .upload-section {
+            background: #16213e;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px solid #2a2a3e;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .upload-btn {
+            padding: 15px 40px;
+            background: #ff4655;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: #ff6675;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 70, 85, 0.4);
+        }
+
+        .info-panel {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #2a2a3e;
+            display: none;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: #0f0f1e;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .info-label {
+            color: #b8b8b8;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #00ff00;
+            font-size: 1.5rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .image-viewer {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+            border: 2px solid #2a2a3e;
+            position: relative;
+        }
+
+        .canvas-container {
+            display: inline-block;
+            position: relative;
+            cursor: crosshair;
+            border: 2px solid #ff4655;
+            box-shadow: 0 0 20px rgba(255, 70, 85, 0.3);
+        }
+
+        #canvas {
+            display: block;
+        }
+
+        .crosshair-lines {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .crosshair-lines.horizontal {
+            height: 1px;
+            background: #00ff00;
+            width: 100%;
+            left: 0;
+            box-shadow: 0 0 3px #000;
+        }
+
+        .crosshair-lines.vertical {
+            width: 1px;
+            background: #00ff00;
+            height: 100%;
+            top: 0;
+            box-shadow: 0 0 3px #000;
+        }
+
+        .center-marker {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #ff0000;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px #ff0000;
+        }
+
+        .center-marker::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: #ff0000;
+            border-radius: 50%;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            background: #2a2a3e;
+            color: white;
+            border: 2px solid #ff4655;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #ff4655;
+            transform: translateY(-2px);
+        }
+
+        .control-btn.active {
+            background: #ff4655;
+        }
+
+        .offset-display {
+            background: #0f0f1e;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 2px solid #ff4655;
+        }
+
+        .offset-display h3 {
+            color: #ff4655;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .offset-values {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+        }
+
+        .offset-item {
+            background: #16213e;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .offset-item .label {
+            color: #b8b8b8;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .offset-item .value {
+            color: #00ff00;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .offset-item .value.negative {
+            color: #ff4655;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 准星位置测试工具</h1>
+
+        <div class="instructions">
+            <h2>📖 使用说明</h2>
+            <ul>
+                <li><strong>上传图片：</strong>上传你的游戏截图（1920x1440）</li>
+                <li><strong>红色圆圈：</strong>标记图片的正中心位置</li>
+                <li><strong>绿色十字线：</strong>跟随鼠标移动，显示当前像素位置</li>
+                <li><strong>鼠标点击：</strong>点击游戏准星所在位置，工具会计算偏移量</li>
+                <li><strong>查看结果：</strong>底部显示准星相对中心的偏移值（像素）</li>
+            </ul>
+        </div>
+
+        <div class="upload-section">
+            <input type="file" id="fileInput" accept="image/*">
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                📁 选择截图文件
+            </button>
+            <p style="margin-top: 15px; color: #b8b8b8;">支持 JPG、PNG 等图片格式</p>
+        </div>
+
+        <div class="info-panel" id="infoPanel">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">图片尺寸</div>
+                    <div class="info-value" id="imageSize">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">图片中心</div>
+                    <div class="info-value" id="imageCenter">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">鼠标位置</div>
+                    <div class="info-value" id="mousePos">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">准星位置</div>
+                    <div class="info-value" id="crosshairPos">未标记</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="image-viewer" id="imageViewer">
+            <div class="canvas-container" id="canvasContainer">
+                <canvas id="canvas"></canvas>
+                <div class="crosshair-lines horizontal" id="hLine"></div>
+                <div class="crosshair-lines vertical" id="vLine"></div>
+                <div class="center-marker" id="centerMarker"></div>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn active" id="showCenterBtn" onclick="toggleCenter()">显示中心标记</button>
+                <button class="control-btn active" id="showLinesBtn" onclick="toggleLines()">显示十字线</button>
+                <button class="control-btn" onclick="resetMark()">重置标记</button>
+            </div>
+
+            <div class="offset-display" id="offsetDisplay" style="display: none;">
+                <h3>📊 准星偏移量</h3>
+                <div class="offset-values">
+                    <div class="offset-item">
+                        <div class="label">水平偏移 (X)</div>
+                        <div class="value" id="offsetX">0</div>
+                    </div>
+                    <div class="offset-item">
+                        <div class="label">垂直偏移 (Y)</div>
+                        <div class="value" id="offsetY">0</div>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; text-align: center; color: #b8b8b8; font-size: 0.9rem;">
+                    正值 = 向右/向下，负值 = 向左/向上
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let image = null;
+        let centerX = 0;
+        let centerY = 0;
+        let markedX = null;
+        let markedY = null;
+        let showCenter = true;
+        let showLines = true;
+
+        const fileInput = document.getElementById('fileInput');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const canvasContainer = document.getElementById('canvasContainer');
+        const hLine = document.getElementById('hLine');
+        const vLine = document.getElementById('vLine');
+        const centerMarker = document.getElementById('centerMarker');
+
+        // 文件选择
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                image = new Image();
+                image.onload = function() {
+                    loadImage();
+                };
+                image.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function loadImage() {
+            // 设置 canvas 尺寸为图片原始尺寸
+            canvas.width = image.width;
+            canvas.height = image.height;
+
+            // 绘制图片
+            ctx.drawImage(image, 0, 0);
+
+            // 计算中心点
+            centerX = Math.floor(image.width / 2);
+            centerY = Math.floor(image.height / 2);
+
+            // 显示信息
+            document.getElementById('infoPanel').style.display = 'block';
+            document.getElementById('imageViewer').style.display = 'block';
+            document.getElementById('imageSize').textContent = `${image.width} x ${image.height}`;
+            document.getElementById('imageCenter').textContent = `(${centerX}, ${centerY})`;
+
+            // 设置中心标记位置
+            centerMarker.style.left = centerX + 'px';
+            centerMarker.style.top = centerY + 'px';
+
+            // 重置标记
+            markedX = null;
+            markedY = null;
+            document.getElementById('offsetDisplay').style.display = 'none';
+            document.getElementById('crosshairPos').textContent = '未标记';
+        }
+
+        // 鼠标移动
+        canvasContainer.addEventListener('mousemove', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor(e.clientX - rect.left);
+            const y = Math.floor(e.clientY - rect.top);
+
+            // 更新十字线位置
+            hLine.style.top = y + 'px';
+            vLine.style.left = x + 'px';
+
+            // 更新鼠标位置显示
+            document.getElementById('mousePos').textContent = `(${x}, ${y})`;
+        });
+
+        // 鼠标点击标记准星位置
+        canvasContainer.addEventListener('click', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            markedX = Math.floor(e.clientX - rect.left);
+            markedY = Math.floor(e.clientY - rect.top);
+
+            // 在画布上标记点击位置
+            ctx.drawImage(image, 0, 0);
+            
+            // 绘制标记点
+            ctx.strokeStyle = '#ff00ff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(markedX, markedY, 15, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = '#ff00ff';
+            ctx.beginPath();
+            ctx.arc(markedX, markedY, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 计算偏移
+            const offsetX = markedX - centerX;
+            const offsetY = markedY - centerY;
+
+            // 更新显示
+            document.getElementById('crosshairPos').textContent = `(${markedX}, ${markedY})`;
+            document.getElementById('offsetX').textContent = offsetX;
+            document.getElementById('offsetY').textContent = offsetY;
+
+            // 设置颜色
+            const offsetXEl = document.getElementById('offsetX');
+            const offsetYEl = document.getElementById('offsetY');
+            offsetXEl.className = 'value' + (offsetX < 0 ? ' negative' : '');
+            offsetYEl.className = 'value' + (offsetY < 0 ? ' negative' : '');
+
+            // 显示偏移信息
+            document.getElementById('offsetDisplay').style.display = 'block';
+        });
+
+        // 鼠标离开
+        canvasContainer.addEventListener('mouseleave', function() {
+            document.getElementById('mousePos').textContent = '-';
+        });
+
+        // 切换中心标记
+        function toggleCenter() {
+            showCenter = !showCenter;
+            centerMarker.style.display = showCenter ? 'block' : 'none';
+            document.getElementById('showCenterBtn').classList.toggle('active');
+        }
+
+        // 切换十字线
+        function toggleLines() {
+            showLines = !showLines;
+            hLine.style.display = showLines ? 'block' : 'none';
+            vLine.style.display = showLines ? 'block' : 'none';
+            document.getElementById('showLinesBtn').classList.toggle('active');
+        }
+
+        // 重置标记
+        function resetMark() {
+            if (image) {
+                ctx.drawImage(image, 0, 0);
+                markedX = null;
+                markedY = null;
+                document.getElementById('crosshairPos').textContent = '未标记';
+                document.getElementById('offsetDisplay').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -478,41 +478,39 @@ function copyCommand() {
 
 // ==================== 图片查看器 ====================
 const imageViewer = {
-    modal: null,
-    image: null,
-    container: null,
+    currentImageType: null,
     currentScale: 1,
-    currentImageType: null, // 'position', 'crosshair', 'landing'
     crosshairSettings: {
-        style: 'dot',
+        style: 'small',     // 'dot', 'small', 'large'
         size: 20,
         thickness: 2,
         gap: 4,
         showDot: true,
         dotSize: 2,
         color: '#00FF00',
-        outline: true,
-        // 准星偏移量（适配不同屏幕比例）
-        offsetX: 0,      // 水平偏移（屏幕宽度的百分比），0 = 居中
-        offsetY: -0.02   // 垂直偏移（屏幕高度的百分比），负数向上
-                         // 4:3 建议 -0.02 到 0
-                         // 16:9 建议 -0.03 到 -0.02
+        outline: true
     },
     
     init() {
-        this.modal = document.getElementById('image-viewer-modal');
-        this.image = document.getElementById('viewer-image');
-        this.container = document.getElementById('image-container');
-        
-        // 添加拖拽功能
-        this.setupDrag();
-        
         // ESC 键关闭
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.modal.style.display === 'block') {
-                this.close();
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('image-viewer-modal');
+                if (modal && modal.style.display === 'block') {
+                    this.close();
+                }
             }
         });
+        
+        // 鼠标滚轮缩放
+        const container = document.getElementById('image-container');
+        if (container) {
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                this.zoom(delta);
+            });
+        }
     },
     
     open(src, title, imageType) {
@@ -522,27 +520,23 @@ const imageViewer = {
         const modal = document.getElementById('image-viewer-modal');
         const image = document.getElementById('viewer-image');
         const titleEl = document.getElementById('viewer-title');
-        const crosshairOverlay = document.getElementById('crosshair-overlay');
+        const container = document.getElementById('image-container');
         const crosshairSettings = document.getElementById('crosshair-settings');
         
+        // 设置图片
         image.src = src;
         titleEl.textContent = title;
         modal.style.display = 'block';
+        container.style.transform = 'scale(1)';
         
-        // 只有准星位置图才显示准星
+        // 只有准星位置图才显示准星设置
         if (imageType === 'crosshair') {
-            crosshairOverlay.classList.add('active');
             crosshairSettings.classList.add('active');
-            
             // 等待图片加载完成后绘制准星
             image.onload = () => {
-                // 延迟一帧确保图片完全渲染
-                requestAnimationFrame(() => {
-                    this.updateCrosshair();
-                });
+                this.drawCrosshair();
             };
         } else {
-            crosshairOverlay.classList.remove('active');
             crosshairSettings.classList.remove('active');
         }
         
@@ -550,55 +544,48 @@ const imageViewer = {
     },
     
     close() {
-        const modal = document.getElementById('image-viewer-modal');
-        modal.style.display = 'none';
+        document.getElementById('image-viewer-modal').style.display = 'none';
         this.currentScale = 1;
-        this.image.style.transform = 'scale(1)';
     },
     
     zoom(delta) {
         this.currentScale = Math.max(0.5, Math.min(5, this.currentScale + delta));
-        this.image.style.transform = `scale(${this.currentScale})`;
+        document.getElementById('image-container').style.transform = `scale(${this.currentScale})`;
         this.updateZoomLevel();
-        
-        // 如果有准星，更新准星位置
-        if (this.currentImageType === 'crosshair') {
-            requestAnimationFrame(() => {
-                this.updateCrosshair();
-            });
-        }
     },
     
     reset() {
         this.currentScale = 1;
-        this.image.style.transform = 'scale(1)';
+        document.getElementById('image-container').style.transform = 'scale(1)';
         this.updateZoomLevel();
-        
-        // 如果有准星，更新准星位置
-        if (this.currentImageType === 'crosshair') {
-            requestAnimationFrame(() => {
-                this.updateCrosshair();
-            });
-        }
     },
     
     updateZoomLevel() {
         document.getElementById('zoom-level').textContent = `${Math.round(this.currentScale * 100)}%`;
     },
     
-    setupDrag() {
-        // 鼠标滚轮缩放
-        this.container.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? -0.1 : 0.1;
-            this.zoom(delta);
-        });
-    },
-    
-    updateCrosshair() {
+    drawCrosshair() {
         const svg = document.getElementById('crosshair-svg');
-        const overlay = document.getElementById('crosshair-overlay');
+        const image = document.getElementById('viewer-image');
         const settings = this.crosshairSettings;
+        
+        // 清空 SVG
+        svg.innerHTML = '';
+        
+        // 获取图片尺寸
+        const width = image.naturalWidth;
+        const height = image.naturalHeight;
+        
+        if (!width || !height) return;
+        
+        // 设置 SVG 尺寸为图片原始尺寸
+        svg.setAttribute('width', width);
+        svg.setAttribute('height', height);
+        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        
+        // 图片中心点
+        const cx = width / 2;
+        const cy = height / 2;
         
         // 更新显示的数值
         document.getElementById('size-value').textContent = settings.size;
@@ -606,112 +593,69 @@ const imageViewer = {
         document.getElementById('gap-value').textContent = settings.gap;
         document.getElementById('dot-size-value').textContent = settings.dotSize;
         
-        // 清空 SVG
-        svg.innerHTML = '';
-        
-        // 获取图片实际渲染尺寸（考虑缩放）
-        const image = document.getElementById('viewer-image');
-        const imageWidth = image.offsetWidth;
-        const imageHeight = image.offsetHeight;
-        
-        // 如果图片还没有渲染完成，延迟执行
-        if (!imageWidth || !imageHeight) {
-            requestAnimationFrame(() => this.updateCrosshair());
-            return;
-        }
-        
-        // 对于全屏准星，SVG 尺寸需要覆盖整个图片
-        let svgSize, center;
-        
-        if (settings.style === 'fullscreen') {
-            // 全屏模式：SVG 覆盖整个图片
-            overlay.classList.add('fullscreen');
-            svg.setAttribute('width', imageWidth);
-            svg.setAttribute('height', imageHeight);
-            // 应用偏移量（适配不同屏幕比例）
-            center = { 
-                x: imageWidth / 2 + (imageWidth * settings.offsetX), 
-                y: imageHeight / 2 + (imageHeight * settings.offsetY)
-            };
-        } else {
-            // 普通模式
-            overlay.classList.remove('fullscreen');
-            svgSize = settings.size * 2 + 40;
-            svg.setAttribute('width', svgSize);
-            svg.setAttribute('height', svgSize);
-            center = { x: svgSize / 2, y: svgSize / 2 };
-        }
-        
-        const lineLength = settings.size;
-        const gap = settings.gap;
-        const thickness = settings.thickness;
-        const color = settings.color;
-        const outline = settings.outline;
-        
-        // 绘制准星线条的函数
+        // 绘制线条的辅助函数
         const drawLine = (x1, y1, x2, y2) => {
+            if (settings.outline) {
+                // 黑色描边
+                const outlineLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                outlineLine.setAttribute('x1', x1);
+                outlineLine.setAttribute('y1', y1);
+                outlineLine.setAttribute('x2', x2);
+                outlineLine.setAttribute('y2', y2);
+                outlineLine.setAttribute('stroke', '#000000');
+                outlineLine.setAttribute('stroke-width', settings.thickness + 2);
+                outlineLine.setAttribute('stroke-linecap', 'butt');
+                svg.appendChild(outlineLine);
+            }
+            
+            // 主线条
             const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             line.setAttribute('x1', x1);
             line.setAttribute('y1', y1);
             line.setAttribute('x2', x2);
             line.setAttribute('y2', y2);
-            line.setAttribute('stroke', color);
-            line.setAttribute('stroke-width', thickness);
-            line.setAttribute('stroke-linecap', 'square');
-            
-            if (outline) {
-                line.setAttribute('stroke', '#000000');
-                line.setAttribute('stroke-width', thickness + 2);
-                svg.appendChild(line.cloneNode());
-                line.setAttribute('stroke', color);
-                line.setAttribute('stroke-width', thickness);
-            }
-            
+            line.setAttribute('stroke', settings.color);
+            line.setAttribute('stroke-width', settings.thickness);
+            line.setAttribute('stroke-linecap', 'butt');
             svg.appendChild(line);
         };
         
         // 根据样式绘制准星
-        switch (settings.style) {
-            case 'fullscreen':
-                // 全屏十字准星：延伸到图片边缘
-                drawLine(center.x, 0, center.x, imageHeight); // 竖线
-                drawLine(0, center.y, imageWidth, center.y); // 横线
-                break;
-                
-            case 'small':
-                const smallLength = lineLength * 0.6;
-                // 上
-                drawLine(center.x, center.y - gap, center.x, center.y - gap - smallLength);
-                // 下
-                drawLine(center.x, center.y + gap, center.x, center.y + gap + smallLength);
-                // 左
-                drawLine(center.x - gap, center.y, center.x - gap - smallLength, center.y);
-                // 右
-                drawLine(center.x + gap, center.y, center.x + gap + smallLength, center.y);
-                break;
-                
-            case 'dot':
-                // 只显示中心点，不绘制线条
-                break;
+        if (settings.style === 'dot') {
+            // 只有中心点
+        } else if (settings.style === 'small') {
+            // 小准星：四条短线
+            const size = settings.size;
+            const gap = settings.gap;
+            drawLine(cx, cy - gap, cx, cy - gap - size);        // 上
+            drawLine(cx, cy + gap, cx, cy + gap + size);        // 下
+            drawLine(cx - gap, cy, cx - gap - size, cy);        // 左
+            drawLine(cx + gap, cy, cx + gap + size, cy);        // 右
+        } else if (settings.style === 'large') {
+            // 大准星：从中心到边缘的完整线条
+            const gap = settings.gap;
+            drawLine(cx, gap, cx, cy - gap);                    // 上
+            drawLine(cx, cy + gap, cx, height - gap);           // 下
+            drawLine(gap, cy, cx - gap, cy);                    // 左
+            drawLine(cx + gap, cy, width - gap, cy);            // 右
         }
         
-        // 中心点
+        // 绘制中心点
         if (settings.showDot) {
-            const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            dot.setAttribute('cx', center.x);
-            dot.setAttribute('cy', center.y);
-            dot.setAttribute('r', settings.dotSize);
-            
-            if (outline) {
-                dot.setAttribute('fill', '#000000');
-                dot.setAttribute('r', settings.dotSize + 1);
-                svg.appendChild(dot.cloneNode());
-                dot.setAttribute('fill', color);
-                dot.setAttribute('r', settings.dotSize);
-            } else {
-                dot.setAttribute('fill', color);
+            if (settings.outline) {
+                const outlineDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                outlineDot.setAttribute('cx', cx);
+                outlineDot.setAttribute('cy', cy);
+                outlineDot.setAttribute('r', settings.dotSize + 1);
+                outlineDot.setAttribute('fill', '#000000');
+                svg.appendChild(outlineDot);
             }
             
+            const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            dot.setAttribute('cx', cx);
+            dot.setAttribute('cy', cy);
+            dot.setAttribute('r', settings.dotSize);
+            dot.setAttribute('fill', settings.color);
             svg.appendChild(dot);
         }
     }
@@ -748,7 +692,7 @@ function updateCrosshair() {
     settings.dotSize = parseInt(document.getElementById('dot-size').value);
     settings.outline = document.getElementById('crosshair-outline').checked;
     
-    imageViewer.updateCrosshair();
+    imageViewer.drawCrosshair();
 }
 
 function setCrosshairStyle(style) {
@@ -758,9 +702,12 @@ function setCrosshairStyle(style) {
     document.querySelectorAll('.style-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.querySelector(`[data-style="${style}"]`).classList.add('active');
+    const activeBtn = document.querySelector(`[data-style="${style}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
     
-    imageViewer.updateCrosshair();
+    imageViewer.drawCrosshair();
 }
 
 function setCrosshairColor(color) {
@@ -770,11 +717,10 @@ function setCrosshairColor(color) {
     document.querySelectorAll('.color-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.querySelector(`[data-color="${color}"]`).classList.add('active');
+    const activeBtn = document.querySelector(`[data-color="${color}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
     
-    imageViewer.updateCrosshair();
-}
-
-function openFullImage(src) {
-    window.open(src, '_blank');
+    imageViewer.drawCrosshair();
 }
