@@ -65,10 +65,6 @@ def select_utilities():
     if not utilities:
         return jsonify({'success': False, 'message': '未选择道具'}), 400
     
-    # ✅ 移除地图冲突检查
-    # 允许同时选择多个地图的道具
-    # 截图脚本会根据当前地图自动筛选
-    
     # 更新状态为 selected
     count = 0
     for util in utilities:
@@ -89,16 +85,6 @@ def select_utilities():
         'message': f'已选择 {count} 个道具\n地图: {map_info}\n\n💡 提示: 截图时脚本会自动筛选当前地图的道具',
         'count': count,
         'maps': list(maps)
-    })
-    count = 0
-    for util in utilities:
-        if db.update_status(util['hash'], 'selected'):
-            count += 1
-    
-    return jsonify({
-        'success': True,
-        'message': f'已选择 {count} 个道具',
-        'count': count
     })
 
 

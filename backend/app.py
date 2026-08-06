@@ -12,8 +12,8 @@ from flask_cors import CORS
 # 添加项目根目录到路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from backend.database import Database
-from backend.routes import demo, utility, screenshot, export_route
+from database import Database
+from routes import demo, utility, screenshot, export_route
 
 # 创建 Flask 应用
 app = Flask(__name__, 
