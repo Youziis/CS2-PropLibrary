@@ -101,6 +101,32 @@ async function loadData() {
     }
 }
 
+async function loadAllUtilitiesData() {
+    // 如果已经加载过，直接返回
+    if (state.allUtilities.length > 0) {
+        return;
+    }
+    
+    // 先加载索引
+    if (state.maps.length === 0) {
+        await loadData();
+    }
+    
+    // 加载所有地图的道具数据
+    const allUtilities = [];
+    for (const map of state.maps) {
+        try {
+            const response = await fetch(map.data_file);
+            const mapData = await response.json();
+            allUtilities.push(...mapData.utilities);
+        } catch (error) {
+            console.error(`加载地图 ${map.name} 数据失败:`, error);
+        }
+    }
+    
+    state.allUtilities = allUtilities;
+}
+
 async function loadMapData(mapName) {
     try {
         const map = state.maps.find(m => m.name === mapName);
@@ -321,7 +347,15 @@ function showDetailPage(utilityId) {
     hideAllViews();
     document.getElementById('detail-view').style.display = 'block';
     state.currentView = 'detail';
-    renderDetailPage(utilityId);
+    
+    // 如果数据还没加载，先加载数据再渲染详情页
+    if (state.allUtilities.length === 0) {
+        loadAllUtilitiesData().then(() => {
+            renderDetailPage(utilityId);
+        });
+    } else {
+        renderDetailPage(utilityId);
+    }
 }
 
 function renderDetailPage(utilityId) {
