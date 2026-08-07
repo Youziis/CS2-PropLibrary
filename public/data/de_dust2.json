@@ -2,7 +2,7 @@
   "map": "de_dust2",
   "utilities": [
     {
-      "id": "de_dust2_smoke_001",
+      "id": "de_dust2_smoke_6a332aa7",
       "type": "smoke",
       "team": "TERRORIST",
       "name": "中门挂门烟",
@@ -29,9 +29,9 @@
       "tags": [],
       "notes": "站在轮胎上，确保不会顶到头再投掷。",
       "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_001_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_001_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_001_landing.jpg"
+        "position": "images/de_dust2/smoke/de_dust2_smoke_6a332aa7_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_6a332aa7_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_6a332aa7_landing.jpg"
       },
       "thrower": "tN1R",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
