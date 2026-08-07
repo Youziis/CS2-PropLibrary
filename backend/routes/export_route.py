@@ -47,12 +47,13 @@ def export_utilities():
             # 生成地图数据
             map_utilities = []
             
-            for i, util in enumerate(utilities, 1):
+            for util in utilities:
                 util_type = util['type']
-                utility_id = f"{map_name}_{util_type}_{i:03d}"
+                util_hash = util['hash'][:8]  # 使用hash的前8位作为唯一标识
+                utility_id = f"{map_name}_{util_type}_{util_hash}"
                 
                 # 复制截图
-                screenshot_base = util.get('screenshot_filename_base') or f"{map_name}_unknown_{util.get('screenshot_id', 'util000')}"
+                screenshot_base = util.get('screenshot_filename_base') or f"{map_name}_{util['hash']}"
                 
                 for shot_type in ['position', 'crosshair', 'landing']:
                     src_file = screenshots_dir / f"{screenshot_base}_{shot_type}.jpg"
@@ -69,7 +70,7 @@ def export_utilities():
                     'id': utility_id,
                     'type': util_type,
                     'team': util.get('team', 'Unknown'),
-                    'name': util.get('display_name', f'{util_type}_{i}'),
+                    'name': util.get('display_name', f'{util_type}_{util_hash}'),
                     'description': f"{util.get('throw_type', '投掷')}，飞行时间 {util.get('flight_time', 0):.1f} 秒",
                     'position': util.get('throw_position', {}),
                     'angles': util.get('throw_angles', {}),
@@ -109,15 +110,39 @@ def export_utilities():
             
             total_exported += len(map_utilities)
         
-        # 生成索引文件
+        # 生成索引文件（合并已有数据）
         index_file = public_dir / 'data' / 'utilities.json'
+        
+        # 读取现有索引（如果存在）
+        existing_maps = {}
+        if index_file.exists():
+            try:
+                with open(index_file, 'r', encoding='utf-8') as f:
+                    existing_data = json.load(f)
+                    # 将现有地图转换为字典，便于更新
+                    for map_info in existing_data.get('maps', []):
+                        existing_maps[map_info['name']] = map_info
+            except:
+                pass
+        
+        # 更新或添加本次导出的地图
+        for map_info in exported_maps:
+            existing_maps[map_info['name']] = map_info
+        
+        # 转换回列表并排序
+        all_maps = sorted(existing_maps.values(), key=lambda x: x['name'])
+        
+        # 计算总数
+        total_in_index = sum(m['utility_count'] for m in all_maps)
+        
+        # 保存合并后的索引
         with open(index_file, 'w', encoding='utf-8') as f:
             json.dump({
                 'version': '1.0.0',
                 'last_updated': datetime.now().isoformat(),
-                'maps': exported_maps,
+                'maps': all_maps,
                 'statistics': {
-                    'total_utilities': total_exported,
+                    'total_utilities': total_in_index,
                     'by_type': {}
                 }
             }, f, ensure_ascii=False, indent=2)
