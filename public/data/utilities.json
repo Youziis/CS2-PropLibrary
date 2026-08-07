@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
-  "last_updated": "2026-08-07T23:44:26.840111",
+  "last_updated": "2026-08-08T00:01:34.608466",
   "maps": [
     {
-      "name": "de_mirage",
-      "display_name": "Mirage",
+      "name": "de_dust2",
+      "display_name": "Dust2",
       "utility_count": 1,
-      "data_file": "data/de_mirage.json"
+      "data_file": "data/de_dust2.json"
     }
   ],
   "statistics": {

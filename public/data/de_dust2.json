@@ -1,0 +1,40 @@
+{
+  "map": "de_dust2",
+  "utilities": [
+    {
+      "id": "de_dust2_smoke_001",
+      "type": "smoke",
+      "team": "TERRORIST",
+      "name": "中门挂门烟",
+      "description": "stand，飞行时间 3.1 秒",
+      "position": {
+        "x": 363.9348449707031,
+        "y": -625.0651245117188,
+        "z": 49.72743225097656
+      },
+      "angles": {
+        "pitch": -25.431976318359375,
+        "yaw": 110.158203125
+      },
+      "land_position": {
+        "x": 666.0665283203125,
+        "y": 696.6201171875,
+        "z": 2.6322383880615234
+      },
+      "throw_type": "stand",
+      "flight_time": 3.14,
+      "distance": 1356.6,
+      "command": "setpos 363.93 -625.07 49.73; setang -25.43 110.16 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "站在轮胎上，确保不会顶到头再投掷。",
+      "screenshots": {
+        "position": "images/de_dust2/smoke/de_dust2_smoke_001_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_001_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_001_landing.jpg"
+      },
+      "thrower": "tN1R",
+      "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
+    }
+  ]
+}
