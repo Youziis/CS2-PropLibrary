@@ -11,7 +11,12 @@ from typing import List, Dict, Optional
 
 
 class Database:
-    def __init__(self, db_path='backend/data/yuuko.db'):
+    def __init__(self, db_path=None):
+        if db_path is None:
+            # 使用绝对路径，基于项目根目录
+            project_root = Path(__file__).parent.parent
+            db_path = project_root / 'backend' / 'data' / 'yuuko.db'
+        
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init_db()

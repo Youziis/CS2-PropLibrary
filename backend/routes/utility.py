@@ -80,11 +80,21 @@ def select_utilities():
     
     map_info = ', '.join([f"{m}({c}个)" for m, c in map_counts.items()])
     
+    # 🆕 自动导出到JSON文件供截图脚本使用
+    import json
+    selected_utils = db.get_utilities(status='selected')
+    output_path = Path(__file__).parent.parent.parent / 'output' / 'commands' / 'selected_for_screenshot.json'
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(selected_utils, f, ensure_ascii=False, indent=2)
+    
     return jsonify({
         'success': True,
-        'message': f'已选择 {count} 个道具\n地图: {map_info}\n\n💡 提示: 截图时脚本会自动筛选当前地图的道具',
+        'message': f'已选择 {count} 个道具并导出到JSON\n地图: {map_info}\n\n💡 提示: 现在可以直接运行截图脚本',
         'count': count,
-        'maps': list(maps)
+        'maps': list(maps),
+        'json_exported': True
     })
 
 
