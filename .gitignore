@@ -21,10 +21,6 @@ output/
 # Demo 文件（体积大）
 demos/
 
-# 前端导出的数据
-public/data/
-public/images/
-
 # 测试和临时文件
 *.md
 *.bat

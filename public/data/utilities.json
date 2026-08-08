@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-08-08T17:16:39.791572",
+  "maps": [
+    {
+      "name": "de_anubis",
+      "display_name": "Anubis",
+      "utility_count": 1,
+      "data_file": "data/de_anubis.json"
+    },
+    {
+      "name": "de_dust2",
+      "display_name": "Dust2",
+      "utility_count": 1,
+      "data_file": "data/de_dust2.json"
+    },
+    {
+      "name": "de_mirage",
+      "display_name": "Mirage",
+      "utility_count": 1,
+      "data_file": "data/de_mirage.json"
+    }
+  ],
+  "statistics": {
+    "total_utilities": 3,
+    "by_type": {}
+  }
+}

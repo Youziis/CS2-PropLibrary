@@ -1,0 +1,40 @@
+{
+  "map": "de_dust2",
+  "utilities": [
+    {
+      "id": "de_dust2_smoke_7d0b3c27",
+      "type": "smoke",
+      "team": "CT",
+      "name": "A门烟",
+      "description": "jump，飞行时间 3.6 秒",
+      "position": {
+        "x": 1004.937255859375,
+        "y": 2379.8896484375,
+        "z": 30.984375
+      },
+      "angles": {
+        "pitch": -21.808547973632812,
+        "yaw": -98.42445373535156
+      },
+      "land_position": {
+        "x": 1384.622314453125,
+        "y": 1284.766357421875,
+        "z": -8.924310684204102
+      },
+      "throw_type": "jump",
+      "flight_time": 3.62,
+      "distance": 1159.8,
+      "command": "setpos 1004.94 2379.89 30.98; setang -21.81 -98.42 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "抵住电梯位拐角投掷。",
+      "screenshots": {
+        "position": "images/de_dust2/smoke/de_dust2_smoke_7d0b3c27_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_7d0b3c27_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_7d0b3c27_landing.jpg"
+      },
+      "thrower": "Gizmy",
+      "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
+    }
+  ]
+}
