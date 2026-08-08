@@ -2,38 +2,38 @@
   "map": "de_dust2",
   "utilities": [
     {
-      "id": "de_dust2_smoke_6a332aa7",
+      "id": "de_dust2_smoke_7d0b3c27",
       "type": "smoke",
-      "team": "TERRORIST",
-      "name": "中门挂门烟",
-      "description": "stand，飞行时间 3.1 秒",
+      "team": "CT",
+      "name": "A门烟",
+      "description": "jump，飞行时间 3.6 秒",
       "position": {
-        "x": 363.9348449707031,
-        "y": -625.0651245117188,
-        "z": 49.72743225097656
+        "x": 1004.937255859375,
+        "y": 2379.8896484375,
+        "z": 30.984375
       },
       "angles": {
-        "pitch": -25.431976318359375,
-        "yaw": 110.158203125
+        "pitch": -21.808547973632812,
+        "yaw": -98.42445373535156
       },
       "land_position": {
-        "x": 666.0665283203125,
-        "y": 696.6201171875,
-        "z": 2.6322383880615234
+        "x": 1384.622314453125,
+        "y": 1284.766357421875,
+        "z": -8.924310684204102
       },
-      "throw_type": "stand",
-      "flight_time": 3.14,
-      "distance": 1356.6,
-      "command": "setpos 363.93 -625.07 49.73; setang -25.43 110.16 0",
+      "throw_type": "jump",
+      "flight_time": 3.62,
+      "distance": 1159.8,
+      "command": "setpos 1004.94 2379.89 30.98; setang -21.81 -98.42 0",
       "quality": 3,
       "tags": [],
-      "notes": "站在轮胎上，确保不会顶到头再投掷。",
+      "notes": "抵住电梯位拐角投掷。",
       "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_6a332aa7_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_6a332aa7_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_6a332aa7_landing.jpg"
+        "position": "images/de_dust2/smoke/de_dust2_smoke_7d0b3c27_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_7d0b3c27_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_7d0b3c27_landing.jpg"
       },
-      "thrower": "tN1R",
+      "thrower": "Gizmy",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     }
   ]

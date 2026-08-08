@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS2 道具管理后台</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <h1>🎮 CS2 道具管理后台</h1>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-count">0</div>
+                    <div class="stat-label">总解析</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="pending-count">0</div>
+                    <div class="stat-label">待审核</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="approved-count">0</div>
+                    <div class="stat-label">已批准</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 标签页导航 -->
+        <nav class="tabs">
+            <button class="tab active" data-tab="demo">📁 Demo管理</button>
+            <button class="tab" data-tab="select">🎯 选择道具</button>
+            <button class="tab" data-tab="review">✅ 审核道具</button>
+            <button class="tab" data-tab="export">📤 导出发布</button>
+        </nav>
+
+        <!-- Tab 1: Demo管理 -->
+        <div class="tab-content active" id="demo-tab">
+            <div class="section">
+                <h2>📁 Demo 文件</h2>
+                <p class="hint">将 .dem 文件放入 <code>demos/</code> 文件夹</p>
+                
+                <button class="btn btn-primary" onclick="loadDemos()">🔄 刷新列表</button>
+                
+                <div id="demo-list" class="demo-list">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: 选择道具 -->
+        <div class="tab-content" id="select-tab">
+            <div class="section select-utilities-section">
+                <h2>🎯 选择要截图的道具</h2>
+                <p class="hint">解析 demo 后，未截图的道具会显示在这里。勾选需要截图的道具，然后保存。</p>
+                
+                <div class="type-stats" id="type-stats">
+                    <div class="loading">加载中...</div>
+                </div>
+                
+                <div class="info-box" style="margin-top: 20px;">
+                    <h3>📸 截图流程</h3>
+                    <ol>
+                        <li>勾选需要截图的道具（可以使用上方的快捷按钮批量选择）</li>
+                        <li>点击"保存选择并准备截图"按钮</li>
+                        <li>启动 CS2 游戏，进入对应地图</li>
+                        <li>开启控制台输入：<code>sv_cheats 1</code></li>
+                        <li>运行截图工具：<code>python screenshot.py</code></li>
+                        <li>截图完成后运行：<code>python create_screenshot_index.py</code></li>
+                        <li>前往"审核道具"页面查看截图并进行审核</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: 审核道具 -->
+        <div class="tab-content" id="review-tab">
+            <div class="section">
+                <h2>✅ 审核道具</h2>
+                
+                <div class="filters">
+                    <select id="filter-map" onchange="applyFilters()">
+                        <option value="">全部地图</option>
+                        <!-- 动态填充 -->
+                    </select>
+                    
+                    <select id="filter-demo" onchange="applyFilters()">
+                        <option value="">全部来源</option>
+                        <!-- 动态填充 -->
+                    </select>
+                    
+                    <select id="filter-type" onchange="applyFilters()">
+                        <option value="">全部类型</option>
+                        <option value="smoke">烟雾弹</option>
+                        <option value="flashbang">闪光弹</option>
+                        <option value="hegrenade">手雷</option>
+                        <option value="incendiary">燃烧弹</option>
+                    </select>
+                    
+                    <select id="filter-team" onchange="applyFilters()">
+                        <option value="">全部队伍</option>
+                        <option value="CT">CT</option>
+                        <option value="TERRORIST">T</option>
+                    </select>
+                    
+                    <button class="btn btn-primary" onclick="loadPending()">🔄 刷新</button>
+                </div>
+                
+                <div class="filter-stats" id="review-stats">
+                    <span>显示 <strong id="visible-review-count">0</strong> 个道具 / 共 <strong id="total-review-count">0</strong> 个</span>
+                </div>
+                
+                <div id="utilities-grid" class="utilities-grid">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: 导出发布 -->
+        <div class="tab-content" id="export-tab">
+            <div class="section">
+                <h2>📤 导出发布</h2>
+                
+                <!-- 子标签 -->
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-subtab="pending-export">⏳ 待导出</button>
+                    <button class="sub-tab" data-subtab="exported">✅ 已导出</button>
+                </div>
+                
+                <!-- 待导出子页面 -->
+                <div class="sub-tab-content active" id="pending-export-subtab">
+                    <div class="info-box">
+                        <h3>导出流程</h3>
+                        <p>1. 读取已批准的道具数据</p>
+                        <p>2. 压缩截图文件 (1200x900, quality=85)</p>
+                        <p>3. 生成前端 JSON 文件</p>
+                        <p>4. 复制到 <code>public/</code> 目录</p>
+                        <p>5. 标记为已导出</p>
+                    </div>
+                    
+                    <div class="export-stats">
+                        <div class="stat-item">
+                            <strong id="pending-export-count">0</strong>
+                            <span>待导出道具</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-large btn-primary" onclick="exportData()">
+                        🚀 开始导出
+                    </button>
+                    
+                    <div id="export-result" class="result-message"></div>
+                    
+                    <!-- 待导出道具列表 -->
+                    <div id="pending-export-list" style="margin-top: 30px;">
+                        <div class="loading">加载中...</div>
+                    </div>
+                    
+                    <div class="info-box" style="margin-top: 30px;">
+                        <h3>📋 导出后续步骤</h3>
+                        <p><strong>1. 使用 Git 推送更新</strong></p>
+                        <ul>
+                            <li>打开终端或 GitHub Desktop</li>
+                            <li>查看更改的文件</li>
+                            <li>输入提交信息（如："添加了 5 个新道具"）</li>
+                            <li>点击 Commit → Push</li>
+                        </ul>
+                        <p><strong>2. Cloudflare Pages 自动部署</strong></p>
+                        <ul>
+                            <li>推送后 Cloudflare 会自动检测</li>
+                            <li>等待 1-2 分钟部署完成</li>
+                            <li>访问你的网站查看更新</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 已导出子页面 -->
+                <div class="sub-tab-content" id="exported-subtab">
+                    <div class="info-box">
+                        <h3>ℹ️ 说明</h3>
+                        <p>这里显示已经导出到客户端的道具。你可以对它们进行编辑或删除操作。</p>
+                        <p><strong>注意：</strong>编辑后需要重新导出，推送到GitHub后才能在客户端生效。</p>
+                    </div>
+                    
+                    <div class="export-stats">
+                        <div class="stat-item">
+                            <strong id="exported-count">0</strong>
+                            <span>已导出道具</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button class="btn btn-primary" onclick="loadExportedUtilities()">🔄 刷新列表</button>
+                        <button class="btn btn-large btn-primary" onclick="reExportData()">🚀 重新导出</button>
+                    </div>
+                    
+                    <div id="re-export-result" class="result-message"></div>
+                    
+                    <!-- 已导出道具网格 -->
+                    <div id="exported-grid" class="utilities-grid" style="margin-top: 20px;">
+                        <div class="loading">加载中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片预览模态框 -->
+    <div class="modal" id="image-modal" onclick="closeModal()">
+        <img id="modal-image" src="" alt="">
+    </div>
+
+    <!-- 编辑道具模态框 -->
+    <div class="modal" id="edit-modal" onclick="closeEditModal(event)">
+        <div class="modal-content edit-modal-content" onclick="event.stopPropagation()">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>✏️ 编辑道具信息</h2>
+            
+            <form id="edit-form" onsubmit="saveEditedUtility(event)">
+                <input type="hidden" id="edit-hash">
+                
+                <div class="form-group">
+                    <label>道具名称 *</label>
+                    <input type="text" id="edit-name" required placeholder="如：A小烟、中门闪">
+                </div>
+                
+                <div class="form-group">
+                    <label>类型</label>
+                    <select id="edit-type">
+                        <option value="smoke">烟雾弹</option>
+                        <option value="flashbang">闪光弹</option>
+                        <option value="hegrenade">手雷</option>
+                        <option value="incendiary">燃烧弹</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>队伍</label>
+                    <select id="edit-team">
+                        <option value="T">T (恐怖分子)</option>
+                        <option value="CT">CT (反恐精英)</option>
+                        <option value="Unknown">未知</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>投掷方式</label>
+                    <input type="text" id="edit-throw-type" placeholder="如：跳投、站投、蹲投、走投等">
+                </div>
+                
+                <div class="form-group">
+                    <label>备注信息</label>
+                    <textarea id="edit-notes" rows="3" placeholder="投掷技巧、注意事项等"></textarea>
+                </div>
+                
+                <div class="actions" style="margin-top: 20px;">
+                    <button type="submit" class="btn btn-large btn-primary">💾 保存修改</button>
+                    <button type="button" class="btn btn-large" onclick="closeEditModal()">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,47 +1,48 @@
-# ==========================================
-# 客户端工具（不上传到Git）
-# ==========================================
-client/
-demos/
-maps/
-output/
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
 .Python
-venv/
-ENV/
 env/
+venv/
+*.egg-info/
+dist/
+build/
 
-# ==========================================
-# 后端数据（不上传到Git）
-# ==========================================
-backend/data/
-backend/data/*.db
-backend/data/*.db-journal
+# 数据库
+*.db
+*.sqlite
+*.sqlite3
+
+# 后端临时文件
 backend/__pycache__/
-backend/routes/__pycache__/
+backend/*/__pycache__/
+client/__pycache__/
+client/*/__pycache__/
 
-# ==========================================
-# 临时文件
-# ==========================================
-*.log
-*.swp
-*.swo
-*~
-.DS_Store
-Thumbs.db
+# 输出文件（不上传截图和临时文件）
+output/screenshots/*.jpg
+output/screenshots/*.png
+output/data/*.json
 
-# ==========================================
 # IDE
-# ==========================================
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# ==========================================
-# 静态网站文件（需要上传到Git）
-# ==========================================
-# public/ 文件夹内容会上传
-# 但排除临时文件
-public/**/.DS_Store
-public/**/Thumbs.db
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 日志
+*.log
+
+# 环境变量
+.env
+.env.local
+
+# Node modules（如果有）
+node_modules/

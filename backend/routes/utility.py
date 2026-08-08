@@ -41,9 +41,23 @@ def get_utilities():
 
 @bp.route('/api/all_pending', methods=['GET'])
 def get_all_pending():
-    """获取所有待选择的道具（用于选择道具页面）"""
-    utilities = db.get_utilities(status='parsed')
-    return jsonify({'utilities': utilities})
+    """获取所有待选择的道具（用于选择道具页面）- 包含parsed、selected和rejected状态"""
+    # 获取parsed状态的道具（待选择）
+    parsed_utilities = db.get_utilities(status='parsed')
+    
+    # 获取selected状态的道具（已选择但未截图）
+    selected_utilities = db.get_utilities(status='selected')
+    
+    # 获取rejected状态的道具（已拒绝，可重新选择）
+    rejected_utilities = db.get_utilities(status='rejected')
+    
+    # 合并三种状态的道具
+    all_utilities = parsed_utilities + selected_utilities + rejected_utilities
+    
+    return jsonify({
+        'utilities': all_utilities,
+        'success': True
+    })
 
 
 @bp.route('/api/pending', methods=['GET'])
