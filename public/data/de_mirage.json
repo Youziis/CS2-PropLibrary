@@ -2,11 +2,11 @@
   "map": "de_mirage",
   "utilities": [
     {
-      "id": "de_mirage_smoke_754c0f16",
+      "id": "de_mirage_smoke_001",
       "type": "smoke",
       "team": "TERRORIST",
       "name": "中路沙袋过点烟",
-      "description": "stand，飞行时间 4.4 秒",
+      "description": "站投，飞行时间 4.4 秒",
       "position": {
         "x": 1422.94091796875,
         "y": 36.46875,
@@ -26,12 +26,14 @@
       "distance": 1482.2,
       "command": "setpos 1422.94 36.47 -167.97; setang -42.34 -160.50 0",
       "quality": 3,
-      "tags": [],
+      "tags": [
+        "远投"
+      ],
       "notes": "贴住垃圾桶右侧投掷。",
       "screenshots": {
-        "position": "images/de_mirage/smoke/de_mirage_smoke_754c0f16_position.jpg",
-        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_754c0f16_crosshair.jpg",
-        "landing": "images/de_mirage/smoke/de_mirage_smoke_754c0f16_landing.jpg"
+        "position": "images/de_mirage/smoke/de_mirage_smoke_001_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_001_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_001_landing.jpg"
       },
       "thrower": "magixx",
       "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"

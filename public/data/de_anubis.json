@@ -2,15 +2,15 @@
   "map": "de_anubis",
   "utilities": [
     {
-      "id": "de_anubis_smoke_93060c54",
+      "id": "de_anubis_smoke_001",
       "type": "smoke",
       "team": "TERRORIST",
       "name": "警家隔断烟",
-      "description": "jump，飞行时间 4.7 秒",
+      "description": "跳投，飞行时间 4.7 秒",
       "position": {
         "x": -937.8806762695312,
         "y": -1363.441650390625,
-        "z": 75.640625
+        "z": 66.94312500000001
       },
       "angles": {
         "pitch": -11.992263793945312,
@@ -24,14 +24,17 @@
       "throw_type": "jump",
       "flight_time": 4.7,
       "distance": 1649.1,
-      "command": "setpos -937.88 -1363.44 75.64; setang -11.99 99.90 0",
+      "command": "setpos -937.88 -1363.44 66.94; setang -11.99 99.90 0",
       "quality": 3,
-      "tags": [],
+      "tags": [
+        "跳投",
+        "远投"
+      ],
       "notes": "走上楼梯，贴住墙壁拐角投掷。",
       "screenshots": {
-        "position": "images/de_anubis/smoke/de_anubis_smoke_93060c54_position.jpg",
-        "crosshair": "images/de_anubis/smoke/de_anubis_smoke_93060c54_crosshair.jpg",
-        "landing": "images/de_anubis/smoke/de_anubis_smoke_93060c54_landing.jpg"
+        "position": "images/de_anubis/smoke/de_anubis_smoke_001_position.jpg",
+        "crosshair": "images/de_anubis/smoke/de_anubis_smoke_001_crosshair.jpg",
+        "landing": "images/de_anubis/smoke/de_anubis_smoke_001_landing.jpg"
       },
       "thrower": "zont1x",
       "demo_source": "100-thieves-vs-spirit-m1-anubis.dem"

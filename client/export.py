@@ -17,6 +17,12 @@ from PIL import Image
 # 设置标准输出编码为 UTF-8
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
+# 添加项目根目录到sys.path以导入backend模块
+root_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(root_dir.resolve()))
+
+from backend.database import Database
+
 class UtilityExporter:
     def __init__(self, 
                  input_data_dir=None,
@@ -34,28 +40,25 @@ class UtilityExporter:
         (self.output_dir / 'images').mkdir(parents=True, exist_ok=True)
     
     def load_utilities(self):
-        """加载已批准和已导出的道具数据"""
-        approved_file = self.input_data_dir / 'approved.json'
-        exported_file = self.input_data_dir / 'exported.json'
-        
+        """从数据库加载已批准和已导出的道具数据"""
+        db = Database()
         utilities = []
         
-        # 加载已批准的道具
-        if approved_file.exists():
-            with open(approved_file, 'r', encoding='utf-8') as f:
-                approved_utilities = json.load(f)
-                utilities.extend(approved_utilities)
-                print(f"[OK] 从 approved.json 加载了 {len(approved_utilities)} 个待导出道具")
+        # 加载已批准的道具（待导出）
+        approved = db.get_utilities(status='approved')
+        if approved:
+            utilities.extend(approved)
+            print(f"[OK] 从数据库加载了 {len(approved)} 个待导出道具（状态=approved）")
         
         # 加载已导出的道具（用于重新导出）
-        if exported_file.exists():
-            with open(exported_file, 'r', encoding='utf-8') as f:
-                exported_utilities = json.load(f)
-                utilities.extend(exported_utilities)
-                print(f"[OK] 从 exported.json 加载了 {len(exported_utilities)} 个已导出道具（将重新导出）")
+        exported = db.get_utilities(status='exported')
+        if exported:
+            utilities.extend(exported)
+            print(f"[OK] 从数据库加载了 {len(exported)} 个已导出道具（状态=exported，将重新导出）")
         
         if not utilities:
             print(f"[错误] 没有需要导出的道具")
+            print(f"[提示] 请先在审核页面批准道具，或使用后端导出API")
             return []
         
         print(f"[OK] 共加载了 {len(utilities)} 个道具")
@@ -91,22 +94,22 @@ class UtilityExporter:
     def export_screenshots(self, utility, utility_id, map_name, util_type):
         """
         导出道具的3张截图
-        使用 screenshot_id 来定位正确的截图文件
+        使用 screenshot_filename_base 来定位正确的截图文件
         返回截图的相对路径
         """
         screenshots = {}
         shot_types = ['position', 'crosshair', 'landing']
         
-        # 获取截图ID（从索引映射中获取）
-        screenshot_id = utility.get('screenshot_id', 'unknown')
+        # 获取截图文件名前缀（使用screenshot_filename_base字段）
+        screenshot_base = utility.get('screenshot_filename_base', '')
         
-        if screenshot_id == 'unknown':
-            print(f"   [警告] 道具没有screenshot_id，跳过截图导出")
+        if not screenshot_base:
+            print(f"   [警告] 道具没有screenshot_filename_base，跳过截图导出")
             return screenshots
         
         for shot_type in shot_types:
-            # 使用正确的截图文件名格式：{map}_unknown_{screenshot_id}_{shot_type}.jpg
-            src_filename = f"{map_name}_unknown_{screenshot_id}_{shot_type}.jpg"
+            # 使用screenshot_filename_base直接构造文件名
+            src_filename = f"{screenshot_base}_{shot_type}.jpg"
             src_path = self.input_screenshots_dir / src_filename
             
             if src_path.exists():
