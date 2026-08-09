@@ -1017,6 +1017,12 @@ async function approveUtility(hash) {
         notes: card.querySelector('.util-notes').value.trim()
     };
     
+    // 保存当前的筛选器状态
+    const currentMap = document.getElementById('filter-map')?.value || '';
+    const currentDemo = document.getElementById('filter-demo')?.value || '';
+    const currentType = document.getElementById('filter-type')?.value || '';
+    const currentTeam = document.getElementById('filter-team')?.value || '';
+    
     try {
         const response = await fetch('/api/approve', {
             method: 'POST',
@@ -1032,7 +1038,16 @@ async function approveUtility(hash) {
         if (result.success) {
             card.style.opacity = '0';
             setTimeout(() => {
-                loadPending();
+                loadPending().then(() => {
+                    // 重新应用筛选器
+                    if (currentMap) document.getElementById('filter-map').value = currentMap;
+                    if (currentDemo) document.getElementById('filter-demo').value = currentDemo;
+                    if (currentType) document.getElementById('filter-type').value = currentType;
+                    if (currentTeam) document.getElementById('filter-team').value = currentTeam;
+                    
+                    // 重新应用筛选
+                    applyFilters();
+                });
                 loadStats();
                 loadExportStats();
             }, 300);
@@ -1049,6 +1064,12 @@ async function rejectUtility(hash) {
         return;
     }
     
+    // 保存当前的筛选器状态
+    const currentMap = document.getElementById('filter-map')?.value || '';
+    const currentDemo = document.getElementById('filter-demo')?.value || '';
+    const currentType = document.getElementById('filter-type')?.value || '';
+    const currentTeam = document.getElementById('filter-team')?.value || '';
+    
     try {
         const response = await fetch('/api/reject', {
             method: 'POST',
@@ -1064,7 +1085,16 @@ async function rejectUtility(hash) {
                 card.style.opacity = '0';
             }
             setTimeout(() => {
-                loadPending();
+                loadPending().then(() => {
+                    // 重新应用筛选器
+                    if (currentMap) document.getElementById('filter-map').value = currentMap;
+                    if (currentDemo) document.getElementById('filter-demo').value = currentDemo;
+                    if (currentType) document.getElementById('filter-type').value = currentType;
+                    if (currentTeam) document.getElementById('filter-team').value = currentTeam;
+                    
+                    // 重新应用筛选
+                    applyFilters();
+                });
                 loadStats();
             }, 300);
             alert('✅ ' + result.message);
@@ -1080,6 +1110,12 @@ async function deleteUtilityPermanently(hash) {
     if (!confirm('⚠️ 确定要永久删除这个道具吗？\n\n此操作将：\n- 永久删除道具数据\n- 删除所有截图文件\n- 无法恢复\n\n建议：如果只是暂时不需要，请使用"拒绝"按钮')) {
         return;
     }
+    
+    // 保存当前的筛选器状态
+    const currentMap = document.getElementById('filter-map')?.value || '';
+    const currentDemo = document.getElementById('filter-demo')?.value || '';
+    const currentType = document.getElementById('filter-type')?.value || '';
+    const currentTeam = document.getElementById('filter-team')?.value || '';
     
     try {
         const response = await fetch('/api/delete_pending', {
@@ -1099,7 +1135,16 @@ async function deleteUtilityPermanently(hash) {
                 }
             }
             setTimeout(() => {
-                loadPending();
+                loadPending().then(() => {
+                    // 重新应用筛选器
+                    if (currentMap) document.getElementById('filter-map').value = currentMap;
+                    if (currentDemo) document.getElementById('filter-demo').value = currentDemo;
+                    if (currentType) document.getElementById('filter-type').value = currentType;
+                    if (currentTeam) document.getElementById('filter-team').value = currentTeam;
+                    
+                    // 重新应用筛选
+                    applyFilters();
+                });
                 loadStats();
             }, 300);
             alert('✅ ' + result.message);
