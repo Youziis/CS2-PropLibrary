@@ -4,9 +4,11 @@
 import sys
 import json
 import shutil
+import os
 from pathlib import Path
 from flask import Blueprint, request, jsonify
 from datetime import datetime
+from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -14,6 +16,57 @@ from backend.database import Database
 
 bp = Blueprint('export', __name__)
 db = Database()
+
+
+def process_and_save_image(src_path, dest_path, shot_type, max_size=(1200, 900), quality=75):
+    """
+    处理并保存图片
+    - crosshair（准星图）: 裁剪中心区域，保留准星周围
+    - position/landing（站位图/落点图）: 压缩质量以减小文件大小
+    """
+    try:
+        # 创建目标目录
+        dest_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # 打开图片
+        img = Image.open(src_path)
+        
+        if shot_type == 'crosshair':
+            # 准星图：裁剪中心区域
+            width, height = img.size
+            
+            # 裁剪尺寸：宽度的40%，高度的50%
+            crop_width = int(width * 0.4)
+            crop_height = int(height * 0.5)
+            
+            # 计算裁剪区域（中心区域）
+            left = (width - crop_width) // 2
+            top = (height - crop_height) // 2
+            right = left + crop_width
+            bottom = top + crop_height
+            
+            # 裁剪图片
+            img = img.crop((left, top, right, bottom))
+            
+            # 保存裁剪后的图片，使用较高质量
+            img.save(dest_path, 'JPEG', quality=85, optimize=True)
+            
+        else:
+            # 站位图和落点图：压缩质量
+            # 如果图片太大，先缩小尺寸
+            if img.width > max_size[0] or img.height > max_size[1]:
+                img.thumbnail(max_size, Image.Resampling.LANCZOS)
+            
+            # 保存压缩后的图片
+            img.save(dest_path, 'JPEG', quality=quality, optimize=True)
+        
+        return True
+        
+    except Exception as e:
+        print(f"[错误] 处理图片失败 ({shot_type}): {e}")
+        import traceback
+        traceback.print_exc()
+        return False
 
 
 @bp.route('/api/export', methods=['POST'])
@@ -52,7 +105,7 @@ def export_utilities():
                 util_hash = util['hash'][:8]  # 使用hash的前8位作为唯一标识
                 utility_id = f"{map_name}_{util_type}_{util_hash}"
                 
-                # 复制截图
+                # 复制并处理截图
                 screenshot_base = util.get('screenshot_filename_base') or f"{map_name}_{util['hash']}"
                 
                 for shot_type in ['position', 'crosshair', 'landing']:
@@ -63,7 +116,8 @@ def export_utilities():
                         dest_dir.mkdir(parents=True, exist_ok=True)
                         dest_file = dest_dir / f"{utility_id}_{shot_type}.jpg"
                         
-                        shutil.copy2(src_file, dest_file)
+                        # 使用图片处理函数（压缩和裁剪）
+                        process_and_save_image(src_file, dest_file, shot_type)
                 
                 # 生成道具数据
                 map_utilities.append({
