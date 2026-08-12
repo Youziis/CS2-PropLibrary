@@ -64,11 +64,12 @@ class UtilityExporter:
         print(f"[OK] 共加载了 {len(utilities)} 个道具")
         return utilities
     
-    def generate_utility_id(self, utility, index):
-        """生成友好的道具ID"""
+    def generate_utility_id(self, utility):
+        """生成道具ID（使用hash值前8位）"""
         map_name = utility.get('map', 'unknown')
         util_type = utility.get('type', 'unknown')
-        return f"{map_name}_{util_type}_{index:03d}"
+        util_hash = utility.get('hash', 'unknown')[:8]
+        return f"{map_name}_{util_type}_{util_hash}"
     
     def compress_and_copy_image(self, src_path, dest_path, shot_type, max_size=(1200, 900), quality=75):
         """
@@ -328,8 +329,8 @@ class UtilityExporter:
             for idx, utility in enumerate(utilities, 1):
                 print(f"\n  道具 {idx}/{len(utilities)}: {utility.get('type')}")
                 
-                # 生成ID
-                utility_id = self.generate_utility_id(utility, idx)
+                # 生成ID（使用hash值）
+                utility_id = self.generate_utility_id(utility)
                 
                 # 导出截图
                 screenshots = self.export_screenshots(utility, utility_id, map_name, utility.get('type'))

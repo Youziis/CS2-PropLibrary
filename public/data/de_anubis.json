@@ -2,7 +2,7 @@
   "map": "de_anubis",
   "utilities": [
     {
-      "id": "de_anubis_smoke_001",
+      "id": "de_anubis_smoke_93060c54",
       "type": "smoke",
       "team": "TERRORIST",
       "name": "警家隔断烟",
@@ -32,9 +32,9 @@
       ],
       "notes": "走上楼梯，贴住墙壁拐角投掷。",
       "screenshots": {
-        "position": "images/de_anubis/smoke/de_anubis_smoke_001_position.jpg",
-        "crosshair": "images/de_anubis/smoke/de_anubis_smoke_001_crosshair.jpg",
-        "landing": "images/de_anubis/smoke/de_anubis_smoke_001_landing.jpg"
+        "position": "images/de_anubis/smoke/de_anubis_smoke_93060c54_position.jpg",
+        "crosshair": "images/de_anubis/smoke/de_anubis_smoke_93060c54_crosshair.jpg",
+        "landing": "images/de_anubis/smoke/de_anubis_smoke_93060c54_landing.jpg"
       },
       "thrower": "zont1x",
       "demo_source": "100-thieves-vs-spirit-m1-anubis.dem"

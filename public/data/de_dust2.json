@@ -2,7 +2,7 @@
   "map": "de_dust2",
   "utilities": [
     {
-      "id": "de_dust2_smoke_001",
+      "id": "de_dust2_smoke_7d0b3c27",
       "type": "smoke",
       "team": "CT",
       "name": "A门烟",
@@ -32,15 +32,15 @@
       ],
       "notes": "抵住电梯位拐角投掷。",
       "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_001_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_001_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_001_landing.jpg"
+        "position": "images/de_dust2/smoke/de_dust2_smoke_7d0b3c27_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_7d0b3c27_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_7d0b3c27_landing.jpg"
       },
       "thrower": "Gizmy",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
-      "id": "de_dust2_smoke_002",
+      "id": "de_dust2_smoke_6a332aa7",
       "type": "smoke",
       "team": "TERRORIST",
       "name": "中门挂门烟",
@@ -69,15 +69,15 @@
       ],
       "notes": "站在轮胎上，确保不会顶到头再投掷。",
       "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_002_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_002_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_002_landing.jpg"
+        "position": "images/de_dust2/smoke/de_dust2_smoke_6a332aa7_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_6a332aa7_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_6a332aa7_landing.jpg"
       },
       "thrower": "tN1R",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
-      "id": "de_dust2_smoke_003",
+      "id": "de_dust2_smoke_a3d45fbf",
       "type": "smoke",
       "team": "TERRORIST",
       "name": "中门满封烟",
@@ -106,15 +106,15 @@
       ],
       "notes": "抵住暗道箱子投掷。",
       "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_003_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_003_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_003_landing.jpg"
+        "position": "images/de_dust2/smoke/de_dust2_smoke_a3d45fbf_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_a3d45fbf_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_a3d45fbf_landing.jpg"
       },
       "thrower": "sh1ro",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
-      "id": "de_dust2_smoke_004",
+      "id": "de_dust2_smoke_9b5c45ca",
       "type": "smoke",
       "team": "TERRORIST",
       "name": "警家烟",
@@ -144,15 +144,15 @@
       ],
       "notes": "抵住x箱投掷。",
       "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_004_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_004_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_004_landing.jpg"
+        "position": "images/de_dust2/smoke/de_dust2_smoke_9b5c45ca_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_9b5c45ca_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_9b5c45ca_landing.jpg"
       },
       "thrower": "donk",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
-      "id": "de_dust2_smoke_005",
+      "id": "de_dust2_smoke_f090e4f9",
       "type": "smoke",
       "team": "TERRORIST",
       "name": "警家烟",
@@ -181,15 +181,15 @@
       ],
       "notes": "贴住A小铁门左侧的石砖描点投掷。",
       "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_005_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_005_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_005_landing.jpg"
+        "position": "images/de_dust2/smoke/de_dust2_smoke_f090e4f9_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_f090e4f9_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_f090e4f9_landing.jpg"
       },
       "thrower": "magixx",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
-      "id": "de_dust2_smoke_006",
+      "id": "de_dust2_smoke_b11c21d8",
       "type": "smoke",
       "team": "TERRORIST",
       "name": "B洞展开烟",
@@ -218,15 +218,15 @@
       ],
       "notes": "抵住柱子投掷。",
       "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_006_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_006_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_006_landing.jpg"
+        "position": "images/de_dust2/smoke/de_dust2_smoke_b11c21d8_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_b11c21d8_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_b11c21d8_landing.jpg"
       },
       "thrower": "zont1x",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
-      "id": "de_dust2_smoke_007",
+      "id": "de_dust2_smoke_13ebe9c4",
       "type": "smoke",
       "team": "TERRORIST",
       "name": "沙地展开烟",
@@ -255,15 +255,15 @@
       ],
       "notes": "贴住B1层拐角向左走一步后描点投掷。",
       "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_007_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_007_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_007_landing.jpg"
+        "position": "images/de_dust2/smoke/de_dust2_smoke_13ebe9c4_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_13ebe9c4_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_13ebe9c4_landing.jpg"
       },
       "thrower": "donk",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
-      "id": "de_dust2_smoke_008",
+      "id": "de_dust2_smoke_ce652c43",
       "type": "smoke",
       "team": "TERRORIST",
       "name": "B门烟",
@@ -292,15 +292,15 @@
       ],
       "notes": "抵住柱子右侧后端投掷。",
       "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_008_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_008_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_008_landing.jpg"
+        "position": "images/de_dust2/smoke/de_dust2_smoke_ce652c43_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_ce652c43_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_ce652c43_landing.jpg"
       },
       "thrower": "sh1ro",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
-      "id": "de_dust2_smoke_009",
+      "id": "de_dust2_smoke_0e8f065e",
       "type": "smoke",
       "team": "TERRORIST",
       "name": "中门挂门烟",
@@ -330,9 +330,9 @@
       ],
       "notes": "站在轮胎上，瞄准灯盏边上的白点向上移找到描点。",
       "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_009_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_009_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_009_landing.jpg"
+        "position": "images/de_dust2/smoke/de_dust2_smoke_0e8f065e_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_0e8f065e_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_0e8f065e_landing.jpg"
       },
       "thrower": "Gizmy",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
