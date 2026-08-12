@@ -364,7 +364,7 @@ function renderDetailPage(utilityId) {
     if (!utility) {
         document.getElementById('detail-content').innerHTML = `
             <div style="text-align: center; padding: 60px 20px;">
-                <h2>😔 道具未找到</h2>
+                <h2>(っ˘ω˘ς)道具未找到</h2>
                 <p style="color: var(--text-secondary); margin: 20px 0;">该道具可能已被删除或ID不正确</p>
                 <button class="btn-back" onclick="history.back()">← 返回</button>
             </div>
@@ -395,7 +395,7 @@ function renderDetailPage(utilityId) {
                     </div>
                     <div class="detail-image-item">
                         <h4>准星位置</h4>
-                        <img class="detail-image" src="${utility.screenshots.crosshair}" alt="准星图" onclick="openImageViewer('${utility.screenshots.crosshair}', '准星位置', 'crosshair')">
+                        <img class="detail-image detail-image-crosshair" src="${utility.screenshots.crosshair}" alt="准星图" onclick="openImageViewer('${utility.screenshots.crosshair}', '准星位置', 'crosshair')">
                     </div>
                     <div class="detail-image-item">
                         <h4>落点位置</h4>
@@ -446,24 +446,6 @@ function renderDetailPage(utilityId) {
                     <p class="command-hint">
                         在CS2游戏中按 <kbd>~</kbd> 打开控制台，粘贴命令后按回车即可传送到投掷位置
                     </p>
-                </div>
-                
-                <div class="detail-section">
-                    <h3>📍 坐标信息</h3>
-                    <div class="coordinates">
-                        <div class="coord-item">
-                            <strong>投掷位置:</strong>
-                            <span>X: ${utility.position.x.toFixed(2)}, Y: ${utility.position.y.toFixed(2)}, Z: ${utility.position.z.toFixed(2)}</span>
-                        </div>
-                        <div class="coord-item">
-                            <strong>准星角度:</strong>
-                            <span>Pitch: ${utility.angles.pitch.toFixed(2)}°, Yaw: ${utility.angles.yaw.toFixed(2)}°</span>
-                        </div>
-                        <div class="coord-item">
-                            <strong>落点位置:</strong>
-                            <span>X: ${utility.land_position.x.toFixed(2)}, Y: ${utility.land_position.y.toFixed(2)}, Z: ${utility.land_position.z.toFixed(2)}</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -521,8 +503,10 @@ const imageViewer = {
         gap: 4,
         showDot: true,
         dotSize: 2,
-        color: '#00FF00',
-        outline: true
+        colorR: 0,
+        colorG: 255,
+        colorB: 0,
+        outline: false
     },
     
     init() {
@@ -648,7 +632,7 @@ const imageViewer = {
             line.setAttribute('y1', y1);
             line.setAttribute('x2', x2);
             line.setAttribute('y2', y2);
-            line.setAttribute('stroke', settings.color);
+            line.setAttribute('stroke', `rgb(${settings.colorR}, ${settings.colorG}, ${settings.colorB})`);
             line.setAttribute('stroke-width', settings.thickness);
             line.setAttribute('stroke-linecap', 'butt');
             svg.appendChild(line);
@@ -689,7 +673,7 @@ const imageViewer = {
             dot.setAttribute('cx', cx);
             dot.setAttribute('cy', cy);
             dot.setAttribute('r', settings.dotSize);
-            dot.setAttribute('fill', settings.color);
+            dot.setAttribute('fill', `rgb(${settings.colorR}, ${settings.colorG}, ${settings.colorB})`);
             svg.appendChild(dot);
         }
     }
@@ -741,20 +725,54 @@ function setCrosshairStyle(style) {
         activeBtn.classList.add('active');
     }
     
+    // 根据准星样式显示/隐藏相关设置
+    const sizeGroup = document.getElementById('setting-size');
+    const thicknessGroup = document.getElementById('setting-thickness');
+    const gapGroup = document.getElementById('setting-gap');
+    
+    if (style === 'dot') {
+        // 仅中心点：隐藏大小、厚度、间隙
+        if (sizeGroup) sizeGroup.style.display = 'none';
+        if (thicknessGroup) thicknessGroup.style.display = 'none';
+        if (gapGroup) gapGroup.style.display = 'none';
+    } else if (style === 'large') {
+        // 大准星：隐藏大小、间隙，显示厚度
+        if (sizeGroup) sizeGroup.style.display = 'none';
+        if (thicknessGroup) thicknessGroup.style.display = 'block';
+        if (gapGroup) gapGroup.style.display = 'none';
+    } else {
+        // 小准星（small）：显示全部
+        if (sizeGroup) sizeGroup.style.display = 'block';
+        if (thicknessGroup) thicknessGroup.style.display = 'block';
+        if (gapGroup) gapGroup.style.display = 'block';
+    }
+    
+    imageViewer.drawCrosshair();
+}
+
+function updateCrosshairColor() {
+    const settings = imageViewer.crosshairSettings;
+    
+    // 获取RGB值
+    settings.colorR = parseInt(document.getElementById('color-r').value);
+    settings.colorG = parseInt(document.getElementById('color-g').value);
+    settings.colorB = parseInt(document.getElementById('color-b').value);
+    
+    // 更新显示的数值
+    document.getElementById('color-r-value').textContent = settings.colorR;
+    document.getElementById('color-g-value').textContent = settings.colorG;
+    document.getElementById('color-b-value').textContent = settings.colorB;
+    
+    // 更新颜色预览
+    const preview = document.getElementById('color-preview');
+    if (preview) {
+        preview.style.background = `rgb(${settings.colorR}, ${settings.colorG}, ${settings.colorB})`;
+    }
+    
     imageViewer.drawCrosshair();
 }
 
 function setCrosshairColor(color) {
-    imageViewer.crosshairSettings.color = color;
-    
-    // 更新按钮状态
-    document.querySelectorAll('.color-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    const activeBtn = document.querySelector(`[data-color="${color}"]`);
-    if (activeBtn) {
-        activeBtn.classList.add('active');
-    }
-    
+    // 保留旧函数以防兼容性问题，但现在使用RGB滑动条
     imageViewer.drawCrosshair();
 }

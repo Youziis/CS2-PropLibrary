@@ -488,6 +488,12 @@ body.detail-page {
     border: 2px solid var(--border);
 }
 
+.detail-image-crosshair {
+    height: auto;
+    /* 调整描点图比例 */
+    aspect-ratio: 1200 / 900;
+}
+
 .detail-image:hover {
     transform: scale(1.05);
     border-color: var(--primary-color);

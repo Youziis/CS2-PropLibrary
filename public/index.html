@@ -153,17 +153,17 @@
                     </div>
                 </div>
                 
-                <div class="setting-group">
+                <div class="setting-group" id="setting-size">
                     <label>大小: <span id="size-value">20</span></label>
                     <input type="range" id="crosshair-size" min="10" max="50" value="20" oninput="updateCrosshair()">
                 </div>
                 
-                <div class="setting-group">
+                <div class="setting-group" id="setting-thickness">
                     <label>厚度: <span id="thickness-value">2</span></label>
                     <input type="range" id="crosshair-thickness" min="1" max="6" value="2" oninput="updateCrosshair()">
                 </div>
                 
-                <div class="setting-group">
+                <div class="setting-group" id="setting-gap">
                     <label>间隙: <span id="gap-value">4</span></label>
                     <input type="range" id="crosshair-gap" min="0" max="20" value="4" oninput="updateCrosshair()">
                 </div>
@@ -181,19 +181,28 @@
                 </div>
                 
                 <div class="setting-group">
-                    <label>颜色</label>
-                    <div class="color-picker">
-                        <button class="color-btn active" data-color="#00FF00" style="background: #00FF00" onclick="setCrosshairColor('#00FF00')"></button>
-                        <button class="color-btn" data-color="#FF0000" style="background: #FF0000" onclick="setCrosshairColor('#FF0000')"></button>
-                        <button class="color-btn" data-color="#FFFF00" style="background: #FFFF00" onclick="setCrosshairColor('#FFFF00')"></button>
-                        <button class="color-btn" data-color="#00FFFF" style="background: #00FFFF" onclick="setCrosshairColor('#00FFFF')"></button>
-                        <button class="color-btn" data-color="#FFFFFF" style="background: #FFFFFF" onclick="setCrosshairColor('#FFFFFF')"></button>
-                    </div>
+                    <label>红色 (R): <span id="color-r-value">0</span></label>
+                    <input type="range" id="color-r" min="0" max="255" value="0" oninput="updateCrosshairColor()">
+                </div>
+                
+                <div class="setting-group">
+                    <label>绿色 (G): <span id="color-g-value">255</span></label>
+                    <input type="range" id="color-g" min="0" max="255" value="255" oninput="updateCrosshairColor()">
+                </div>
+                
+                <div class="setting-group">
+                    <label>蓝色 (B): <span id="color-b-value">0</span></label>
+                    <input type="range" id="color-b" min="0" max="255" value="0" oninput="updateCrosshairColor()">
+                </div>
+                
+                <div class="setting-group">
+                    <label>颜色预览</label>
+                    <div id="color-preview" style="width: 100%; height: 30px; border-radius: 4px; border: 2px solid var(--border); background: rgb(0, 255, 0);"></div>
                 </div>
                 
                 <div class="setting-group">
                     <label>
-                        <input type="checkbox" id="crosshair-outline" onchange="updateCrosshair()" checked>
+                        <input type="checkbox" id="crosshair-outline" onchange="updateCrosshair()">
                         显示轮廓
                     </label>
                 </div>
