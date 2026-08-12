@@ -70,25 +70,64 @@ class UtilityExporter:
         util_type = utility.get('type', 'unknown')
         return f"{map_name}_{util_type}_{index:03d}"
     
-    def compress_and_copy_image(self, src_path, dest_path, max_size=(1200, 900), quality=85):
+    def compress_and_copy_image(self, src_path, dest_path, shot_type, max_size=(1200, 900), quality=75):
         """
-        直接复制图片，不做任何处理
-        保持原始截图的尺寸和质量，确保准星位置准确
+        处理并保存图片
+        - crosshair（准星图）: 裁剪中心区域，保留准星周围
+        - position/landing（站位图/落点图）: 压缩质量以减小文件大小
         """
         try:
             # 创建目标目录
             dest_path.parent.mkdir(parents=True, exist_ok=True)
             
-            # 直接复制文件，保持原始尺寸和质量
-            shutil.copy2(src_path, dest_path)
+            # 打开图片
+            img = Image.open(src_path)
+            original_size = os.path.getsize(src_path) / 1024  # KB
             
-            # 显示文件大小
-            file_size = os.path.getsize(dest_path) / 1024  # KB
-            print(f"      复制: {file_size:.1f}KB (保持原始尺寸)")
+            if shot_type == 'crosshair':
+                # 准星图：裁剪中心区域
+                # CS2截图通常是1920x1080，准星在中心
+                width, height = img.size
+                
+                # 裁剪中心区域（保留准星周围）
+                # 裁剪尺寸：宽度的40%，高度的50%左右
+                crop_width = int(width * 0.4)
+                crop_height = int(height * 0.5)
+                
+                # 计算裁剪区域（中心区域）
+                left = (width - crop_width) // 2
+                top = (height - crop_height) // 2
+                right = left + crop_width
+                bottom = top + crop_height
+                
+                # 裁剪图片
+                img = img.crop((left, top, right, bottom))
+                
+                # 保存裁剪后的图片，使用较高质量
+                img.save(dest_path, 'JPEG', quality=85, optimize=True)
+                
+                new_size = os.path.getsize(dest_path) / 1024
+                print(f"      裁剪准星图: {original_size:.1f}KB -> {new_size:.1f}KB (尺寸: {crop_width}x{crop_height})")
+                
+            else:
+                # 站位图和落点图：压缩质量
+                # 如果图片太大，先缩小尺寸
+                if img.width > max_size[0] or img.height > max_size[1]:
+                    img.thumbnail(max_size, Image.Resampling.LANCZOS)
+                
+                # 保存压缩后的图片
+                img.save(dest_path, 'JPEG', quality=quality, optimize=True)
+                
+                new_size = os.path.getsize(dest_path) / 1024
+                compression_ratio = (1 - new_size / original_size) * 100 if original_size > 0 else 0
+                print(f"      压缩: {original_size:.1f}KB -> {new_size:.1f}KB (压缩率: {compression_ratio:.1f}%)")
             
             return True
+            
         except Exception as e:
-            print(f"      [错误] 复制图片失败: {e}")
+            print(f"      [错误] 处理图片失败: {e}")
+            import traceback
+            traceback.print_exc()
             return False
     
     def export_screenshots(self, utility, utility_id, map_name, util_type):
@@ -119,7 +158,8 @@ class UtilityExporter:
                 dest_path = dest_subdir / dest_filename
                 
                 print(f"   [导出] {shot_type} 图: {src_filename} -> {dest_filename}")
-                if self.compress_and_copy_image(src_path, dest_path):
+                # 传入shot_type参数，用于区分处理方式
+                if self.compress_and_copy_image(src_path, dest_path, shot_type):
                     # 保存相对路径（供前端使用）
                     screenshots[shot_type] = f"images/{map_name}/{util_type}/{dest_filename}"
             else:
@@ -320,7 +360,6 @@ class UtilityExporter:
         print("="*50)
         print(f"\n[输出] 目录: {self.output_dir.absolute()}")
         print(f"[统计] 共导出 {sum(m['utility_count'] for m in maps_summary)} 个道具")
-        print("\n下一步: 开发静态网站前端")
 
 
 if __name__ == '__main__':
