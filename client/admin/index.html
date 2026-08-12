@@ -190,6 +190,15 @@
                         </div>
                     </div>
                     
+                    <!-- 搜索框 -->
+                    <div class="search-section" style="margin: 20px 0;">
+                        <input type="text" 
+                               id="exported-search-input" 
+                               placeholder="🔍 搜索道具ID（如：de_dust2_smoke_7d0b3c27）或名称..." 
+                               style="width: 100%; padding: 12px; font-size: 14px; border: 1px solid #3a506b; background: #0f3460; color: #fff; border-radius: 5px;"
+                               oninput="filterExportedUtilities()">
+                    </div>
+                    
                     <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                         <button class="btn btn-primary" onclick="loadExportedUtilities()">🔄 刷新列表</button>
                         <button class="btn btn-large btn-primary" onclick="reExportData()">🚀 重新导出</button>

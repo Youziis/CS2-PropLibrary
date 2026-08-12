@@ -1217,6 +1217,9 @@ async function loadPendingExportUtilities() {
 }
 
 // 加载已导出道具
+// 全局变量存储已导出道具数据
+let allExportedUtilities = [];
+
 async function loadExportedUtilities() {
     const gridEl = document.getElementById('exported-grid');
     const countEl = document.getElementById('exported-count');
@@ -1229,6 +1232,9 @@ async function loadExportedUtilities() {
         const response = await fetch('/api/export/exported');
         const data = await response.json();
         
+        // 存储全部数据供搜索使用
+        allExportedUtilities = data.utilities;
+        
         countEl.textContent = data.utilities.length;
         
         if (data.utilities.length === 0) {
@@ -1236,11 +1242,68 @@ async function loadExportedUtilities() {
             return;
         }
         
-        gridEl.innerHTML = data.utilities.map(u => renderExportedUtilityCard(u)).join('');
+        // 清空搜索框
+        const searchInput = document.getElementById('exported-search-input');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        
+        // 渲染全部道具
+        renderExportedUtilities(allExportedUtilities);
     } catch (error) {
         console.error('加载已导出道具失败:', error);
         gridEl.innerHTML = '<p class="hint error">加载失败</p>';
     }
+}
+
+// 渲染已导出道具列表
+function renderExportedUtilities(utilities) {
+    const gridEl = document.getElementById('exported-grid');
+    
+    if (!gridEl) return;
+    
+    if (utilities.length === 0) {
+        gridEl.innerHTML = '<p class="hint">没有符合条件的道具</p>';
+        return;
+    }
+    
+    gridEl.innerHTML = utilities.map(u => renderExportedUtilityCard(u)).join('');
+}
+
+// 搜索过滤已导出道具
+function filterExportedUtilities() {
+    const searchInput = document.getElementById('exported-search-input');
+    if (!searchInput) return;
+    
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    
+    if (!searchTerm) {
+        // 如果搜索框为空，显示全部
+        renderExportedUtilities(allExportedUtilities);
+        return;
+    }
+    
+    // 过滤道具
+    const filtered = allExportedUtilities.filter(u => {
+        const map = (u.map || u.map_name || '').toLowerCase();
+        const type = (u.type || u.grenade_type || '').toLowerCase();
+        const hash = (u.hash || '').toLowerCase();
+        const name = (u.display_name || '').toLowerCase();
+        const screenshotBase = (u.screenshot_filename_base || '').toLowerCase();
+        
+        // 构建完整的道具ID（如：de_dust2_smoke_7d0b3c27）
+        const utilityId = `${map}_${type}_${hash.substring(0, 8)}`.toLowerCase();
+        
+        // 搜索条件：匹配道具ID、screenshot_filename_base、名称、地图、类型或hash
+        return utilityId.includes(searchTerm) || 
+               screenshotBase.includes(searchTerm) ||
+               name.includes(searchTerm) ||
+               map.includes(searchTerm) ||
+               type.includes(searchTerm) ||
+               hash.includes(searchTerm);
+    });
+    
+    renderExportedUtilities(filtered);
 }
 
 // 渲染已导出道具卡片
@@ -1249,12 +1312,16 @@ function renderExportedUtilityCard(u) {
     const map = u.map || u.map_name || 'unknown';
     const screenshotId = u.screenshot_id;
     const name = u.display_name || '未命名';
+    const hash = (u.hash || '').substring(0, 8);
     
     // 使用 screenshot_filename_base 字段
     const screenshotBase = u.screenshot_filename_base || `${map}_unknown_${screenshotId}`;
     
+    // 构建道具ID（如：de_dust2_smoke_7d0b3c27）
+    const utilityId = `${map}_${type}_${hash}`;
+    
     return `
-        <div class="utility-card">
+        <div class="utility-card" data-utility-id="${utilityId}">
             <div class="screenshots">
                 <img src="/screenshots/${screenshotBase}_position.jpg" 
                      alt="站位" onclick="showImage(this.src)" 
@@ -1268,6 +1335,10 @@ function renderExportedUtilityCard(u) {
             </div>
             
             <div class="utility-info">
+                <div class="info-row">
+                    <span class="label">道具ID</span>
+                    <span class="value" style="font-family: monospace; font-size: 12px; color: #667eea;">${utilityId}</span>
+                </div>
                 <div class="info-row">
                     <span class="label">名称</span>
                     <span class="value">${name}</span>
