@@ -1256,13 +1256,13 @@ function renderExportedUtilityCard(u) {
     return `
         <div class="utility-card">
             <div class="screenshots">
-                <img src="../../output/screenshots/${screenshotBase}_position.jpg" 
+                <img src="/screenshots/${screenshotBase}_position.jpg" 
                      alt="站位" onclick="showImage(this.src)" 
                      onerror="this.style.display='none'">
-                <img src="../../output/screenshots/${screenshotBase}_crosshair.jpg" 
+                <img src="/screenshots/${screenshotBase}_crosshair.jpg" 
                      alt="准星" onclick="showImage(this.src)" 
                      onerror="this.style.display='none'">
-                <img src="../../output/screenshots/${screenshotBase}_landing.jpg" 
+                <img src="/screenshots/${screenshotBase}_landing.jpg" 
                      alt="落点" onclick="showImage(this.src)" 
                      onerror="this.style.display='none'">
             </div>
