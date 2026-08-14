@@ -341,7 +341,7 @@ def create_utility_record(throw_event, det_event, tick_diff, tick_rate, map_name
         'id': generate_id(throw_event, det_event),    # 保留 id 以兼容
         'type': weapon_type,
         'thrower': get_field(throw_event, 'name') or 'Unknown',
-        'team': get_field(throw_event, 'team_name') or 'Unknown',
+        'team': 'T' if (get_field(throw_event, 'team_name') or '').upper() == 'TERRORIST' else (get_field(throw_event, 'team_name') or 'Unknown'),
         'map': map_name,
         
         # 投掷信息
