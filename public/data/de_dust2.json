@@ -2,41 +2,6 @@
   "map": "de_dust2",
   "utilities": [
     {
-      "id": "de_dust2_smoke_0e8f065e",
-      "type": "smoke",
-      "team": "T",
-      "name": "中门挂门烟",
-      "description": "左键跳投，飞行时间 5.0 秒",
-      "position": {
-        "x": 363.9338684082031,
-        "y": -625.0687255859375,
-        "z": 62.140625
-      },
-      "angles": {
-        "pitch": -25.274734497070312,
-        "yaw": 110.23065185546875
-      },
-      "land_position": {
-        "x": -482.4635009765625,
-        "y": 1607.6087646484375,
-        "z": 43.90713882446289
-      },
-      "throw_type": "左键跳投",
-      "flight_time": 4.97,
-      "distance": 2387.8,
-      "command": "setpos 363.93 -625.07 62.14; setang -25.27 110.23 0",
-      "quality": 3,
-      "tags": [],
-      "notes": "站在轮胎上，瞄准灯盏边上的白点向上移找到描点。",
-      "screenshots": {
-        "position": "images/de_dust2/smoke/de_dust2_smoke_0e8f065e_position.jpg",
-        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_0e8f065e_crosshair.jpg",
-        "landing": "images/de_dust2/smoke/de_dust2_smoke_0e8f065e_landing.jpg"
-      },
-      "thrower": "Gizmy",
-      "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
-    },
-    {
       "id": "de_dust2_smoke_13ebe9c4",
       "type": "smoke",
       "team": "T",
