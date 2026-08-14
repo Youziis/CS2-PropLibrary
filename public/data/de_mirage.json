@@ -4,9 +4,9 @@
     {
       "id": "de_mirage_smoke_754c0f16",
       "type": "smoke",
-      "team": "TERRORIST",
+      "team": "T",
       "name": "中路沙袋过点烟",
-      "description": "stand，飞行时间 4.4 秒",
+      "description": "左键跳投，飞行时间 4.4 秒",
       "position": {
         "x": 1422.94091796875,
         "y": 36.46875,
@@ -21,7 +21,7 @@
         "y": -481.9688720703125,
         "z": -184.2051239013672
       },
-      "throw_type": "stand",
+      "throw_type": "左键跳投",
       "flight_time": 4.44,
       "distance": 1482.2,
       "command": "setpos 1422.94 36.47 -167.97; setang -42.34 -160.50 0",
