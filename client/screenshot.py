@@ -75,7 +75,7 @@ class CS2AutoScreenshot:
         self.utilities = all_utilities
         
         # 统计队伍数量（仅用于显示）
-        t_count = sum(1 for u in all_utilities if u.get('team') in ['TERRORIST', 'T'])
+        t_count = sum(1 for u in all_utilities if u.get('team') in ['T', 'T'])
         ct_count = sum(1 for u in all_utilities if u.get('team') in ['CT'])
         
         print(f"✅ 已加载 {len(self.utilities)} 个道具")

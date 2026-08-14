@@ -441,10 +441,12 @@ function renderDetailPage(utilityId) {
                     <h3>🎮 控制台命令</h3>
                     <div class="command-box">
                         <code id="command-text">${utility.command}</code>
-                        <button class="copy-btn" onclick="copyCommand()">📋 复制</button>
+                        <button class="copy-btn" onclick="copyCommand()">复制</button>
                     </div>
                     <p class="command-hint">
-                        在CS2游戏中按 <kbd>~</kbd> 打开控制台，粘贴命令后按回车即可传送到投掷位置
+                        在CS2游戏中开启训练模式进入对应地图,按 <kbd>~</kbd> 打开控制台，
+                        输入<kbd>sv_cheats 1</kbd>开启作弊模式后,
+                        粘贴命令后按回车即可传送到投掷位置
                     </p>
                 </div>
             </div>
