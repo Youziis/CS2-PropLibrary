@@ -37,6 +37,41 @@
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
+      "id": "de_dust2_smoke_4143d562",
+      "type": "smoke",
+      "team": "T",
+      "name": "警家烟",
+      "description": "左键投掷，飞行时间 1.7 秒",
+      "position": {
+        "x": -569.96875,
+        "y": 1670.0343017578125,
+        "z": -115.840576171875
+      },
+      "angles": {
+        "pitch": 8.711822509765625,
+        "yaw": 54.085357666015625
+      },
+      "land_position": {
+        "x": -170.22044372558594,
+        "y": 2190.593017578125,
+        "z": -123.91059875488281
+      },
+      "throw_type": "左键投掷",
+      "flight_time": 1.72,
+      "distance": 656.4,
+      "command": "setpos -569.97 1670.03 -115.84; setang 8.71 54.09 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "进中门后，抵住左边墙壁投掷。",
+      "screenshots": {
+        "position": "images/de_dust2/smoke/de_dust2_smoke_4143d562_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_4143d562_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_4143d562_landing.jpg"
+      },
+      "thrower": "magixx",
+      "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
+    },
+    {
       "id": "de_dust2_smoke_6a332aa7",
       "type": "smoke",
       "team": "T",
@@ -104,6 +139,41 @@
         "landing": "images/de_dust2/smoke/de_dust2_smoke_7d0b3c27_landing.jpg"
       },
       "thrower": "Gizmy",
+      "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
+    },
+    {
+      "id": "de_dust2_smoke_8d6354ef",
+      "type": "smoke",
+      "team": "T",
+      "name": "A小烟",
+      "description": "双键跳投，飞行时间 4.1 秒",
+      "position": {
+        "x": 916.0499267578125,
+        "y": 1123.9703369140625,
+        "z": 8.0625
+      },
+      "angles": {
+        "pitch": -60.720062255859375,
+        "yaw": 126.35617065429688
+      },
+      "land_position": {
+        "x": 1100.1195068359375,
+        "y": 2176.520751953125,
+        "z": 5.121067523956299
+      },
+      "throw_type": "双键跳投",
+      "flight_time": 4.08,
+      "distance": 1068.5,
+      "command": "setpos 916.05 1123.97 8.06; setang -60.72 126.36 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "贴住蓝箱右侧抵住矮箱投掷---用于截断A小回访CT",
+      "screenshots": {
+        "position": "images/de_dust2/smoke/de_dust2_smoke_8d6354ef_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_8d6354ef_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_8d6354ef_landing.jpg"
+      },
+      "thrower": "magixx",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
