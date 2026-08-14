@@ -99,12 +99,14 @@ def approve_utility_legacy():
 
 @app.route('/api/reject', methods=['POST'])
 def reject_utility_legacy():
-    """拒绝道具（兼容旧API）- 删除截图文件但保留数据"""
+    """拒绝道具（兼容旧API）- 删除截图文件但保留数据，同时保存编辑的字段"""
     try:
         data = request.json
         hash_val = data.get('hash')
+        info = data.get('info', {})
         
         print(f"[拒绝道具] 开始处理: {hash_val}")
+        print(f"[拒绝道具] 接收到的info: {info}")
         
         # 获取道具信息以找到截图文件
         utility = db.get_utility_by_hash(hash_val)
@@ -144,12 +146,36 @@ def reject_utility_legacy():
         else:
             print(f"[拒绝道具] 警告: 没有截图文件前缀")
         
-        # 一次性更新状态和清空截图字段
+        # 构建要更新的字段（包括用户编辑的信息）
+        update_fields = {
+            'screenshot_filename_base': None
+        }
+        
+        # 添加可选的编辑字段
+        if 'display_name' in info and info['display_name']:
+            update_fields['display_name'] = info['display_name']
+            print(f"[拒绝道具] 保存道具名称: {info['display_name']}")
+        if 'notes' in info and info['notes']:
+            update_fields['notes'] = info['notes']
+            print(f"[拒绝道具] 保存备注: {info['notes']}")
+        if 'type' in info and info['type']:
+            update_fields['type'] = info['type']
+            print(f"[拒绝道具] 保存类型: {info['type']}")
+        if 'team' in info and info['team']:
+            update_fields['team'] = info['team']
+            print(f"[拒绝道具] 保存队伍: {info['team']}")
+        if 'throw_type' in info and info['throw_type']:
+            update_fields['throw_type'] = info['throw_type']
+            print(f"[拒绝道具] 保存投掷方式: {info['throw_type']}")
+        
+        print(f"[拒绝道具] 准备更新的字段: {update_fields}")
+        
+        # 一次性更新状态、清空截图字段并保存编辑的信息
         print(f"[拒绝道具] 更新数据库...")
         success = db.update_status(
             hash_val, 
             'rejected',
-            screenshot_filename_base=None
+            **update_fields
         )
         
         if success:
@@ -159,6 +185,8 @@ def reject_utility_legacy():
             updated_utility = db.get_utility_by_hash(hash_val)
             print(f"[拒绝道具] 验证 - 新状态: {updated_utility.get('status')}")
             print(f"[拒绝道具] 验证 - screenshot_filename_base: {updated_utility.get('screenshot_filename_base')}")
+            print(f"[拒绝道具] 验证 - display_name: {updated_utility.get('display_name')}")
+            print(f"[拒绝道具] 验证 - notes: {updated_utility.get('notes')}")
             
             return jsonify({
                 'success': True, 

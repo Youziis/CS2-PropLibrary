@@ -1059,7 +1059,46 @@ async function approveUtility(hash) {
 }
 
 async function rejectUtility(hash) {
-    if (!confirm('确定要拒绝这个道具吗？\n\n拒绝后：\n- 道具状态变为"已拒绝"\n- 截图文件将被删除\n- 不会再出现在选择列表中\n- 数据保留在数据库中')) {
+    // 限定在审核页面的道具网格中查找
+    const grid = document.getElementById('utilities-grid');
+    if (!grid) {
+        alert('❌ 错误：找不到审核页面');
+        return;
+    }
+    
+    const card = grid.querySelector(`[data-hash="${hash}"]`);
+    
+    if (!card) {
+        alert('❌ 错误：找不到道具卡片元素');
+        console.error('找不到 data-hash:', hash);
+        return;
+    }
+    
+    // 收集表单数据（在确认前）
+    const nameInput = card.querySelector('.util-name');
+    const typeSelect = card.querySelector('.util-type');
+    const teamSelect = card.querySelector('.util-team');
+    const throwTypeInput = card.querySelector('.util-throw-type');
+    const notesTextarea = card.querySelector('.util-notes');
+    
+    if (!nameInput) {
+        alert('❌ 错误：找不到道具名称输入框\n\n请刷新页面后重试（Ctrl+Shift+R 强制刷新）');
+        console.error('找不到 .util-name 元素');
+        return;
+    }
+    
+    // 收集所有表单数据
+    const utilityInfo = {
+        display_name: nameInput.value.trim(),
+        type: typeSelect ? typeSelect.value : '',
+        team: teamSelect ? teamSelect.value : '',
+        throw_type: throwTypeInput ? throwTypeInput.value.trim() : '',
+        notes: notesTextarea ? notesTextarea.value.trim() : ''
+    };
+    
+    console.log('[拒绝道具] 收集到的信息:', utilityInfo);
+    
+    if (!confirm('确定要拒绝这个道具吗？\n\n拒绝后：\n- 道具状态变为"已拒绝"\n- 截图文件将被删除\n- 不会再出现在选择列表中\n- 数据保留在数据库中\n- 你填写的名称和备注也会被保存')) {
         return;
     }
     
@@ -1073,7 +1112,10 @@ async function rejectUtility(hash) {
         const response = await fetch('/api/reject', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ hash: hash })
+            body: JSON.stringify({ 
+                hash: hash,
+                info: utilityInfo
+            })
         });
         
         const result = await response.json();
