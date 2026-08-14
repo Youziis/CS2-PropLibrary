@@ -76,8 +76,21 @@ def export_utilities():
         # 获取已批准的道具
         approved = db.get_utilities(status='approved')
         
+        # 如果没有待导出道具，检查是否是重新导出请求
         if not approved:
-            return jsonify({'success': False, 'message': '没有待导出的道具'}), 400
+            # 尝试获取已导出的道具进行重新导出
+            exported = db.get_utilities(status='exported')
+            
+            if not exported:
+                return jsonify({'success': False, 'message': '没有可导出的道具（既没有待导出，也没有已导出的道具）'}), 400
+            
+            # 使用已导出的道具进行重新导出
+            utilities_to_export = exported
+            is_reexport = True
+        else:
+            # 正常导出流程
+            utilities_to_export = approved
+            is_reexport = False
         
         # 项目根目录
         root_dir = Path(__file__).parent.parent.parent
@@ -86,7 +99,7 @@ def export_utilities():
         
         # 按地图分组
         by_map = {}
-        for util in approved:
+        for util in utilities_to_export:
             map_name = util['map']
             if map_name not in by_map:
                 by_map[map_name] = []
@@ -145,20 +158,50 @@ def export_utilities():
                     'demo_source': util.get('source_demo')
                 })
             
-            # 保存地图数据
+            # 保存地图数据（合并模式：保留已有道具，添加新道具）
             map_data_file = public_dir / 'data' / f"{map_name}.json"
             map_data_file.parent.mkdir(parents=True, exist_ok=True)
             
+            # 读取已有的地图数据
+            existing_utilities = []
+            existing_ids = set()
+            
+            if map_data_file.exists():
+                try:
+                    with open(map_data_file, 'r', encoding='utf-8') as f:
+                        existing_data = json.load(f)
+                        existing_utilities = existing_data.get('utilities', [])
+                        # 记录已有道具的ID
+                        existing_ids = {u['id'] for u in existing_utilities}
+                except Exception as e:
+                    print(f"[警告] 读取已有地图数据失败: {e}")
+            
+            # 合并道具列表：更新已有道具或添加新道具
+            merged_utilities = []
+            new_utility_ids = {u['id'] for u in map_utilities}
+            
+            # 保留未被更新的已有道具
+            for existing_util in existing_utilities:
+                if existing_util['id'] not in new_utility_ids:
+                    merged_utilities.append(existing_util)
+            
+            # 添加所有新道具（包括更新的道具）
+            merged_utilities.extend(map_utilities)
+            
+            # 按ID排序，保持稳定顺序
+            merged_utilities.sort(key=lambda u: u['id'])
+            
+            # 保存合并后的数据
             with open(map_data_file, 'w', encoding='utf-8') as f:
                 json.dump({
                     'map': map_name,
-                    'utilities': map_utilities
+                    'utilities': merged_utilities
                 }, f, ensure_ascii=False, indent=2)
             
             exported_maps.append({
                 'name': map_name,
                 'display_name': map_name.replace('de_', '').title(),
-                'utility_count': len(map_utilities),
+                'utility_count': len(merged_utilities),  # 使用合并后的总数
                 'data_file': f"data/{map_name}.json"
             })
             
@@ -201,19 +244,27 @@ def export_utilities():
                 }
             }, f, ensure_ascii=False, indent=2)
         
-        # 更新数据库状态为 exported
-        for util in approved:
-            db.update_status(
-                util['hash'],
-                'exported',
-                exported_time=datetime.now().isoformat()
-            )
+        # 只有在正常导出时才更新数据库状态为 exported
+        if not is_reexport:
+            for util in utilities_to_export:
+                db.update_status(
+                    util['hash'],
+                    'exported',
+                    exported_time=datetime.now().isoformat()
+                )
+        
+        # 构建返回消息
+        if is_reexport:
+            message = f'重新导出成功！共重新导出 {total_exported} 个已导出道具'
+        else:
+            message = f'导出成功！共导出 {total_exported} 个新道具'
         
         return jsonify({
             'success': True,
-            'message': f'导出成功！共导出 {total_exported} 个道具',
+            'message': message,
             'total': total_exported,
-            'maps': exported_maps
+            'maps': exported_maps,
+            'is_reexport': is_reexport
         })
         
     except Exception as e:

@@ -6,7 +6,7 @@
       "type": "smoke",
       "team": "TERRORIST",
       "name": "中路沙袋过点烟",
-      "description": "站投，飞行时间 4.4 秒",
+      "description": "stand，飞行时间 4.4 秒",
       "position": {
         "x": 1422.94091796875,
         "y": 36.46875,
@@ -26,9 +26,7 @@
       "distance": 1482.2,
       "command": "setpos 1422.94 36.47 -167.97; setang -42.34 -160.50 0",
       "quality": 3,
-      "tags": [
-        "远投"
-      ],
+      "tags": [],
       "notes": "贴住垃圾桶右侧投掷。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_754c0f16_position.jpg",

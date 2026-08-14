@@ -256,12 +256,44 @@ class UtilityExporter:
         return tags
     
     def export_map_data(self, map_name, utilities):
-        """导出单个地图的数据"""
+        """导出单个地图的数据（合并模式）"""
         output_file = self.output_dir / 'data' / f'{map_name}.json'
+        
+        # 读取已有的地图数据
+        existing_utilities = []
+        existing_ids = set()
+        
+        if output_file.exists():
+            try:
+                with open(output_file, 'r', encoding='utf-8') as f:
+                    existing_data = json.load(f)
+                    existing_utilities = existing_data.get('utilities', [])
+                    # 记录已有道具的ID
+                    existing_ids = {u['id'] for u in existing_utilities}
+                    print(f"   已加载 {len(existing_utilities)} 个现有道具")
+            except Exception as e:
+                print(f"   [警告] 读取已有地图数据失败: {e}")
+        
+        # 合并道具列表：更新已有道具或添加新道具
+        merged_utilities = []
+        new_utility_ids = {u['id'] for u in utilities}
+        
+        # 保留未被更新的已有道具
+        for existing_util in existing_utilities:
+            if existing_util['id'] not in new_utility_ids:
+                merged_utilities.append(existing_util)
+        
+        # 添加所有新道具（包括更新的道具）
+        merged_utilities.extend(utilities)
+        
+        # 按ID排序，保持稳定顺序
+        merged_utilities.sort(key=lambda u: u['id'])
+        
+        print(f"   合并后共 {len(merged_utilities)} 个道具（新增/更新 {len(utilities)} 个）")
         
         map_data = {
             'map': map_name,
-            'utilities': utilities
+            'utilities': merged_utilities
         }
         
         with open(output_file, 'w', encoding='utf-8') as f:

@@ -1,11 +1,11 @@
 {
   "version": "1.0.0",
-  "last_updated": "2026-08-14T11:18:23.476046",
+  "last_updated": "2026-08-14T11:34:57.344279",
   "maps": [
     {
       "name": "de_anubis",
       "display_name": "Anubis",
-      "utility_count": 1,
+      "utility_count": 2,
       "data_file": "data/de_anubis.json"
     },
     {
@@ -22,7 +22,7 @@
     }
   ],
   "statistics": {
-    "total_utilities": 11,
+    "total_utilities": 12,
     "by_type": {}
   }
 }
