@@ -212,6 +212,41 @@
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
+      "id": "de_dust2_smoke_a1dc9422",
+      "type": "smoke",
+      "team": "T",
+      "name": "A小过点瀑布烟（后）",
+      "description": "左键投掷，飞行时间 3.5 秒",
+      "position": {
+        "x": 267.94964599609375,
+        "y": 1348.0294189453125,
+        "z": 0.3269176483154297
+      },
+      "angles": {
+        "pitch": -12.91717529296875,
+        "yaw": 72.00198364257812
+      },
+      "land_position": {
+        "x": 581.10546875,
+        "y": 2387.38916015625,
+        "z": 66.77256774902344
+      },
+      "throw_type": "左键投掷",
+      "flight_time": 3.52,
+      "distance": 1087.5,
+      "command": "setpos 267.95 1348.03 0.33; setang -12.92 72.00 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "抵住卷帘门左侧突出的墙壁投掷。",
+      "screenshots": {
+        "position": "images/de_dust2/smoke/de_dust2_smoke_a1dc9422_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_a1dc9422_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_a1dc9422_landing.jpg"
+      },
+      "thrower": "sh1ro",
+      "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
+    },
+    {
       "id": "de_dust2_smoke_a3d45fbf",
       "type": "smoke",
       "team": "T",
@@ -282,6 +317,41 @@
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
+      "id": "de_dust2_smoke_b97f98ed",
+      "type": "smoke",
+      "team": "T",
+      "name": "A小过点瀑布烟（后）",
+      "description": "双键投掷，飞行时间 2.4 秒",
+      "position": {
+        "x": 489.94732666015625,
+        "y": 1943.96875,
+        "z": 96.03125
+      },
+      "angles": {
+        "pitch": 2.062347412109375,
+        "yaw": 80.4219970703125
+      },
+      "land_position": {
+        "x": 596.6592407226562,
+        "y": 2379.60107421875,
+        "z": 66.77256774902344
+      },
+      "throw_type": "双键投掷",
+      "flight_time": 2.42,
+      "distance": 449.5,
+      "command": "setpos 489.95 1943.97 96.03; setang 2.06 80.42 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "从A小上来抵住箱子后投掷。",
+      "screenshots": {
+        "position": "images/de_dust2/smoke/de_dust2_smoke_b97f98ed_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_b97f98ed_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_b97f98ed_landing.jpg"
+      },
+      "thrower": "donk",
+      "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
+    },
+    {
       "id": "de_dust2_smoke_ce652c43",
       "type": "smoke",
       "team": "T",
@@ -317,6 +387,41 @@
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     },
     {
+      "id": "de_dust2_smoke_d0acb981",
+      "type": "smoke",
+      "team": "CT",
+      "name": "A大保护烟",
+      "description": "左键投掷，飞行时间 3.5 秒",
+      "position": {
+        "x": 1004.9642944335938,
+        "y": 2308.668212890625,
+        "z": 23.36079978942871
+      },
+      "angles": {
+        "pitch": -12.472915649414062,
+        "yaw": -48.5101318359375
+      },
+      "land_position": {
+        "x": 1415.8673095703125,
+        "y": 1393.806396484375,
+        "z": -8.679956436157227
+      },
+      "throw_type": "左键投掷",
+      "flight_time": 3.52,
+      "distance": 1003.4,
+      "command": "setpos 1004.96 2308.67 23.36; setang -12.47 -48.51 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "从警家回防，抵住电梯位右侧墙壁边缘描点投掷。",
+      "screenshots": {
+        "position": "images/de_dust2/smoke/de_dust2_smoke_d0acb981_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_d0acb981_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_d0acb981_landing.jpg"
+      },
+      "thrower": "Gizmy",
+      "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
+    },
+    {
       "id": "de_dust2_smoke_f090e4f9",
       "type": "smoke",
       "team": "T",
@@ -349,6 +454,41 @@
         "landing": "images/de_dust2/smoke/de_dust2_smoke_f090e4f9_landing.jpg"
       },
       "thrower": "magixx",
+      "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
+    },
+    {
+      "id": "de_dust2_smoke_f9054ee8",
+      "type": "smoke",
+      "team": "T",
+      "name": "警家过点烟（A大厕所丢）",
+      "description": "按住d+左键跳投，飞行时间 4.3 秒",
+      "position": {
+        "x": 1768.92333984375,
+        "y": 676.955322265625,
+        "z": 56.03125
+      },
+      "angles": {
+        "pitch": 5.599945068359375,
+        "yaw": 111.41268920898438
+      },
+      "land_position": {
+        "x": 1371.242919921875,
+        "y": 2263.60009765625,
+        "z": 2.5282440185546875
+      },
+      "throw_type": "按住d+左键跳投",
+      "flight_time": 4.3,
+      "distance": 1636.6,
+      "command": "setpos 1768.92 676.96 56.03; setang 5.60 111.41 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "走上楼梯的最高一层投掷。",
+      "screenshots": {
+        "position": "images/de_dust2/smoke/de_dust2_smoke_f9054ee8_position.jpg",
+        "crosshair": "images/de_dust2/smoke/de_dust2_smoke_f9054ee8_crosshair.jpg",
+        "landing": "images/de_dust2/smoke/de_dust2_smoke_f9054ee8_landing.jpg"
+      },
+      "thrower": "sh1ro",
       "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
     }
   ]
