@@ -21,7 +21,7 @@
         "y": -170.39060974121094,
         "z": -93.96875
       },
-      "throw_type": "左键跳投",
+      "throw_type": "jump",
       "flight_time": 3.58,
       "distance": 1779.2,
       "command": "setpos -568.06 -1279.05 17.73; setang -30.20 95.65 0",
