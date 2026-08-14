@@ -381,7 +381,7 @@ function renderDetailPage(utilityId) {
             <div class="detail-badges">
                 <span class="badge badge-type">${getUtilityTypeName(utility.type)}</span>
                 <span class="badge badge-team team-${utility.team.toLowerCase()}">${utility.team}</span>
-                <span class="badge badge-throw">${getThrowTypeName(utility.throw_type)}</span>
+                <span class="badge badge-throw">${utility.throw_type || '未知'}</span>
             </div>
         </div>
         
@@ -422,7 +422,7 @@ function renderDetailPage(utilityId) {
                         </div>
                         <div class="info-item">
                             <span class="info-label">投掷方式</span>
-                            <span class="info-value">${getThrowTypeName(utility.throw_type)}</span>
+                            <span class="info-value">${utility.throw_type || '未知'}</span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">飞行时间</span>

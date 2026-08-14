@@ -219,12 +219,7 @@ class UtilityExporter:
     
     def generate_description(self, utility):
         """生成道具描述"""
-        throw_type_names = {
-            'jump': '跳投',
-            'stand': '站投',
-            'crouch': '蹲投'
-        }
-        throw_type = throw_type_names.get(utility.get('throw_type'), '投掷')
+        throw_type = utility.get('throw_type', '投掷')
         flight_time = utility.get('flight_time', 0)
         return f"{throw_type}，飞行时间 {flight_time:.1f} 秒"
     
