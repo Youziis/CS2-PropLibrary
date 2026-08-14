@@ -4,9 +4,9 @@
     {
       "id": "de_anubis_smoke_29dad53a",
       "type": "smoke",
-      "team": "TERRORIST",
+      "team": "T",
       "name": "黑屋烟",
-      "description": "jump，飞行时间 3.6 秒",
+      "description": "左键跳投，飞行时间 3.6 秒",
       "position": {
         "x": -568.0576171875,
         "y": -1279.054443359375,
@@ -21,7 +21,7 @@
         "y": -170.39060974121094,
         "z": -93.96875
       },
-      "throw_type": "jump",
+      "throw_type": "左键跳投",
       "flight_time": 3.58,
       "distance": 1779.2,
       "command": "setpos -568.06 -1279.05 17.73; setang -30.20 95.65 0",

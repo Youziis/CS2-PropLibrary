@@ -301,12 +301,19 @@ class Database:
         # 如果有raw_data，直接使用它（包含所有字段）
         if d.get('raw_data'):
             full_data = json.loads(d['raw_data'])
-            # 覆盖数据库中的特殊字段
+            # 覆盖数据库中可能被审核修改的字段
             full_data['status'] = d['status']
             full_data['screenshot_id'] = d.get('screenshot_id')
             full_data['screenshot_filename_base'] = d.get('screenshot_filename_base')
             full_data['display_name'] = d.get('display_name')
             full_data['notes'] = d.get('notes')
+            # ✅ 新增：覆盖审核时可能修改的字段
+            if d.get('type'):
+                full_data['type'] = d['type']
+            if d.get('team'):
+                full_data['team'] = d['team']
+            if d.get('throw_type'):
+                full_data['throw_type'] = d['throw_type']
             return full_data
         
         # 解析JSON字段
