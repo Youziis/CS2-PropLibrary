@@ -808,13 +808,12 @@ function renderUtilityCard(u) {
     const type = u.type || u.grenade_type || 'unknown';
     const map = u.map || u.map_name || 'unknown';
     const player = u.thrower || u.player_name || 'unknown';
-    const screenshotId = u.screenshot_id || 'unknown';
+    const screenshotBase = u.screenshot_filename_base || `${map}_unknown_${screenshotId}`;
     const team = u.team || 'Unknown';
     const throwType = u.throw_type || 'unknown';
     const flightTime = u.flight_time || 0;
     
-    // 使用 screenshot_filename_base 字段（包含完整的文件名前缀）
-    const screenshotBase = u.screenshot_filename_base || `${map}_unknown_${screenshotId}`;
+    
     
     // 生成TP指令
     const pos = u.throw_position || u.throw_position_corrected || {};
@@ -1310,12 +1309,10 @@ function filterExportedUtilities() {
 function renderExportedUtilityCard(u) {
     const type = u.type || u.grenade_type || 'unknown';
     const map = u.map || u.map_name || 'unknown';
-    const screenshotId = u.screenshot_id;
+    const screenshotBase = u.screenshot_filename_base || `${map}_unknown_${screenshotId}`;
     const name = u.display_name || '未命名';
     const hash = (u.hash || '').substring(0, 8);
     
-    // 使用 screenshot_filename_base 字段
-    const screenshotBase = u.screenshot_filename_base || `${map}_unknown_${screenshotId}`;
     
     // 构建道具ID（如：de_dust2_smoke_7d0b3c27）
     const utilityId = `${map}_${type}_${hash}`;

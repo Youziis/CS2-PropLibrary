@@ -62,18 +62,17 @@ def update_from_script():
     """
     从截图脚本更新道具状态
     截图脚本完成后调用此API更新数据库
-    Body: { "utilities": [...] }  # 包含 screenshot_id 的道具列表
     """
     data = request.json
     utilities = data.get('utilities', [])
     
     updated = 0
     for util in utilities:
-        if util.get('screenshot_id'):
+        # 只要有hash和screenshot_filename_base就更新
+        if util.get('hash') and util.get('screenshot_filename_base'):
             success = db.update_status(
                 util['hash'],
                 'screenshotted',
-                screenshot_id=util['screenshot_id'],
                 screenshot_filename_base=util.get('screenshot_filename_base')
             )
             if success:

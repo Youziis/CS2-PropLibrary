@@ -90,7 +90,6 @@ class Database:
                     
                     -- 状态管理
                     status TEXT NOT NULL DEFAULT 'parsed',
-                    screenshot_id TEXT,
                     screenshot_filename_base TEXT,
                     
                     -- 审核信息
@@ -303,7 +302,6 @@ class Database:
             full_data = json.loads(d['raw_data'])
             # 覆盖数据库中可能被审核修改的字段
             full_data['status'] = d['status']
-            full_data['screenshot_id'] = d.get('screenshot_id')
             full_data['screenshot_filename_base'] = d.get('screenshot_filename_base')
             full_data['display_name'] = d.get('display_name')
             full_data['notes'] = d.get('notes')

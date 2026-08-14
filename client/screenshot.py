@@ -416,7 +416,7 @@ class CS2AutoScreenshot:
             traceback.print_exc()
             print("   💡 请手动运行: python sync_screenshots.py")
         
-        # 保存更新后的道具数据（包含screenshot_id）
+        # 保存更新后的道具数据
         print("\n💾 保存道具数据到JSON...")
         with open(self.utilities_file, 'w', encoding='utf-8') as f:
             json.dump(self.utilities, f, ensure_ascii=False, indent=2)

@@ -142,7 +142,7 @@ class UtilityManager:
         批准道具
         updated_info: 更新的信息字典
         """
-        # 从 selected_for_screenshot.json 读取（包含 screenshot_id）
+        # 从 selected_for_screenshot.json
         screenshot_file = self.base_path / 'output' / 'commands' / 'selected_for_screenshot.json'
         pending_utilities = []
         
@@ -238,11 +238,12 @@ class UtilityManager:
         
         utilities.append(utility)
         
-        # 按 screenshot_id 排序
-        utilities.sort(key=lambda u: u.get('screenshot_id', 'util999'))
-        
+        # 按parse_time排序
+        utilities.sort(key=lambda u: u.get('parse_time', ''))
+
         with open(screenshot_file, 'w', encoding='utf-8') as f:
             json.dump(utilities, f, ensure_ascii=False, indent=2)
+
         
         # 保存
         self.save_data(approved, 'approved')
