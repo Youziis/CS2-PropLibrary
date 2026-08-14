@@ -41,7 +41,7 @@
       "type": "smoke",
       "team": "T",
       "name": "警家隔断烟",
-      "description": "jump，飞行时间 4.7 秒",
+      "description": "左键跳投，飞行时间 4.7 秒",
       "position": {
         "x": -937.8806762695312,
         "y": -1363.441650390625,
@@ -56,7 +56,7 @@
         "y": 271.31048583984375,
         "z": -53.96875
       },
-      "throw_type": "jump",
+      "throw_type": "左键跳投",
       "flight_time": 4.7,
       "distance": 1649.1,
       "command": "setpos -937.88 -1363.44 75.64; setang -11.99 99.90 0",
