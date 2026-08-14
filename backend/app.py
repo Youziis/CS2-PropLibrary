@@ -68,12 +68,27 @@ def approve_utility_legacy():
     hash_val = data.get('hash')
     info = data.get('info', {})
     
+    # 构建要更新的字段
+    update_fields = {
+        'approved_time': datetime.now().isoformat()
+    }
+    
+    # 添加可选字段
+    if 'display_name' in info:
+        update_fields['display_name'] = info['display_name']
+    if 'notes' in info:
+        update_fields['notes'] = info['notes']
+    if 'type' in info:
+        update_fields['type'] = info['type']
+    if 'team' in info:
+        update_fields['team'] = info['team']
+    if 'throw_type' in info:
+        update_fields['throw_type'] = info['throw_type']
+    
     success = db.update_status(
         hash_val,
         'approved',
-        display_name=info.get('display_name'),
-        notes=info.get('notes'),
-        approved_time=datetime.now().isoformat()
+        **update_fields
     )
     
     if success:

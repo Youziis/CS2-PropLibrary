@@ -465,12 +465,19 @@ function getUtilityTypeName(type) {
 }
 
 function getThrowTypeName(type) {
+    // 如果没有值，返回"未知"
+    if (!type) return '未知';
+    
+    // 预定义的英文值翻译
     const names = {
         'jump': '跳投',
         'stand': '站投',
         'crouch': '蹲投',
-        'elevated': '高台投'
+        'elevated': '高台投',
+        'unknown': '未知'
     };
+    
+    // 如果是预定义的英文值，返回翻译；否则返回原值（支持自定义投掷方式）
     return names[type] || type;
 }
 
