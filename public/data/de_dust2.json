@@ -6,7 +6,7 @@
       "type": "smoke",
       "team": "T",
       "name": "中门挂门烟",
-      "description": "jump，飞行时间 5.0 秒",
+      "description": "左键跳投，飞行时间 5.0 秒",
       "position": {
         "x": 363.9338684082031,
         "y": -625.0687255859375,
