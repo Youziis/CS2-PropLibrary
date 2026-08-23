@@ -310,6 +310,138 @@ def edit_exported():
         return jsonify({'success': False, 'message': '道具未找到'}), 404
 
 
+@app.route('/api/add_manual_utility', methods=['POST'])
+def add_manual_utility():
+    """手动添加道具（用户上传）"""
+    try:
+        import hashlib
+        from werkzeug.utils import secure_filename
+        import json
+        
+        # 获取表单数据
+        name = request.form.get('name')
+        map_name = request.form.get('map')
+        utility_type = request.form.get('type')
+        team = request.form.get('team')
+        throw_type = request.form.get('throw_type', '未知')
+        source = request.form.get('source', '手动添加')
+        notes = request.form.get('notes', '')
+        
+        # 获取坐标数据
+        throw_position = json.loads(request.form.get('throw_position', '{}'))
+        throw_angles = json.loads(request.form.get('throw_angles', '{}'))
+        land_position = json.loads(request.form.get('land_position', '{}'))
+        
+        # 验证必填字段
+        if not all([name, map_name, utility_type, team]):
+            return jsonify({'success': False, 'error': '缺少必填字段'}), 400
+        
+        if not all([throw_position, throw_angles, land_position]):
+            return jsonify({'success': False, 'error': '缺少坐标信息'}), 400
+        
+        # 获取上传的图片
+        img_position = request.files.get('img_position')
+        img_crosshair = request.files.get('img_crosshair')
+        img_landing = request.files.get('img_landing')
+        
+        if not all([img_position, img_crosshair, img_landing]):
+            return jsonify({'success': False, 'error': '请上传所有三张截图'}), 400
+        
+        # 使用与Demo解析相同的hash生成规则
+        # 将坐标四舍五入到1位小数
+        throw_pos = (
+            round(throw_position.get('x', 0), 1),
+            round(throw_position.get('y', 0), 1),
+            round(throw_position.get('z', 0), 1)
+        )
+        throw_ang = (
+            round(throw_angles.get('pitch', 0), 1),
+            round(throw_angles.get('yaw', 0), 1)
+        )
+        land_pos = (
+            round(land_position.get('x', 0), 1),
+            round(land_position.get('y', 0), 1),
+            round(land_position.get('z', 0), 1)
+        )
+        
+        # 生成weapon字符串（根据类型）
+        weapon_map = {
+            'smoke': 'weapon_smokegrenade',
+            'flashbang': 'weapon_flashbang',
+            'hegrenade': 'weapon_hegrenade',
+            'incendiary': 'weapon_incgrenade',
+            'molotov': 'weapon_molotov'
+        }
+        weapon = weapon_map.get(utility_type, 'unknown')
+        
+        # 组合成字符串（与extractor.py中的逻辑一致）
+        hash_string = f"{throw_pos}_{throw_ang}_{land_pos}_{weapon}"
+        hash_val = hashlib.md5(hash_string.encode()).hexdigest()[:16]
+        
+        print(f"[手动添加道具] Hash生成字符串: {hash_string}")
+        print(f"[手动添加道具] 生成的Hash: {hash_val}")
+        
+        # 保存图片文件
+        screenshots_dir = Path(__file__).parent.parent / 'output' / 'screenshots'
+        screenshots_dir.mkdir(parents=True, exist_ok=True)
+        
+        screenshot_base = f"{map_name}_{hash_val}"
+        
+        try:
+            # 保存三张图片
+            img_position.save(screenshots_dir / f"{screenshot_base}_position.jpg")
+            img_crosshair.save(screenshots_dir / f"{screenshot_base}_crosshair.jpg")
+            img_landing.save(screenshots_dir / f"{screenshot_base}_landing.jpg")
+        except Exception as e:
+            print(f"保存图片失败: {e}")
+            return jsonify({'success': False, 'error': f'保存图片失败: {str(e)}'}), 500
+        
+        # 插入数据库
+        timestamp = datetime.now().isoformat()
+        utility_data = {
+            'hash': hash_val,
+            'map': map_name,
+            'type': utility_type,
+            'team': team,
+            'throw_type': throw_type,
+            'throw_position': throw_position,
+            'throw_angles': throw_angles,
+            'land_position': land_position,
+            'display_name': name,
+            'notes': notes,
+            'demo_source': source,
+            'screenshot_filename_base': screenshot_base,
+            'status': 'approved',  # 手动添加直接批准，无需审核
+            'created_time': timestamp,
+            'approved_time': timestamp  # 记录批准时间
+        }
+        
+        success = db.insert_utility(utility_data)
+        
+        if success:
+            print(f"[手动添加道具] 成功添加: {name} ({hash_val})")
+            return jsonify({
+                'success': True, 
+                'message': '道具添加成功',
+                'hash': hash_val
+            })
+        else:
+            # 如果数据库插入失败（可能是hash冲突），删除已保存的图片
+            for suffix in ['position', 'crosshair', 'landing']:
+                filepath = screenshots_dir / f"{screenshot_base}_{suffix}.jpg"
+                if filepath.exists():
+                    filepath.unlink()
+            
+            return jsonify({'success': False, 'error': '该道具已存在（相同坐标和角度）'}), 400
+            
+    except Exception as e:
+        print(f"[手动添加道具] 异常: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': f'服务器错误: {str(e)}'}), 500
+
+
+
 @app.route('/screenshots/<path:filename>')
 def serve_screenshot(filename):
     """提供截图文件"""

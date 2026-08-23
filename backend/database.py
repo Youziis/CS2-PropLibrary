@@ -160,6 +160,51 @@ class Database:
             
             return added, duplicated
     
+    def insert_utility(self, utility_data: Dict) -> bool:
+        """
+        插入单个道具（用于手动添加）
+        utility_data: 包含道具信息的字典
+        返回：是否成功
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            try:
+                # 准备基础字段（使用默认值填充缺失字段）
+                cursor.execute("""
+                    INSERT INTO utilities (
+                        hash, map, type, team, 
+                        throw_position, throw_angles, land_position,
+                        throw_type, source_demo, parse_time, 
+                        status, screenshot_filename_base,
+                        display_name, notes, approved_time, raw_data
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    utility_data['hash'],
+                    utility_data['map'],
+                    utility_data['type'],
+                    utility_data.get('team', 'Unknown'),
+                    json.dumps(utility_data.get('throw_position', {})),
+                    json.dumps(utility_data.get('throw_angles', {})),
+                    json.dumps(utility_data.get('land_position', {})),
+                    utility_data.get('throw_type', '未知'),
+                    utility_data.get('demo_source', '手动添加'),
+                    utility_data.get('created_time', datetime.now().strftime('%Y-%m-%d %H:%M:%S')),
+                    utility_data.get('status', 'approved'),
+                    utility_data.get('screenshot_filename_base'),
+                    utility_data.get('display_name'),
+                    utility_data.get('notes'),
+                    utility_data.get('approved_time'),
+                    json.dumps(utility_data)  # 保存完整数据
+                ))
+                return True
+            except sqlite3.IntegrityError as e:
+                print(f"插入道具失败（重复hash）: {e}")
+                return False
+            except Exception as e:
+                print(f"插入道具失败: {e}")
+                return False
+    
     def get_utilities(self, status: Optional[str] = None, 
                      map_name: Optional[str] = None,
                      limit: Optional[int] = None,

@@ -1,4 +1,4 @@
-// 全局变量
+﻿// 全局变量
 let allUtilities = [];
 let filteredUtilities = [];
 let currentFilterDemo = 'all'; // 当前筛选的 demo
@@ -17,26 +17,70 @@ const TYPE_NAMES = {
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
     initTabs();
-    initSubTabs();
+    initSidebarToggle();
     loadStats();
+    loadOverviewStats();
+    loadOverviewPendingStats();
     loadDemos();
     loadTypeStats();
     loadPending();
     loadExportStats();
+    loadPendingExportUtilities();
 });
+
+// 侧边栏收缩展开功能
+function initSidebarToggle() {
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    
+    if (!sidebar || !toggleBtn) return;
+    
+    // 从localStorage读取侧边栏状态
+    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    if (isCollapsed) {
+        sidebar.classList.add('collapsed');
+    }
+    
+    // 点击切换按钮
+    toggleBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        sidebar.classList.toggle('collapsed');
+        
+        // 保存状态到localStorage
+        const collapsed = sidebar.classList.contains('collapsed');
+        localStorage.setItem('sidebarCollapsed', collapsed);
+        
+        // 添加动画结束后的回调
+        if (!collapsed) {
+            // 展开时，延迟显示文字
+            setTimeout(() => {
+                sidebar.style.overflowX = 'hidden';
+            }, 300);
+        }
+    });
+    
+    // 为导航项添加tooltip属性
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        const text = item.querySelector('.nav-text');
+        if (text) {
+            item.setAttribute('data-tooltip', text.textContent.trim());
+        }
+    });
+}
 
 // 标签页切换
 function initTabs() {
-    const tabs = document.querySelectorAll('.tab');
+    const navItems = document.querySelectorAll('.nav-item');
     const contents = document.querySelectorAll('.tab-content');
     
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const targetTab = tab.dataset.tab;
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const targetTab = item.dataset.tab;
             
-            // 切换活动标签
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
+            // 切换活动导航项
+            navItems.forEach(t => t.classList.remove('active'));
+            item.classList.add('active');
             
             // 切换内容
             contents.forEach(c => c.classList.remove('active'));
@@ -51,33 +95,14 @@ function initTabs() {
                 loadPending();
             } else if (targetTab === 'export') {
                 loadExportStats();
-            }
-        });
-    });
-}
-
-// 子标签页切换
-function initSubTabs() {
-    const subTabs = document.querySelectorAll('.sub-tab');
-    const subContents = document.querySelectorAll('.sub-tab-content');
-    
-    subTabs.forEach(subTab => {
-        subTab.addEventListener('click', () => {
-            const targetSubTab = subTab.dataset.subtab;
-            
-            // 切换活动子标签
-            subTabs.forEach(st => st.classList.remove('active'));
-            subTab.classList.add('active');
-            
-            // 切换内容
-            subContents.forEach(sc => sc.classList.remove('active'));
-            document.getElementById(`${targetSubTab}-subtab`).classList.add('active');
-            
-            // 加载对应数据
-            if (targetSubTab === 'pending-export') {
                 loadPendingExportUtilities();
-            } else if (targetSubTab === 'exported') {
+            } else if (targetTab === 'exported') {
+                loadExportedStats();
                 loadExportedUtilities();
+            } else if (targetTab === 'overview') {
+                loadStats();
+                loadOverviewStats();
+                loadOverviewPendingStats();
             }
         });
     });
@@ -89,11 +114,173 @@ async function loadStats() {
         const response = await fetch('/api/stats');
         const stats = await response.json();
         
-        document.getElementById('total-count').textContent = stats.total_parsed || 0;
-        document.getElementById('pending-count').textContent = stats.pending_review || 0;
-        document.getElementById('approved-count').textContent = stats.approved || 0;
+        // 更新总览页面的统计数据
+        const overviewTotal = document.getElementById('overview-total-count');
+        const overviewPending = document.getElementById('overview-pending-count');
+        const overviewApproved = document.getElementById('overview-approved-count');
+        
+        if (overviewTotal) overviewTotal.textContent = stats.total_parsed || 0;
+        if (overviewPending) overviewPending.textContent = stats.pending_review || 0;
+        if (overviewApproved) overviewApproved.textContent = stats.approved || 0;
     } catch (error) {
         console.error('加载统计失败:', error);
+    }
+}
+
+// 加载总览页面详细统计
+async function loadOverviewStats() {
+    try {
+        const response = await fetch('/api/stats');
+        const stats = await response.json();
+        
+        // 按地图统计
+        const mapStatsList = document.getElementById('map-stats-list');
+        if (mapStatsList && stats.by_map) {
+            const mapEntries = Object.entries(stats.by_map).sort((a, b) => b[1] - a[1]);
+            if (mapEntries.length > 0) {
+                mapStatsList.innerHTML = mapEntries.map(([map, count]) => `
+                    <div class="stat-row">
+                        <span class="stat-name">${map.replace('de_', '')}</span>
+                        <span class="stat-bar">
+                            <span class="stat-bar-fill" style="width: ${(count / mapEntries[0][1]) * 100}%"></span>
+                        </span>
+                        <span class="stat-count">${count}</span>
+                    </div>
+                `).join('');
+            } else {
+                mapStatsList.innerHTML = '<p class="hint">暂无数据</p>';
+            }
+        }
+        
+        // 按类型统计
+        const typeStatsList = document.getElementById('type-stats-list');
+        if (typeStatsList && stats.by_type) {
+            const typeNames = {
+                'smoke': '烟雾弹',
+                'flashbang': '闪光弹',
+                'hegrenade': '手雷',
+                'incendiary': '燃烧弹',
+                'molotov': '燃烧弹'
+            };
+            const typeEntries = Object.entries(stats.by_type).sort((a, b) => b[1] - a[1]);
+            if (typeEntries.length > 0) {
+                typeStatsList.innerHTML = typeEntries.map(([type, count]) => `
+                    <div class="stat-row">
+                        <span class="stat-name">${typeNames[type] || type}</span>
+                        <span class="stat-bar">
+                            <span class="stat-bar-fill type-${type}" style="width: ${(count / typeEntries[0][1]) * 100}%"></span>
+                        </span>
+                        <span class="stat-count">${count}</span>
+                    </div>
+                `).join('');
+            } else {
+                typeStatsList.innerHTML = '<p class="hint">暂无数据</p>';
+            }
+        }
+        
+        // 按状态统计
+        const statusStatsList = document.getElementById('status-stats-list');
+        if (statusStatsList && stats.by_status) {
+            const statusNames = {
+                'parsed': '已解析',
+                'selected': '已选择',
+                'screenshotted': '已截图',
+                'approved': '已批准',
+                'exported': '已导出',
+                'rejected': '已拒绝'
+            };
+            const statusEntries = Object.entries(stats.by_status)
+                .filter(([_, count]) => count > 0)
+                .sort((a, b) => b[1] - a[1]);
+            if (statusEntries.length > 0) {
+                statusStatsList.innerHTML = statusEntries.map(([status, count]) => `
+                    <div class="stat-row">
+                        <span class="stat-name">${statusNames[status] || status}</span>
+                        <span class="stat-bar">
+                            <span class="stat-bar-fill status-${status}" style="width: ${(count / statusEntries[0][1]) * 100}%"></span>
+                        </span>
+                        <span class="stat-count">${count}</span>
+                    </div>
+                `).join('');
+            } else {
+                statusStatsList.innerHTML = '<p class="hint">暂无数据</p>';
+            }
+        }
+    } catch (error) {
+        console.error('加载总览统计失败:', error);
+    }
+}
+
+// 加载待截图道具统计
+async function loadOverviewPendingStats() {
+    const cardsEl = document.getElementById('overview-type-cards');
+    if (!cardsEl) return;
+    
+    cardsEl.innerHTML = '<div class="loading">加载中</div>';
+    
+    try {
+        const response = await fetch('/api/all_pending');
+        const data = await response.json();
+        
+        if (data.success === false || !data.utilities) {
+            cardsEl.innerHTML = '<p class="hint">加载失败</p>';
+            return;
+        }
+        
+        const allPendingUtilities = data.utilities;
+        
+        if (allPendingUtilities.length === 0) {
+            cardsEl.innerHTML = '<p class="hint">没有待截图的道具</p>';
+            return;
+        }
+        
+        // 统计各类型数量
+        const typeCounts = {};
+        const typeCountsByStatus = { parsed: {}, rejected: {} };
+        
+        allPendingUtilities.forEach(u => {
+            const type = u.type || u.grenade_type || 'unknown';
+            const status = u.status || 'parsed';
+            
+            typeCounts[type] = (typeCounts[type] || 0) + 1;
+            
+            if (status === 'rejected') {
+                typeCountsByStatus.rejected[type] = (typeCountsByStatus.rejected[type] || 0) + 1;
+            } else {
+                typeCountsByStatus.parsed[type] = (typeCountsByStatus.parsed[type] || 0) + 1;
+            }
+        });
+        
+        const rejectedUtilities = allPendingUtilities.filter(u => u.status === 'rejected');
+        
+        // 生成卡片HTML
+        let html = `
+            <div class="pending-summary">
+                共 ${allPendingUtilities.length} 个待截图道具，已拒绝 ${rejectedUtilities.length} 个
+            </div>
+        `;
+        
+        const typeOrder = ['smoke', 'flashbang', 'hegrenade', 'incendiary'];
+        html += '<div class="type-cards-grid">';
+        
+        typeOrder.forEach(type => {
+            const total = typeCounts[type] || 0;
+            const rejected = typeCountsByStatus.rejected[type] || 0;
+            html += `
+                <div class="type-card">
+                    <div class="count">${total}</div>
+                    <div class="label">${TYPE_NAMES[type] || type}</div>
+                    <div class="sub-label">已拒绝: ${rejected}</div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        cardsEl.innerHTML = html;
+        
+    } catch (error) {
+        console.error('加载待截图统计失败:', error);
+        cardsEl.innerHTML = '<p class="hint">加载失败</p>';
     }
 }
 
@@ -115,12 +302,12 @@ async function loadDemos() {
         listEl.innerHTML = data.demos.map(demo => `
             <div class="demo-item">
                 <div class="demo-info">
-                    <h3>📁 ${demo.name}</h3>
+                    <h3>${demo.name}</h3>
                     <p>大小: ${formatFileSize(demo.size)}</p>
-                    ${demo.parsed ? '<span class="badge badge-success">✅ 已解析</span>' : ''}
+                    ${demo.parsed ? '<span class="badge badge-success">已解析</span>' : ''}
                 </div>
                 <button class="btn btn-primary" onclick="parseDemo('${demo.name}')" ${demo.parsed ? 'disabled' : ''}>
-                    ${demo.parsed ? '✅ 已解析' : '🔍 解析'}
+                    ${demo.parsed ? '已解析' : '解析'}
                 </button>
             </div>
         `).join('');
@@ -136,7 +323,7 @@ async function parseDemo(demoName) {
     
     const btn = event.target;
     btn.disabled = true;
-    btn.textContent = '⏳ 解析中...';
+    btn.textContent = '解析中...';
     
     try {
         const response = await fetch('/api/parse_demo', {
@@ -148,17 +335,17 @@ async function parseDemo(demoName) {
         const result = await response.json();
         
         if (result.success) {
-            alert(`✅ ${result.message}`);
+            alert(`${result.message}`);
             loadStats();
             loadTypeStats();
         } else {
-            alert(`❌ ${result.message}`);
+            alert(`${result.message}`);
         }
     } catch (error) {
-        alert('❌ 解析失败: ' + error.message);
+        alert('解析失败: ' + error.message);
     } finally {
         btn.disabled = false;
-        btn.textContent = '🔍 解析';
+        btn.textContent = '解析';
     }
 }
 
@@ -219,35 +406,7 @@ async function loadTypeStats() {
         const rejectedUtilities = allPendingUtilities.filter(u => u.status === 'rejected');
         const notRejectedUtilities = allPendingUtilities.filter(u => u.status !== 'rejected');
         
-        // 显示统计和道具列表
-        let html = '';
-        
-        // 1. 统计卡片区域 - 固定4列横向显示
-        html += '<div class="stats-summary">';
-        html += `<h3>📊 道具统计（共 ${allPendingUtilities.length} 个，已拒绝 ${rejectedUtilities.length} 个）</h3>`;
-        html += '<div class="type-cards">';
-        
-        // 确保按固定顺序显示4种道具类型
-        const typeOrder = ['smoke', 'flashbang', 'hegrenade', 'incendiary'];
-        typeOrder.forEach(type => {
-            const total = typeCounts[type] || 0;
-            const rejected = typeCountsByStatus.rejected[type] || 0;
-            html += `
-                <div class="type-card">
-                    <div class="count">${total}</div>
-                    <div class="label">${TYPE_NAMES[type] || type}</div>
-                    <div class="sub-label">已拒绝: ${rejected}</div>
-                </div>
-            `;
-        });
-        
-        html += '</div>';
-        html += '</div>';
-        
-        // 2. 标签选择区域（整合在一个框内）
-        html += '<div class="selection-controls">';
-        
-        // 2.1 统计来源demo和地图 - 添加下拉筛选器
+        // 统计来源demo和地图
         const demoCounts = {};
         const mapCounts = {};
         allPendingUtilities.forEach(u => {
@@ -257,10 +416,16 @@ async function loadTypeStats() {
             mapCounts[map] = (mapCounts[map] || 0) + 1;
         });
         
-        // 筛选器区域
-        html += '<div class="filter-section">';
-        html += '<h4>🔍 筛选道具</h4>';
-        html += '<div class="filters" style="display: flex; gap: 10px; margin-bottom: 15px;">';
+        // 显示道具列表
+        let html = '';
+        
+        // 1. 筛选和操作区域
+        html += '<div class="selection-controls">';
+        
+        // 1.1 筛选器区域
+        html += '<div class="select-section">';
+        html += '<h4>筛选道具</h4>';
+        html += '<div class="select-buttons">';
         
         // 地图筛选下拉框
         if (Object.keys(mapCounts).length > 0) {
@@ -286,7 +451,7 @@ async function loadTypeStats() {
             html += '</select>';
         }
         
-        // 状态筛选 - 改为：全部状态、未拒绝、已拒绝
+        // 状态筛选
         html += '<select id="selection-filter-screenshot" class="filter-select" onchange="filterByScreenshotStatus(this.value)">';
         html += `<option value="all">全部状态 (${allPendingUtilities.length})</option>`;
         html += `<option value="no">未拒绝 (${notRejectedUtilities.length})</option>`;
@@ -296,9 +461,9 @@ async function loadTypeStats() {
         html += '</div>';
         html += '</div>';
         
-        // 2.2 道具类型筛选按钮
+        // 1.2 道具类型筛选按钮
         html += '<div class="select-section">';
-        html += '<h4>🎯 按类型筛选</h4>';
+        html += '<h4>按类型筛选</h4>';
         html += '<div class="select-buttons">';
         html += '<button class="btn btn-type active" data-type="all" onclick="filterByType(\'all\')">全部类型</button>';
         html += '<button class="btn btn-type" data-type="smoke" onclick="filterByType(\'smoke\')">烟雾弹</button>';
@@ -308,16 +473,7 @@ async function loadTypeStats() {
         html += '</div>';
         html += '</div>';
         
-        // 2.3 快捷操作按钮
-        html += '<div class="select-section">';
-        html += '<h4>💡 快捷操作</h4>';
-        html += '<p class="hint" style="font-size: 12px; color: #888; margin-bottom: 10px;">对当前显示的道具进行操作</p>';
-        html += '<div class="select-buttons">';
-        html += '<button id="toggle-select-all-btn" class="btn btn-primary" onclick="toggleSelectAll()">✓ 全选</button>';
-        html += '</div>';
-        html += '</div>';
-        
-        // 2.4 已选择数量和保存按钮
+        // 1.3 已选择数量和保存按钮
         html += '<div class="selection-summary-inline">';
         html += '<div class="summary-info">';
         html += '<span class="label">已选择</span>';
@@ -327,12 +483,25 @@ async function loadTypeStats() {
         html += '<span id="visible-count" class="count">0</span>';
         html += '<span class="label">个</span>';
         html += '</div>';
-        html += '<button class="btn btn-large btn-primary" onclick="saveSelectedUtilities()">💾 保存选择并准备截图</button>';
+        html += '<button class="btn btn-large btn-primary" onclick="saveSelectedUtilities()">保存选择并准备截图</button>';
         html += '</div>';
         
         html += '</div>'; // 结束 selection-controls
         
-        // 3. 道具列表 - 固定3列
+        // 2. 道具列表表头
+        html += '<div class="utilities-table-header">';
+        html += '<div class="header-checkbox-col">';
+        html += '<button id="toggle-select-all-btn" class="btn-header-select" onclick="toggleSelectAll()" title="全选/取消全选">☐</button>';
+        html += '</div>';
+        html += '<div class="header-info-col">类型/队伍</div>';
+        html += '<div class="header-detail-col">地图</div>';
+        html += '<div class="header-detail-col">玩家</div>';
+        html += '<div class="header-detail-col">投掷方式</div>';
+        html += '<div class="header-detail-col">来源</div>';
+        html += '<div class="header-time-col">解析时间</div>';
+        html += '</div>';
+        
+        // 3. 道具列表
         html += '<div class="utilities-select-list">';
         html += allPendingUtilities.map(u => renderUtilitySelectCard(u)).join('');
         html += '</div>';
@@ -364,27 +533,32 @@ function renderUtilitySelectCard(u) {
     const isRejected = status === 'rejected';
     
     return `
-        <div class="utility-select-card ${isRejected ? 'is-rejected' : ''}" data-hash="${hash}" data-status="${status}">
-            <div class="checkbox-wrapper">
+        <div class="utility-select-row ${isRejected ? 'is-rejected' : ''}" data-hash="${hash}" data-status="${status}">
+            <div class="utility-checkbox-col">
                 <input type="checkbox" id="check-${hash}" class="utility-checkbox" 
                        onchange="toggleUtility('${hash}')" data-type="${type}">
             </div>
-            <div class="utility-select-info">
-                <div class="utility-header">
+            <div class="utility-info-col">
+                <div class="utility-badges">
                     <span class="type-badge type-${type}">${TYPE_NAMES[type] || type}</span>
                     <span class="team-badge team-${team}">${team}</span>
-                    ${isRejected ? '<span class="rejected-badge">❌ 已拒绝</span>' : '<span class="normal-badge">✅ 正常</span>'}
+                    ${isRejected ? '<span class="rejected-badge">已拒绝</span>' : ''}
                 </div>
-                <div class="utility-details">
-                    <div><strong>地图:</strong> ${map}</div>
-                    <div><strong>玩家:</strong> ${player}</div>
-                    <div><strong>投掷方式:</strong> ${throwType}</div>
-                    <div><strong>来源Demo:</strong> <span style="color: #667eea;">${sourceDemo}</span></div>
-                    ${isRejected ? '<div style="color: #ff6b6b; font-weight: bold; margin-top: 5px;">🔄 可重新选择截图</div>' : ''}
-                    <div style="font-size: 11px; color: #666; margin-top: 5px;">
-                        解析时间: ${parseTime}
-                    </div>
-                </div>
+            </div>
+            <div class="utility-detail-col">
+                <span class="detail-value">${map}</span>
+            </div>
+            <div class="utility-detail-col">
+                <span class="detail-value">${player}</span>
+            </div>
+            <div class="utility-detail-col">
+                <span class="detail-value">${throwType}</span>
+            </div>
+            <div class="utility-detail-col">
+                <span class="detail-value">${sourceDemo.replace('.dem', '')}</span>
+            </div>
+            <div class="utility-time-col">
+                <span class="detail-value">${parseTime}</span>
             </div>
         </div>
     `;
@@ -409,7 +583,7 @@ function updateSelectedCount() {
     }
     
     // 计算当前可见的道具数量
-    const visibleCards = Array.from(document.querySelectorAll('.utility-select-card'))
+    const visibleCards = Array.from(document.querySelectorAll('.utility-select-row'))
         .filter(card => card.style.display !== 'none');
     
     if (visibleCountEl) {
@@ -419,31 +593,25 @@ function updateSelectedCount() {
     // 更新全选按钮状态
     if (toggleBtn && visibleCards.length > 0) {
         const visibleHashes = visibleCards.map(card => card.dataset.hash);
-        const visibleSelectedCount = visibleHashes.filter(hash => selectedUtilities.has(hash)).length;
         const allVisibleSelected = visibleHashes.every(hash => selectedUtilities.has(hash));
         
         if (allVisibleSelected) {
             // 全部选中状态
-            toggleBtn.innerHTML = '✗ 取消全选';
-            toggleBtn.classList.remove('btn-primary');
-            toggleBtn.classList.add('btn-selected');
-        } else if (visibleSelectedCount > 0) {
-            // 部分选中状态
-            toggleBtn.innerHTML = `✓ 全选 (${visibleSelectedCount}/${visibleCards.length})`;
-            toggleBtn.classList.add('btn-primary');
-            toggleBtn.classList.remove('btn-selected');
+            toggleBtn.innerHTML = '☑';
+            toggleBtn.classList.add('selected');
+            toggleBtn.title = '取消全选';
         } else {
-            // 未选中状态
-            toggleBtn.innerHTML = '✓ 全选';
-            toggleBtn.classList.add('btn-primary');
-            toggleBtn.classList.remove('btn-selected');
+            // 未全部选中状态
+            toggleBtn.innerHTML = '☐';
+            toggleBtn.classList.remove('selected');
+            toggleBtn.title = '全选';
         }
     }
 }
 
 function toggleSelectAll() {
     // 计算当前可见的道具
-    const visibleCards = Array.from(document.querySelectorAll('.utility-select-card'))
+    const visibleCards = Array.from(document.querySelectorAll('.utility-select-row'))
         .filter(card => card.style.display !== 'none');
     
     if (visibleCards.length === 0) return;
@@ -542,7 +710,7 @@ function filterByType(type) {
 
 function applySelectionFilters() {
     // 同时应用地图、demo、状态和类型筛选
-    document.querySelectorAll('.utility-select-card').forEach(card => {
+    document.querySelectorAll('.utility-select-row').forEach(card => {
         const hash = card.dataset.hash;
         const utility = allPendingUtilities.find(u => u.hash === hash);
         
@@ -591,7 +759,7 @@ function selectByTypeQuick(type) {
 
 async function saveSelectedUtilities() {
     if (selectedUtilities.size === 0) {
-        alert('❌ 请至少选择一个道具');
+        alert('请至少选择一个道具');
         return;
     }
     
@@ -603,7 +771,7 @@ async function saveSelectedUtilities() {
     const selected = allPendingUtilities.filter(u => selectedUtilities.has(u.hash));
     
     try {
-        // ✅ 修改为新的API端点
+        // 修改为新的API端点
         const response = await fetch('/api/utilities/select', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -615,16 +783,16 @@ async function saveSelectedUtilities() {
         const result = await response.json();
         
         if (result.success) {
-            alert(`✅ ${result.message}\n\n下一步：\n1. 确保后端服务器运行中（http://localhost:5000）\n2. 启动 CS2 游戏，进入对应地图\n3. 开启控制台输入：sv_cheats 1\n4. 运行截图工具：python client/screenshot.py`);
+            alert(`${result.message}\n\n下一步：\n1. 确保后端服务器运行中（http://localhost:5000）\n2. 启动 CS2 游戏，进入对应地图\n3. 开启控制台输入：sv_cheats 1\n4. 运行截图工具：python client/screenshot.py`);
             
             // 刷新页面数据
             loadStats();
             loadTypeStats();
         } else {
-            alert(`❌ ${result.message}`);
+            alert(`${result.message}`);
         }
     } catch (error) {
-        alert('❌ 保存失败: ' + error.message);
+        alert('保存失败: ' + error.message);
     }
 }
 
@@ -632,7 +800,7 @@ async function selectType(type) {
     const btn = event.target;
     btn.disabled = true;
     const originalText = btn.textContent;
-    btn.textContent = '⏳ 处理中...';
+    btn.textContent = '处理中...';
     
     try {
         const response = await fetch('/api/select_utilities', {
@@ -653,7 +821,7 @@ async function selectType(type) {
             }, 5000);
         }
     } catch (error) {
-        alert('❌ 选择失败: ' + error.message);
+        alert('选择失败: ' + error.message);
     } finally {
         btn.disabled = false;
         btn.textContent = originalText;
@@ -777,7 +945,7 @@ function renderUtilities() {
             // 有道具但都被筛选掉了
             gridEl.innerHTML = `
                 <div class="info-box" style="text-align: center; padding: 40px;">
-                    <h3>🔍 没有符合筛选条件的道具</h3>
+                    <h3>没有符合筛选条件的道具</h3>
                     <p style="margin: 20px 0;">请调整筛选条件或点击"全部来源/类型/队伍"</p>
                 </div>
             `;
@@ -785,7 +953,7 @@ function renderUtilities() {
             // 真的没有已截图的道具
             gridEl.innerHTML = `
                 <div class="info-box" style="text-align: center; padding: 40px;">
-                    <h3>📸 还没有已截图的道具</h3>
+                    <h3>还没有已截图的道具</h3>
                     <p style="margin: 20px 0;">共有 ${filteredUtilities.length} 个道具待截图</p>
                     <ol style="text-align: left; margin: 20px auto; max-width: 600px;">
                         <li>前往"选择道具"标签页，勾选需要截图的道具</li>
@@ -828,7 +996,7 @@ function renderUtilityCard(u) {
                 <label>🎮 TP到投掷位置（复制后在游戏控制台粘贴）</label>
                 <div class="command-input-wrapper">
                     <input type="text" class="tp-command-input" value="${tpCommand}" readonly onclick="this.select()">
-                    <button class="btn-copy" onclick="copyToClipboard('${tpCommand.replace(/'/g, "\\'")}', this)">📋 复制</button>
+                    <button class="btn-copy" onclick="copyToClipboard('${tpCommand.replace(/'/g, "\\'")}', this)">复制</button>
                 </div>
             </div>
             
@@ -890,8 +1058,8 @@ function renderUtilityCard(u) {
                 </div>
                 
                 <div class="actions">
-                    <button class="btn-approve" onclick="approveUtility('${u.hash}')">✓ 批准</button>
-                    <button class="btn-reject" onclick="rejectUtility('${u.hash}')">✗ 拒绝</button>
+                    <button class="btn-approve" onclick="approveUtility('${u.hash}')">批准</button>
+                    <button class="btn-reject" onclick="rejectUtility('${u.hash}')">拒绝</button>
                 </div>
             </div>
         </div>
@@ -935,11 +1103,11 @@ function renderUtilityCardNoScreenshot(u) {
                 </div>
                 
                 <div style="margin-top: 15px; padding: 10px; background: #0f3460; border-radius: 5px; text-align: center;">
-                    <small style="color: #888;">📸 等待截图</small>
+                    <small style="color: #888;">等待截图</small>
                 </div>
                 
                 <div class="actions">
-                    <button class="btn-delete" onclick="deletePending('${u.hash}')">🗑️ 删除</button>
+                    <button class="btn-delete" onclick="deletePending('${u.hash}')">删除</button>
                 </div>
             </div>
         </div>
@@ -978,14 +1146,14 @@ async function approveUtility(hash) {
     // 限定在审核页面的道具网格中查找
     const grid = document.getElementById('utilities-grid');
     if (!grid) {
-        alert('❌ 错误：找不到审核页面');
+        alert('错误：找不到审核页面');
         return;
     }
     
     const card = grid.querySelector(`[data-hash="${hash}"]`);
     
     if (!card) {
-        alert('❌ 错误：找不到道具卡片元素');
+        alert('错误：找不到道具卡片元素');
         console.error('找不到 data-hash:', hash);
         return;
     }
@@ -993,7 +1161,7 @@ async function approveUtility(hash) {
     const nameInput = card.querySelector('.util-name');
     
     if (!nameInput) {
-        alert('❌ 错误：找不到道具名称输入框\n\n请刷新页面后重试（Ctrl+Shift+R 强制刷新）');
+        alert('错误：找不到道具名称输入框\n\n请刷新页面后重试（Ctrl+Shift+R 强制刷新）');
         console.error('找不到 .util-name 元素，卡片内容:', card.innerHTML.substring(0, 500));
         return;
     }
@@ -1002,7 +1170,7 @@ async function approveUtility(hash) {
     
     // 验证必填字段
     if (!name) {
-        alert('❌ 请填写道具名称');
+        alert('请填写道具名称');
         nameInput.focus();
         return;
     }
@@ -1051,10 +1219,10 @@ async function approveUtility(hash) {
                 loadExportStats();
             }, 300);
         } else {
-            alert('❌ ' + result.message);
+            alert('' + result.message);
         }
     } catch (error) {
-        alert('❌ 操作失败: ' + error.message);
+        alert('操作失败: ' + error.message);
     }
 }
 
@@ -1062,14 +1230,14 @@ async function rejectUtility(hash) {
     // 限定在审核页面的道具网格中查找
     const grid = document.getElementById('utilities-grid');
     if (!grid) {
-        alert('❌ 错误：找不到审核页面');
+        alert('错误：找不到审核页面');
         return;
     }
     
     const card = grid.querySelector(`[data-hash="${hash}"]`);
     
     if (!card) {
-        alert('❌ 错误：找不到道具卡片元素');
+        alert('错误：找不到道具卡片元素');
         console.error('找不到 data-hash:', hash);
         return;
     }
@@ -1082,7 +1250,7 @@ async function rejectUtility(hash) {
     const notesTextarea = card.querySelector('.util-notes');
     
     if (!nameInput) {
-        alert('❌ 错误：找不到道具名称输入框\n\n请刷新页面后重试（Ctrl+Shift+R 强制刷新）');
+        alert('错误：找不到道具名称输入框\n\n请刷新页面后重试（Ctrl+Shift+R 强制刷新）');
         console.error('找不到 .util-name 元素');
         return;
     }
@@ -1138,17 +1306,17 @@ async function rejectUtility(hash) {
                 });
                 loadStats();
             }, 300);
-            alert('✅ ' + result.message);
+            alert('' + result.message);
         } else {
-            alert('❌ ' + result.message);
+            alert('' + result.message);
         }
     } catch (error) {
-        alert('❌ 操作失败: ' + error.message);
+        alert('操作失败: ' + error.message);
     }
 }
 
 async function deleteUtilityPermanently(hash) {
-    if (!confirm('⚠️ 确定要永久删除这个道具吗？\n\n此操作将：\n- 永久删除道具数据\n- 删除所有截图文件\n- 无法恢复\n\n建议：如果只是暂时不需要，请使用"拒绝"按钮')) {
+    if (!confirm('确定要永久删除这个道具吗？\n\n此操作将：\n- 永久删除道具数据\n- 删除所有截图文件\n- 无法恢复\n\n建议：如果只是暂时不需要，请使用"拒绝"按钮')) {
         return;
     }
     
@@ -1188,12 +1356,12 @@ async function deleteUtilityPermanently(hash) {
                 });
                 loadStats();
             }, 300);
-            alert('✅ ' + result.message);
+            alert('' + result.message);
         } else {
-            alert('❌ ' + result.message);
+            alert('' + result.message);
         }
     } catch (error) {
-        alert('❌ 操作失败: ' + error.message);
+        alert('操作失败: ' + error.message);
     }
 }
 
@@ -1205,8 +1373,34 @@ async function deletePending(hash) {
 // ========== 导出发布 ==========
 
 async function loadExportStats() {
-    loadPendingExportUtilities();
-    loadExportedUtilities();
+    const countEl = document.getElementById('pending-export-count');
+    
+    if (!countEl) return;
+    
+    try {
+        const response = await fetch('/api/export/approved');
+        const data = await response.json();
+        
+        countEl.textContent = data.utilities ? data.utilities.length : 0;
+    } catch (error) {
+        console.error('加载导出统计失败:', error);
+    }
+}
+
+// 加载已导出道具统计
+async function loadExportedStats() {
+    const countEl = document.getElementById('exported-count');
+    
+    if (!countEl) return;
+    
+    try {
+        const response = await fetch('/api/export/exported');
+        const data = await response.json();
+        
+        countEl.textContent = data.utilities ? data.utilities.length : 0;
+    } catch (error) {
+        console.error('加载已导出统计失败:', error);
+    }
 }
 
 // 加载待导出道具（已批准但未导出）
@@ -1230,7 +1424,7 @@ async function loadPendingExportUtilities() {
         }
         
         listEl.innerHTML = `
-            <h3 style="margin-bottom: 15px;">📋 待导出道具列表</h3>
+            <h3 style="margin-bottom: 15px;">待导出道具列表</h3>
             <div class="approved-items">
                 ${data.utilities.map(u => {
                     const type = u.type || u.grenade_type || 'unknown';
@@ -1244,7 +1438,7 @@ async function loadPendingExportUtilities() {
                                 </span>
                             </div>
                             <button class="btn btn-delete" onclick="deleteApproved('${u.hash}')">
-                                🗑️ 删除
+                                删除
                             </button>
                         </div>
                     `;
@@ -1402,8 +1596,8 @@ function renderExportedUtilityCard(u) {
                 ` : ''}
                 
                 <div class="actions" style="margin-top: 15px;">
-                    <button class="btn" onclick="editExported('${u.hash}')">✏️ 编辑</button>
-                    <button class="btn-delete" onclick="unExportUtility('${u.hash}')">↩️ 撤销导出</button>
+                    <button class="btn" onclick="editExported('${u.hash}')">编辑</button>
+                    <button class="btn-delete" onclick="unExportUtility('${u.hash}')">撤销导出</button>
                 </div>
             </div>
         </div>
@@ -1425,14 +1619,14 @@ async function deleteApproved(hash) {
         const result = await response.json();
         
         if (result.success) {
-            alert('✅ ' + result.message);
+            alert('' + result.message);
             loadExportStats();
             loadStats();
         } else {
-            alert('❌ ' + result.message);
+            alert('' + result.message);
         }
     } catch (error) {
-        alert('❌ 操作失败: ' + error.message);
+        alert('操作失败: ' + error.message);
     }
 }
 
@@ -1452,14 +1646,14 @@ async function unExportUtility(hash) {
         const result = await response.json();
         
         if (result.success) {
-            alert('✅ ' + result.message);
+            alert('' + result.message);
             loadExportStats();
             loadStats();
         } else {
-            alert('❌ ' + result.message);
+            alert('' + result.message);
         }
     } catch (error) {
-        alert('❌ 操作失败: ' + error.message);
+        alert('操作失败: ' + error.message);
     }
 }
 
@@ -1473,7 +1667,7 @@ function editExported(hash) {
         .then(data => {
             const utility = data.utilities.find(u => u.hash === hash);
             if (!utility) {
-                alert('❌ 道具未找到');
+                alert('道具未找到');
                 return;
             }
             
@@ -1492,7 +1686,7 @@ function editExported(hash) {
         })
         .catch(error => {
             console.error('加载道具失败:', error);
-            alert('❌ 加载失败');
+            alert('加载失败');
         });
 }
 
@@ -1518,7 +1712,7 @@ async function saveEditedUtility(event) {
     };
     
     if (!updatedInfo.display_name) {
-        alert('❌ 请填写道具名称');
+        alert('请填写道具名称');
         return;
     }
     
@@ -1535,14 +1729,14 @@ async function saveEditedUtility(event) {
         const result = await response.json();
         
         if (result.success) {
-            alert('✅ ' + result.message);
+            alert('' + result.message);
             closeEditModal();
             loadExportedUtilities();
         } else {
-            alert('❌ ' + result.message);
+            alert('' + result.message);
         }
     } catch (error) {
-        alert('❌ 保存失败: ' + error.message);
+        alert('保存失败: ' + error.message);
     }
 }
 
@@ -1555,7 +1749,7 @@ async function exportData() {
     const resultEl = document.getElementById('export-result');
     
     btn.disabled = true;
-    btn.textContent = '⏳ 导出中...';
+    btn.textContent = '导出中...';
     resultEl.className = 'result-message';
     resultEl.textContent = '';
     
@@ -1571,7 +1765,7 @@ async function exportData() {
         resultEl.textContent = result.message;
         
         if (result.success) {
-            resultEl.innerHTML += '<br><br><strong>✅ 导出完成！</strong><br>下一步: 使用 Git 推送更新';
+            resultEl.innerHTML += '<br><br><strong>导出完成！</strong><br>下一步: 使用 Git 推送更新';
             loadExportStats();
         }
     } catch (error) {
@@ -1579,7 +1773,7 @@ async function exportData() {
         resultEl.textContent = '导出失败: ' + error.message;
     } finally {
         btn.disabled = false;
-        btn.textContent = '🚀 开始导出';
+        btn.textContent = '开始导出';
     }
 }
 
@@ -1592,7 +1786,7 @@ async function reExportData() {
     const resultEl = document.getElementById('re-export-result');
     
     btn.disabled = true;
-    btn.textContent = '⏳ 导出中...';
+    btn.textContent = '导出中...';
     resultEl.className = 'result-message';
     resultEl.textContent = '';
     
@@ -1608,7 +1802,7 @@ async function reExportData() {
         resultEl.textContent = result.message;
         
         if (result.success) {
-            resultEl.innerHTML += '<br><br><strong>✅ 导出完成！</strong><br>下一步: 使用 Git 推送更新';
+            resultEl.innerHTML += '<br><br><strong>导出完成！</strong><br>下一步: 使用 Git 推送更新';
             loadExportedUtilities();
         }
     } catch (error) {
@@ -1616,7 +1810,7 @@ async function reExportData() {
         resultEl.textContent = '导出失败: ' + error.message;
     } finally {
         btn.disabled = false;
-        btn.textContent = '🚀 重新导出';
+        btn.textContent = '重新导出';
     }
 }
 
@@ -1640,7 +1834,7 @@ function copyToClipboard(text, button) {
         
         // 更新按钮状态
         const originalText = button.textContent;
-        button.textContent = '✅ 已复制';
+        button.textContent = '已复制';
         button.style.background = '#00d4aa';
         
         // 2秒后恢复
@@ -1650,8 +1844,119 @@ function copyToClipboard(text, button) {
         }, 2000);
     } catch (err) {
         console.error('复制失败:', err);
-        alert('❌ 复制失败，请手动选择并复制');
+        alert('复制失败，请手动选择并复制');
     } finally {
         document.body.removeChild(textarea);
     }
+}
+
+
+// ========== 添加道具功能 ==========
+
+// 图片预览功能
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    const file = input.files[0];
+    
+    if (file && file.size > 5 * 1024 * 1024) {
+        showAddResult('图片大小不能超过 5MB', 'error');
+        input.value = '';
+        return;
+    }
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// 提交手动添加的道具
+async function submitManualUtility(event) {
+    event.preventDefault();
+    
+    const formData = new FormData();
+    
+    // 基本信息
+    formData.append('name', document.getElementById('add-name').value);
+    formData.append('map', document.getElementById('add-map').value);
+    formData.append('type', document.getElementById('add-type').value);
+    formData.append('team', document.getElementById('add-team').value);
+    formData.append('throw_type', document.getElementById('add-throw-type').value || '未知');
+    formData.append('source', document.getElementById('add-source').value || '手动添加');
+    formData.append('notes', document.getElementById('add-notes').value || '');
+    
+    // 坐标信息 - 投掷位置
+    const throwX = parseFloat(document.getElementById('add-throw-x').value);
+    const throwY = parseFloat(document.getElementById('add-throw-y').value);
+    const throwZ = parseFloat(document.getElementById('add-throw-z').value);
+    formData.append('throw_position', JSON.stringify({x: throwX, y: throwY, z: throwZ}));
+    
+    // 坐标信息 - 投掷角度
+    const pitch = parseFloat(document.getElementById('add-pitch').value);
+    const yaw = parseFloat(document.getElementById('add-yaw').value);
+    formData.append('throw_angles', JSON.stringify({pitch: pitch, yaw: yaw}));
+    
+    // 坐标信息 - 落点位置
+    const landX = parseFloat(document.getElementById('add-land-x').value);
+    const landY = parseFloat(document.getElementById('add-land-y').value);
+    const landZ = parseFloat(document.getElementById('add-land-z').value);
+    formData.append('land_position', JSON.stringify({x: landX, y: landY, z: landZ}));
+    
+    // 图片文件
+    const positionFile = document.getElementById('add-img-position').files[0];
+    const crosshairFile = document.getElementById('add-img-crosshair').files[0];
+    const landingFile = document.getElementById('add-img-landing').files[0];
+    
+    if (!positionFile || !crosshairFile || !landingFile) {
+        showAddResult('请上传所有三张截图', 'error');
+        return;
+    }
+    
+    formData.append('img_position', positionFile);
+    formData.append('img_crosshair', crosshairFile);
+    formData.append('img_landing', landingFile);
+    
+    try {
+        const response = await fetch('/api/add_manual_utility', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAddResult('道具添加成功！已自动批准，可直接导出', 'success');
+            resetAddForm();
+            // 刷新统计数据
+            loadStats();
+            loadOverviewStats();
+        } else {
+            showAddResult('添加失败：' + (result.error || '未知错误'), 'error');
+        }
+    } catch (error) {
+        console.error('添加道具错误:', error);
+        showAddResult('添加失败：网络错误', 'error');
+    }
+}
+
+// 重置添加表单
+function resetAddForm() {
+    document.getElementById('add-utility-form').reset();
+    document.getElementById('preview-position').innerHTML = '<span style="font-size: 48px; color: #667eea;">📷</span><p style="margin-top: 10px; color: #666;">站位图</p>';
+    document.getElementById('preview-crosshair').innerHTML = '<span style="font-size: 48px; color: #667eea;">📷</span><p style="margin-top: 10px; color: #666;">准星图</p>';
+    document.getElementById('preview-landing').innerHTML = '<span style="font-size: 48px; color: #667eea;">📷</span><p style="margin-top: 10px; color: #666;">落点图</p>';
+}
+
+// 显示添加结果消息
+function showAddResult(message, type) {
+    const resultDiv = document.getElementById('add-utility-result');
+    resultDiv.textContent = message;
+    resultDiv.className = `result-message ${type} show`;
+    
+    setTimeout(() => {
+        resultDiv.classList.remove('show');
+    }, 5000);
 }

@@ -2,6 +2,41 @@
   "map": "de_mirage",
   "utilities": [
     {
+      "id": "de_mirage_smoke_221f1977",
+      "type": "smoke",
+      "team": "T",
+      "name": "拱门内测烟（沙袋补）",
+      "description": "stand，飞行时间 3.9 秒",
+      "position": {
+        "x": 343.30230712890625,
+        "y": -621.6199340820312,
+        "z": -162.331787109375
+      },
+      "angles": {
+        "pitch": -42.801361083984375,
+        "yaw": -150.6713104248047
+      },
+      "land_position": {
+        "x": -736.8623657226562,
+        "y": -580.2597045898438,
+        "z": -269.1018371582031
+      },
+      "throw_type": "stand",
+      "flight_time": 3.92,
+      "distance": 1086.2,
+      "command": "setpos 343.30 -621.62 -162.33; setang -42.80 -150.67 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "抵住中路沙袋车轮投掷。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_221f1977_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_221f1977_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_221f1977_landing.jpg"
+      },
+      "thrower": "magixx",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
       "id": "de_mirage_smoke_754c0f16",
       "type": "smoke",
       "team": "T",
