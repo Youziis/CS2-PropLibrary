@@ -1597,7 +1597,7 @@ function renderExportedUtilityCard(u) {
                 
                 <div class="actions" style="margin-top: 15px;">
                     <button class="btn" onclick="editExported('${u.hash}')">编辑</button>
-                    <button class="btn-delete" onclick="unExportUtility('${u.hash}')">撤销导出</button>
+                    <button class="btn-delete" onclick="deleteExportedUtility('${u.hash}')">删除</button>
                 </div>
             </div>
         </div>
@@ -1630,14 +1630,14 @@ async function deleteApproved(hash) {
     }
 }
 
-// 撤销导出（将已导出道具移回已批准状态）
-async function unExportUtility(hash) {
-    if (!confirm('确定要撤销导出吗？\n\n道具将移回"待导出"状态，客户端需要重新部署才能生效。')) {
+// 删除已导出道具（永久删除）
+async function deleteExportedUtility(hash) {
+    if (!confirm('确定要永久删除此道具吗？\n\n此操作将：\n1. 从数据库中永久删除道具数据\n2. 删除所有截图文件\n3. 客户端需要重新导出和部署才能生效\n\n此操作不可撤销！')) {
         return;
     }
     
     try {
-        const response = await fetch('/api/unexport', {
+        const response = await fetch('/api/delete_exported', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ hash: hash })
@@ -1646,14 +1646,15 @@ async function unExportUtility(hash) {
         const result = await response.json();
         
         if (result.success) {
-            alert('' + result.message);
+            alert('道具已永久删除');
+            loadExportedUtilities();
             loadExportStats();
             loadStats();
         } else {
-            alert('' + result.message);
+            alert('删除失败：' + result.message);
         }
     } catch (error) {
-        alert('操作失败: ' + error.message);
+        alert('删除失败: ' + error.message);
     }
 }
 
@@ -1899,11 +1900,8 @@ async function submitManualUtility(event) {
     const yaw = parseFloat(document.getElementById('add-yaw').value);
     formData.append('throw_angles', JSON.stringify({pitch: pitch, yaw: yaw}));
     
-    // 坐标信息 - 落点位置
-    const landX = parseFloat(document.getElementById('add-land-x').value);
-    const landY = parseFloat(document.getElementById('add-land-y').value);
-    const landZ = parseFloat(document.getElementById('add-land-z').value);
-    formData.append('land_position', JSON.stringify({x: landX, y: landY, z: landZ}));
+    // 落点位置使用默认值（0, 0, 0），因为实际落点由游戏物理引擎决定
+    formData.append('land_position', JSON.stringify({x: 0, y: 0, z: 0}));
     
     // 图片文件
     const positionFile = document.getElementById('add-img-position').files[0];

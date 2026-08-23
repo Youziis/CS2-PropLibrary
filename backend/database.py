@@ -63,6 +63,28 @@ class Database:
             )
             
             # 创建道具表
+            # 字段说明：
+            # - id: 自增主键
+            # - hash: 唯一标识，基于投掷位置、角度、落点的MD5值（16位）
+            # - map: 地图名称（de_dust2, de_mirage等）
+            # - type: 道具类型（smoke/flashbang/hegrenade/incendiary）
+            # - team: 使用阵营（T/CT/Unknown）
+            # - thrower: 投掷者游戏名称
+            # - throw_position: 投掷位置JSON {"x": 0.0, "y": 0.0, "z": 0.0}
+            # - throw_angles: 投掷角度JSON {"pitch": 0.0, "yaw": 0.0}
+            # - land_position: 落点位置JSON {"x": 0.0, "y": 0.0, "z": 0.0}
+            # - throw_type: 投掷方式（跳投、站投、蹲投、走投等）
+            # - flight_time: 飞行时间（秒）
+            # - distance: 投掷距离
+            # - source_demo: 来源Demo文件名或"手动添加"
+            # - parse_time: 解析/添加时间
+            # - status: 状态（parsed/selected/screenshotted/approved/exported/rejected）
+            # - screenshot_filename_base: 截图文件名前缀（格式：map_hash）
+            # - display_name: 显示名称（用户可编辑）
+            # - notes: 备注说明
+            # - approved_time: 批准时间
+            # - exported_time: 导出时间
+            # - raw_data: 原始完整数据JSON
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS utilities (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,

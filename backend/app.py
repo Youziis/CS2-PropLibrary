@@ -283,6 +283,73 @@ def unexport_utility():
         return jsonify({'success': False, 'message': '道具未找到'}), 404
 
 
+@app.route('/api/delete_exported', methods=['POST'])
+def delete_exported_utility():
+    """删除已导出道具（永久删除，包括截图文件和数据库记录）"""
+    try:
+        data = request.json
+        hash_val = data.get('hash')
+        
+        print(f"[删除已导出道具] 开始处理: {hash_val}")
+        
+        # 获取道具信息以找到截图文件
+        utility = db.get_utility_by_hash(hash_val)
+        
+        if not utility:
+            print(f"[删除已导出道具] 错误: 道具未找到")
+            return jsonify({'success': False, 'message': '道具未找到'}), 404
+        
+        print(f"[删除已导出道具] 找到道具，当前状态: {utility.get('status')}")
+        
+        # 删除截图文件
+        screenshot_base = utility.get('screenshot_filename_base')
+        deleted_count = 0
+        
+        if screenshot_base:
+            print(f"[删除已导出道具] 截图文件前缀: {screenshot_base}")
+            screenshots_dir = Path(__file__).parent.parent / 'output' / 'screenshots'
+            screenshot_files = [
+                f"{screenshot_base}_position.jpg",
+                f"{screenshot_base}_crosshair.jpg",
+                f"{screenshot_base}_landing.jpg"
+            ]
+            
+            for filename in screenshot_files:
+                filepath = screenshots_dir / filename
+                if filepath.exists():
+                    try:
+                        filepath.unlink()
+                        deleted_count += 1
+                        print(f"[删除已导出道具] 已删除: {filename}")
+                    except Exception as e:
+                        print(f"[删除已导出道具] 删除失败 {filename}: {e}")
+                else:
+                    print(f"[删除已导出道具] 文件不存在: {filename}")
+            
+            print(f"[删除已导出道具] 共删除 {deleted_count} 个截图文件")
+        else:
+            print(f"[删除已导出道具] 警告: 没有截图文件前缀")
+        
+        # 从数据库中永久删除
+        success = db.delete_utility(hash_val)
+        
+        if success:
+            print(f"[删除已导出道具] 数据库删除成功")
+            return jsonify({
+                'success': True, 
+                'message': f'已永久删除该道具（含 {deleted_count} 个截图文件）'
+            })
+        else:
+            print(f"[删除已导出道具] 数据库删除失败")
+            return jsonify({'success': False, 'message': '删除失败'}), 500
+            
+    except Exception as e:
+        print(f"[删除已导出道具] 异常: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': f'服务器错误: {str(e)}'}), 500
+
+
 @app.route('/api/edit_exported', methods=['POST'])
 def edit_exported():
     """编辑已导出道具（兼容旧API）"""
