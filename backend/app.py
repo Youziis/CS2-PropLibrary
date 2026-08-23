@@ -922,12 +922,19 @@ def internal_error(e):
 
 
 if __name__ == '__main__':
+    import logging
+    
+    # 禁用 Flask 的访问日志，只保留错误日志
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
+    
     print("=" * 70)
-    print("🎮 CS2 道具管理后台")
+    print("🍊 CS2 道具管理后台")
     print("=" * 70)
     print(f"\n🌐 服务器启动成功！")
     print(f"📍 管理后台: http://localhost:5000")
-    print(f"⏹️  按 Ctrl+C 停止服务器\n")
+    print(f"⏹️  按 Ctrl+C 停止服务器")
+    print(f"ℹ️  HTTP 访问日志已关闭，只显示错误和操作日志\n")
     print("=" * 70)
     
     app.run(host='0.0.0.0', port=5000, debug=True)
