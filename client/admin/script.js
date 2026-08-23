@@ -1886,7 +1886,7 @@ async function submitManualUtility(event) {
     formData.append('type', document.getElementById('add-type').value);
     formData.append('team', document.getElementById('add-team').value);
     formData.append('throw_type', document.getElementById('add-throw-type').value || '未知');
-    formData.append('source', document.getElementById('add-source').value || '手动添加');
+    formData.append('source', '手动添加');  // 固定值
     formData.append('notes', document.getElementById('add-notes').value || '');
     
     // 坐标信息 - 投掷位置
