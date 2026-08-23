@@ -1926,7 +1926,7 @@ async function submitManualUtility(event) {
         const result = await response.json();
         
         if (result.success) {
-            showAddResult('道具添加成功！已自动批准，可直接导出', 'success');
+            showAddResult('道具添加成功！已自动导出到前端，无需手动导出', 'success');
             resetAddForm();
             // 刷新统计数据
             loadStats();

@@ -205,20 +205,28 @@ def reject_utility_legacy():
 
 @app.route('/api/delete_pending', methods=['POST'])
 def delete_pending_legacy():
-    """删除待审核道具（永久删除，包括截图文件）"""
+    """删除待审核道具（永久删除，包括截图文件、public文件）"""
     try:
         data = request.json
         hash_val = data.get('hash')
+        
+        print(f"[删除待审核道具] 开始处理: {hash_val}")
         
         # 获取道具信息以找到截图文件
         utility = db.get_utility_by_hash(hash_val)
         
         if not utility:
+            print(f"[删除待审核道具] 错误: 道具未找到")
             return jsonify({'success': False, 'message': '道具未找到'}), 404
         
-        # 删除截图文件
+        print(f"[删除待审核道具] 找到道具，当前状态: {utility.get('status')}")
+        
+        # 1. 删除 output/screenshots 中的截图文件
         screenshot_base = utility.get('screenshot_filename_base')
+        deleted_count = 0
+        
         if screenshot_base:
+            print(f"[删除待审核道具] 截图文件前缀: {screenshot_base}")
             screenshots_dir = Path(__file__).parent.parent / 'output' / 'screenshots'
             screenshot_files = [
                 f"{screenshot_base}_position.jpg",
@@ -226,28 +234,128 @@ def delete_pending_legacy():
                 f"{screenshot_base}_landing.jpg"
             ]
             
-            deleted_count = 0
             for filename in screenshot_files:
                 filepath = screenshots_dir / filename
                 if filepath.exists():
                     try:
                         filepath.unlink()
                         deleted_count += 1
+                        print(f"[删除待审核道具] 已删除output截图: {filename}")
                     except Exception as e:
-                        print(f"删除截图失败 {filename}: {e}")
-            
-            print(f"已删除 {deleted_count} 个截图文件")
+                        print(f"[删除待审核道具] 删除失败 {filename}: {e}")
         
-        # 从数据库中永久删除
+        # 2. 删除 public/images 中的导出图片（如果已导出）
+        map_name = utility.get('map')
+        util_type = utility.get('type')
+        
+        if map_name and util_type:
+            # 生成导出的文件名格式：{map}_{type}_{hash[:8]}_*.jpg
+            util_hash = hash_val[:8]
+            utility_id = f"{map_name}_{util_type}_{util_hash}"
+            
+            print(f"[删除待审核道具] 道具ID: {utility_id}")
+            
+            # 删除 public/images/{map}/{type}/ 目录中的文件
+            public_images_dir = Path(__file__).parent.parent / 'public' / 'images' / map_name / util_type
+            public_screenshot_files = [
+                f"{utility_id}_position.jpg",
+                f"{utility_id}_crosshair.jpg",
+                f"{utility_id}_landing.jpg"
+            ]
+            
+            for filename in public_screenshot_files:
+                filepath = public_images_dir / filename
+                if filepath.exists():
+                    try:
+                        filepath.unlink()
+                        deleted_count += 1
+                        print(f"[删除待审核道具] 已删除public图片: {filename}")
+                    except Exception as e:
+                        print(f"[删除待审核道具] 删除public图片失败 {filename}: {e}")
+        
+        # 3. 从 public/data/{map}.json 中删除道具数据（如果已导出）
+        if map_name:
+            public_data_dir = Path(__file__).parent.parent / 'public' / 'data'
+            map_data_file = public_data_dir / f"{map_name}.json"
+            
+            if map_data_file.exists():
+                try:
+                    # 读取现有数据
+                    with open(map_data_file, 'r', encoding='utf-8') as f:
+                        data_content = json.load(f)
+                    
+                    utilities_list = data_content.get('utilities', [])
+                    
+                    # 过滤掉要删除的道具（通过hash匹配）
+                    original_count = len(utilities_list)
+                    utilities_list = [u for u in utilities_list if u.get('hash') != hash_val]
+                    removed_count = original_count - len(utilities_list)
+                    
+                    if removed_count > 0:
+                        # 更新数据
+                        data_content['utilities'] = utilities_list
+                        
+                        # 保存更新后的JSON文件
+                        with open(map_data_file, 'w', encoding='utf-8') as f:
+                            json.dump(data_content, f, ensure_ascii=False, indent=2)
+                        
+                        print(f"[删除待审核道具] 从{map_name}.json中删除了{removed_count}条数据")
+                    else:
+                        print(f"[删除待审核道具] {map_name}.json中未找到该道具数据")
+                        
+                except Exception as e:
+                    print(f"[删除待审核道具] 更新public/data失败: {e}")
+                    import traceback
+                    traceback.print_exc()
+        
+        # 4. 更新索引文件 utilities.json
+        try:
+            index_file = Path(__file__).parent.parent / 'public' / 'data' / 'utilities.json'
+            if index_file.exists() and map_name:
+                with open(index_file, 'r', encoding='utf-8') as f:
+                    index_data = json.load(f)
+                
+                # 更新对应地图的道具数量
+                for map_info in index_data.get('maps', []):
+                    if map_info['name'] == map_name:
+                        # 重新读取地图数据文件获取最新数量
+                        map_data_file = Path(__file__).parent.parent / 'public' / 'data' / f"{map_name}.json"
+                        if map_data_file.exists():
+                            with open(map_data_file, 'r', encoding='utf-8') as f:
+                                map_data = json.load(f)
+                                map_info['utility_count'] = len(map_data.get('utilities', []))
+                        break
+                
+                # 重新计算总数
+                total_count = sum(m.get('utility_count', 0) for m in index_data.get('maps', []))
+                if 'statistics' not in index_data:
+                    index_data['statistics'] = {}
+                index_data['statistics']['total_utilities'] = total_count
+                index_data['last_updated'] = datetime.now().isoformat()
+                
+                # 保存更新后的索引
+                with open(index_file, 'w', encoding='utf-8') as f:
+                    json.dump(index_data, f, ensure_ascii=False, indent=2)
+                
+                print(f"[删除待审核道具] 已更新索引文件")
+        except Exception as e:
+            print(f"[删除待审核道具] 更新索引文件失败: {e}")
+        
+        # 5. 从数据库中永久删除
         success = db.delete_utility(hash_val)
         
         if success:
-            return jsonify({'success': True, 'message': '已永久删除该道具'})
+            print(f"[删除待审核道具] 数据库删除成功")
+            return jsonify({
+                'success': True, 
+                'message': f'已永久删除该道具（含 {deleted_count} 个文件）'
+            })
         else:
+            print(f"[删除待审核道具] 数据库删除失败")
             return jsonify({'success': False, 'message': '删除失败'}), 500
             
     except Exception as e:
-        print(f"删除道具异常: {e}")
+        print(f"[删除待审核道具] 异常: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'message': f'服务器错误: {str(e)}'}), 500
@@ -326,12 +434,21 @@ def delete_exported_utility():
         
         # 2. 删除 public/images 中的导出图片
         map_name = utility.get('map')
-        if map_name and screenshot_base:
-            public_images_dir = Path(__file__).parent.parent / 'public' / 'images' / map_name
+        util_type = utility.get('type')
+        
+        if map_name and util_type:
+            # 生成导出的文件名格式：{map}_{type}_{hash[:8]}_*.jpg
+            util_hash = hash_val[:8]
+            utility_id = f"{map_name}_{util_type}_{util_hash}"
+            
+            print(f"[删除已导出道具] 道具ID: {utility_id}")
+            
+            # 删除 public/images/{map}/{type}/ 目录中的文件
+            public_images_dir = Path(__file__).parent.parent / 'public' / 'images' / map_name / util_type
             public_screenshot_files = [
-                f"{screenshot_base}_position.jpg",
-                f"{screenshot_base}_crosshair.jpg",
-                f"{screenshot_base}_landing.jpg"
+                f"{utility_id}_position.jpg",
+                f"{utility_id}_crosshair.jpg",
+                f"{utility_id}_landing.jpg"
             ]
             
             for filename in public_screenshot_files:
@@ -343,50 +460,80 @@ def delete_exported_utility():
                         print(f"[删除已导出道具] 已删除public图片: {filename}")
                     except Exception as e:
                         print(f"[删除已导出道具] 删除public图片失败 {filename}: {e}")
+                else:
+                    print(f"[删除已导出道具] 图片不存在: {filepath}")
         
-        # 3. 从 public/data/{map}.js 中删除道具数据
+        # 3. 从 public/data/{map}.json 中删除道具数据
         if map_name:
             public_data_dir = Path(__file__).parent.parent / 'public' / 'data'
-            map_data_file = public_data_dir / f"{map_name}.js"
+            map_data_file = public_data_dir / f"{map_name}.json"
             
             if map_data_file.exists():
                 try:
                     # 读取现有数据
                     with open(map_data_file, 'r', encoding='utf-8') as f:
-                        content = f.read()
+                        data_content = json.load(f)
                     
-                    # 解析JavaScript数据
-                    import re
-                    import json
-                    match = re.search(r'const utilities = (\[[\s\S]*?\]);', content)
-                    if match:
-                        utilities_json = match.group(1)
-                        utilities_list = json.loads(utilities_json)
+                    utilities_list = data_content.get('utilities', [])
+                    
+                    # 过滤掉要删除的道具（通过hash匹配）
+                    original_count = len(utilities_list)
+                    utilities_list = [u for u in utilities_list if u.get('hash') != hash_val]
+                    removed_count = original_count - len(utilities_list)
+                    
+                    if removed_count > 0:
+                        # 更新数据
+                        data_content['utilities'] = utilities_list
                         
-                        # 过滤掉要删除的道具
-                        original_count = len(utilities_list)
-                        utilities_list = [u for u in utilities_list if u.get('hash') != hash_val]
-                        removed_count = original_count - len(utilities_list)
+                        # 保存更新后的JSON文件
+                        with open(map_data_file, 'w', encoding='utf-8') as f:
+                            json.dump(data_content, f, ensure_ascii=False, indent=2)
                         
-                        if removed_count > 0:
-                            # 重新生成JavaScript文件
-                            new_content = f"const utilities = {json.dumps(utilities_list, ensure_ascii=False, indent=2)};\n"
-                            
-                            with open(map_data_file, 'w', encoding='utf-8') as f:
-                                f.write(new_content)
-                            
-                            print(f"[删除已导出道具] 从{map_name}.js中删除了{removed_count}条数据")
-                        else:
-                            print(f"[删除已导出道具] {map_name}.js中未找到该道具数据")
+                        print(f"[删除已导出道具] 从{map_name}.json中删除了{removed_count}条数据")
                     else:
-                        print(f"[删除已导出道具] 无法解析{map_name}.js")
+                        print(f"[删除已导出道具] {map_name}.json中未找到该道具数据")
                         
                 except Exception as e:
                     print(f"[删除已导出道具] 更新public/data失败: {e}")
                     import traceback
                     traceback.print_exc()
+            else:
+                print(f"[删除已导出道具] 数据文件不存在: {map_data_file}")
         
-        # 4. 从数据库中永久删除
+        # 4. 更新索引文件 utilities.json
+        try:
+            index_file = Path(__file__).parent.parent / 'public' / 'data' / 'utilities.json'
+            if index_file.exists() and map_name:
+                with open(index_file, 'r', encoding='utf-8') as f:
+                    index_data = json.load(f)
+                
+                # 更新对应地图的道具数量
+                for map_info in index_data.get('maps', []):
+                    if map_info['name'] == map_name:
+                        # 重新读取地图数据文件获取最新数量
+                        map_data_file = Path(__file__).parent.parent / 'public' / 'data' / f"{map_name}.json"
+                        if map_data_file.exists():
+                            with open(map_data_file, 'r', encoding='utf-8') as f:
+                                map_data = json.load(f)
+                                map_info['utility_count'] = len(map_data.get('utilities', []))
+                        break
+                
+                # 重新计算总数
+                total_count = sum(m.get('utility_count', 0) for m in index_data.get('maps', []))
+                if 'statistics' not in index_data:
+                    index_data['statistics'] = {}
+                index_data['statistics']['total_utilities'] = total_count
+                index_data['last_updated'] = datetime.now().isoformat()
+                
+                # 保存更新后的索引
+                with open(index_file, 'w', encoding='utf-8') as f:
+                    json.dump(index_data, f, ensure_ascii=False, indent=2)
+                
+                print(f"[删除已导出道具] 已更新索引文件")
+        except Exception as e:
+            print(f"[删除已导出道具] 更新索引文件失败: {e}")
+        
+        # 5. 从数据库中永久删除
         success = db.delete_utility(hash_val)
         
         if success:
@@ -433,9 +580,180 @@ def edit_exported():
         return jsonify({'success': False, 'message': '道具未找到'}), 404
 
 
+def export_single_utility(utility, db_instance):
+    """
+    导出单个道具到 public 目录
+    返回: (success, message)
+    """
+    try:
+        from PIL import Image
+        import json
+        
+        root_dir = Path(__file__).parent.parent
+        public_dir = root_dir / 'public'
+        screenshots_dir = root_dir / 'output' / 'screenshots'
+        
+        map_name = utility['map']
+        util_type = utility['type']
+        util_hash = utility['hash'][:8]
+        utility_id = f"{map_name}_{util_type}_{util_hash}"
+        
+        # 1. 处理并复制截图到 public/images
+        screenshot_base = utility.get('screenshot_filename_base') or f"{map_name}_{utility['hash']}"
+        
+        for shot_type in ['position', 'crosshair', 'landing']:
+            src_file = screenshots_dir / f"{screenshot_base}_{shot_type}.jpg"
+            
+            if not src_file.exists():
+                print(f"[警告] 截图文件不存在: {src_file}")
+                continue
+            
+            dest_dir = public_dir / 'images' / map_name / util_type
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            dest_file = dest_dir / f"{utility_id}_{shot_type}.jpg"
+            
+            # 处理图片（裁剪准星图，压缩其他图）
+            try:
+                img = Image.open(src_file)
+                
+                if shot_type == 'crosshair':
+                    # 准星图：裁剪中心区域
+                    width, height = img.size
+                    crop_width = int(width * 0.4)
+                    crop_height = int(height * 0.5)
+                    left = (width - crop_width) // 2
+                    top = (height - crop_height) // 2
+                    right = left + crop_width
+                    bottom = top + crop_height
+                    img = img.crop((left, top, right, bottom))
+                    img.save(dest_file, 'JPEG', quality=85, optimize=True)
+                else:
+                    # 站位图和落点图：压缩
+                    if img.width > 1200 or img.height > 900:
+                        img.thumbnail((1200, 900), Image.Resampling.LANCZOS)
+                    img.save(dest_file, 'JPEG', quality=75, optimize=True)
+                
+                print(f"[导出] 已处理图片: {dest_file}")
+                
+            except Exception as e:
+                print(f"[错误] 处理图片失败 ({shot_type}): {e}")
+                return False, f"处理图片失败: {str(e)}"
+        
+        # 2. 生成道具数据
+        utility_data = {
+            'id': utility_id,
+            'type': util_type,
+            'team': utility.get('team', 'Unknown'),
+            'name': utility.get('display_name', f'{util_type}_{util_hash}'),
+            'description': f"{utility.get('throw_type', '投掷')}，飞行时间 {utility.get('flight_time', 0):.1f} 秒",
+            'position': utility.get('throw_position', {}),
+            'angles': utility.get('throw_angles', {}),
+            'land_position': utility.get('land_position', {}),
+            'throw_type': utility.get('throw_type', 'unknown'),
+            'flight_time': round(utility.get('flight_time', 0), 2),
+            'distance': round(utility.get('distance', 0), 1),
+            'command': f"setpos {utility['throw_position']['x']:.2f} {utility['throw_position']['y']:.2f} {utility['throw_position']['z']:.2f}; setang {utility['throw_angles']['pitch']:.2f} {utility['throw_angles']['yaw']:.2f} 0",
+            'quality': 3,
+            'tags': [],
+            'notes': utility.get('notes', ''),
+            'screenshots': {
+                'position': f"images/{map_name}/{util_type}/{utility_id}_position.jpg",
+                'crosshair': f"images/{map_name}/{util_type}/{utility_id}_crosshair.jpg",
+                'landing': f"images/{map_name}/{util_type}/{utility_id}_landing.jpg"
+            },
+            'thrower': utility.get('thrower'),
+            'demo_source': utility.get('source_demo'),
+            'hash': utility['hash']
+        }
+        
+        # 3. 更新地图数据文件
+        map_data_file = public_dir / 'data' / f"{map_name}.json"
+        map_data_file.parent.mkdir(parents=True, exist_ok=True)
+        
+        # 读取已有数据
+        existing_utilities = []
+        if map_data_file.exists():
+            try:
+                with open(map_data_file, 'r', encoding='utf-8') as f:
+                    existing_data = json.load(f)
+                    existing_utilities = existing_data.get('utilities', [])
+            except Exception as e:
+                print(f"[警告] 读取已有地图数据失败: {e}")
+        
+        # 移除旧的同ID道具（如果存在）
+        existing_utilities = [u for u in existing_utilities if u.get('id') != utility_id]
+        
+        # 添加新道具
+        existing_utilities.append(utility_data)
+        
+        # 按ID排序
+        existing_utilities.sort(key=lambda u: u['id'])
+        
+        # 保存更新后的数据
+        with open(map_data_file, 'w', encoding='utf-8') as f:
+            json.dump({
+                'map': map_name,
+                'utilities': existing_utilities
+            }, f, ensure_ascii=False, indent=2)
+        
+        print(f"[导出] 已更新地图数据: {map_data_file}")
+        
+        # 4. 更新索引文件
+        index_file = public_dir / 'data' / 'utilities.json'
+        existing_maps = {}
+        
+        if index_file.exists():
+            try:
+                with open(index_file, 'r', encoding='utf-8') as f:
+                    existing_data = json.load(f)
+                    for map_info in existing_data.get('maps', []):
+                        existing_maps[map_info['name']] = map_info
+            except:
+                pass
+        
+        # 更新当前地图信息
+        existing_maps[map_name] = {
+            'name': map_name,
+            'display_name': map_name.replace('de_', '').title(),
+            'utility_count': len(existing_utilities),
+            'data_file': f"data/{map_name}.json"
+        }
+        
+        all_maps = sorted(existing_maps.values(), key=lambda x: x['name'])
+        total_in_index = sum(m['utility_count'] for m in all_maps)
+        
+        with open(index_file, 'w', encoding='utf-8') as f:
+            json.dump({
+                'version': '1.0.0',
+                'last_updated': datetime.now().isoformat(),
+                'maps': all_maps,
+                'statistics': {
+                    'total_utilities': total_in_index,
+                    'by_type': {}
+                }
+            }, f, ensure_ascii=False, indent=2)
+        
+        print(f"[导出] 已更新索引文件")
+        
+        # 5. 更新数据库状态为 exported
+        db_instance.update_status(
+            utility['hash'],
+            'exported',
+            exported_time=datetime.now().isoformat()
+        )
+        
+        return True, "导出成功"
+        
+    except Exception as e:
+        print(f"[错误] 导出单个道具失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return False, f"导出失败: {str(e)}"
+
+
 @app.route('/api/add_manual_utility', methods=['POST'])
 def add_manual_utility():
-    """手动添加道具（用户上传）"""
+    """手动添加道具（用户上传）- 直接导出到前端"""
     try:
         import hashlib
         from werkzeug.utils import secure_filename
@@ -504,7 +822,7 @@ def add_manual_utility():
         print(f"[手动添加道具] Hash生成字符串: {hash_string}")
         print(f"[手动添加道具] 生成的Hash: {hash_val}")
         
-        # 保存图片文件
+        # 保存图片文件到 output/screenshots
         screenshots_dir = Path(__file__).parent.parent / 'output' / 'screenshots'
         screenshots_dir.mkdir(parents=True, exist_ok=True)
         
@@ -515,11 +833,12 @@ def add_manual_utility():
             img_position.save(screenshots_dir / f"{screenshot_base}_position.jpg")
             img_crosshair.save(screenshots_dir / f"{screenshot_base}_crosshair.jpg")
             img_landing.save(screenshots_dir / f"{screenshot_base}_landing.jpg")
+            print(f"[手动添加道具] 已保存截图到 output/screenshots")
         except Exception as e:
-            print(f"保存图片失败: {e}")
+            print(f"[手动添加道具] 保存图片失败: {e}")
             return jsonify({'success': False, 'error': f'保存图片失败: {str(e)}'}), 500
         
-        # 插入数据库
+        # 插入数据库（初始状态为 approved，稍后会更新为 exported）
         timestamp = datetime.now().isoformat()
         utility_data = {
             'hash': hash_val,
@@ -534,21 +853,14 @@ def add_manual_utility():
             'notes': notes,
             'demo_source': source,
             'screenshot_filename_base': screenshot_base,
-            'status': 'approved',  # 手动添加直接批准，无需审核
+            'status': 'approved',  # 临时状态，导出后会变为 exported
             'created_time': timestamp,
-            'approved_time': timestamp  # 记录批准时间
+            'approved_time': timestamp
         }
         
         success = db.insert_utility(utility_data)
         
-        if success:
-            print(f"[手动添加道具] 成功添加: {name} ({hash_val})")
-            return jsonify({
-                'success': True, 
-                'message': '道具添加成功',
-                'hash': hash_val
-            })
-        else:
+        if not success:
             # 如果数据库插入失败（可能是hash冲突），删除已保存的图片
             for suffix in ['position', 'crosshair', 'landing']:
                 filepath = screenshots_dir / f"{screenshot_base}_{suffix}.jpg"
@@ -556,6 +868,32 @@ def add_manual_utility():
                     filepath.unlink()
             
             return jsonify({'success': False, 'error': '该道具已存在（相同坐标和角度）'}), 400
+        
+        print(f"[手动添加道具] 成功添加到数据库: {name} ({hash_val})")
+        
+        # 立即导出到 public 目录
+        utility = db.get_utility_by_hash(hash_val)
+        if utility:
+            export_success, export_message = export_single_utility(utility, db)
+            
+            if export_success:
+                print(f"[手动添加道具] 成功导出到前端")
+                return jsonify({
+                    'success': True, 
+                    'message': '道具添加成功并已导出到前端',
+                    'hash': hash_val
+                })
+            else:
+                print(f"[手动添加道具] 导出失败: {export_message}")
+                return jsonify({
+                    'success': False, 
+                    'error': f'道具已添加但导出失败: {export_message}'
+                }), 500
+        else:
+            return jsonify({
+                'success': False, 
+                'error': '道具添加成功但无法读取数据'
+            }), 500
             
     except Exception as e:
         print(f"[手动添加道具] 异常: {e}")
