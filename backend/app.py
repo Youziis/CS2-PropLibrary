@@ -285,7 +285,7 @@ def unexport_utility():
 
 @app.route('/api/delete_exported', methods=['POST'])
 def delete_exported_utility():
-    """删除已导出道具（永久删除，包括截图文件和数据库记录）"""
+    """删除已导出道具（永久删除，包括截图文件、数据库记录和已导出的public文件）"""
     try:
         data = request.json
         hash_val = data.get('hash')
@@ -301,7 +301,7 @@ def delete_exported_utility():
         
         print(f"[删除已导出道具] 找到道具，当前状态: {utility.get('status')}")
         
-        # 删除截图文件
+        # 1. 删除 output/screenshots 中的截图文件
         screenshot_base = utility.get('screenshot_filename_base')
         deleted_count = 0
         
@@ -320,24 +320,80 @@ def delete_exported_utility():
                     try:
                         filepath.unlink()
                         deleted_count += 1
-                        print(f"[删除已导出道具] 已删除: {filename}")
+                        print(f"[删除已导出道具] 已删除output截图: {filename}")
                     except Exception as e:
                         print(f"[删除已导出道具] 删除失败 {filename}: {e}")
-                else:
-                    print(f"[删除已导出道具] 文件不存在: {filename}")
-            
-            print(f"[删除已导出道具] 共删除 {deleted_count} 个截图文件")
-        else:
-            print(f"[删除已导出道具] 警告: 没有截图文件前缀")
         
-        # 从数据库中永久删除
+        # 2. 删除 public/images 中的导出图片
+        map_name = utility.get('map')
+        if map_name and screenshot_base:
+            public_images_dir = Path(__file__).parent.parent / 'public' / 'images' / map_name
+            public_screenshot_files = [
+                f"{screenshot_base}_position.jpg",
+                f"{screenshot_base}_crosshair.jpg",
+                f"{screenshot_base}_landing.jpg"
+            ]
+            
+            for filename in public_screenshot_files:
+                filepath = public_images_dir / filename
+                if filepath.exists():
+                    try:
+                        filepath.unlink()
+                        deleted_count += 1
+                        print(f"[删除已导出道具] 已删除public图片: {filename}")
+                    except Exception as e:
+                        print(f"[删除已导出道具] 删除public图片失败 {filename}: {e}")
+        
+        # 3. 从 public/data/{map}.js 中删除道具数据
+        if map_name:
+            public_data_dir = Path(__file__).parent.parent / 'public' / 'data'
+            map_data_file = public_data_dir / f"{map_name}.js"
+            
+            if map_data_file.exists():
+                try:
+                    # 读取现有数据
+                    with open(map_data_file, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    
+                    # 解析JavaScript数据
+                    import re
+                    import json
+                    match = re.search(r'const utilities = (\[[\s\S]*?\]);', content)
+                    if match:
+                        utilities_json = match.group(1)
+                        utilities_list = json.loads(utilities_json)
+                        
+                        # 过滤掉要删除的道具
+                        original_count = len(utilities_list)
+                        utilities_list = [u for u in utilities_list if u.get('hash') != hash_val]
+                        removed_count = original_count - len(utilities_list)
+                        
+                        if removed_count > 0:
+                            # 重新生成JavaScript文件
+                            new_content = f"const utilities = {json.dumps(utilities_list, ensure_ascii=False, indent=2)};\n"
+                            
+                            with open(map_data_file, 'w', encoding='utf-8') as f:
+                                f.write(new_content)
+                            
+                            print(f"[删除已导出道具] 从{map_name}.js中删除了{removed_count}条数据")
+                        else:
+                            print(f"[删除已导出道具] {map_name}.js中未找到该道具数据")
+                    else:
+                        print(f"[删除已导出道具] 无法解析{map_name}.js")
+                        
+                except Exception as e:
+                    print(f"[删除已导出道具] 更新public/data失败: {e}")
+                    import traceback
+                    traceback.print_exc()
+        
+        # 4. 从数据库中永久删除
         success = db.delete_utility(hash_val)
         
         if success:
             print(f"[删除已导出道具] 数据库删除成功")
             return jsonify({
                 'success': True, 
-                'message': f'已永久删除该道具（含 {deleted_count} 个截图文件）'
+                'message': f'已永久删除该道具（含 {deleted_count} 个文件）'
             })
         else:
             print(f"[删除已导出道具] 数据库删除失败")

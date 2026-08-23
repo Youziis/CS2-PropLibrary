@@ -1,40 +1,6 @@
 {
   "map": "de_nuke",
   "utilities": [
-    {
-      "id": "de_nuke_smoke_eb969c83",
-      "type": "smoke",
-      "team": "T",
-      "name": "1",
-      "description": "1，飞行时间 0.0 秒",
-      "position": {
-        "x": 1,
-        "y": 1,
-        "z": 1
-      },
-      "angles": {
-        "pitch": 1,
-        "yaw": 1
-      },
-      "land_position": {
-        "x": 0,
-        "y": 0,
-        "z": 0
-      },
-      "throw_type": "1",
-      "flight_time": 0,
-      "distance": 0,
-      "command": "setpos 1.00 1.00 1.00; setang 1.00 1.00 0",
-      "quality": 3,
-      "tags": [],
-      "notes": "111",
-      "screenshots": {
-        "position": "images/de_nuke/smoke/de_nuke_smoke_eb969c83_position.jpg",
-        "crosshair": "images/de_nuke/smoke/de_nuke_smoke_eb969c83_crosshair.jpg",
-        "landing": "images/de_nuke/smoke/de_nuke_smoke_eb969c83_landing.jpg"
-      },
-      "thrower": null,
-      "demo_source": null
-    }
+    
   ]
 }
