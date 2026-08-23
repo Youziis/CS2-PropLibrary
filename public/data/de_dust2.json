@@ -2,41 +2,6 @@
   "map": "de_dust2",
   "utilities": [
     {
-      "id": "de_dust2_flashbang_ee9c4e72",
-      "type": "flashbang",
-      "team": "T",
-      "name": "1",
-      "description": "1，飞行时间 0.0 秒",
-      "position": {
-        "x": 1,
-        "y": 1,
-        "z": 1
-      },
-      "angles": {
-        "pitch": 1,
-        "yaw": 1
-      },
-      "land_position": {
-        "x": 1,
-        "y": 1,
-        "z": 1
-      },
-      "throw_type": "1",
-      "flight_time": 0,
-      "distance": 0,
-      "command": "setpos 1.00 1.00 1.00; setang 1.00 1.00 0",
-      "quality": 3,
-      "tags": [],
-      "notes": "1",
-      "screenshots": {
-        "position": "images/de_dust2/flashbang/de_dust2_flashbang_ee9c4e72_position.jpg",
-        "crosshair": "images/de_dust2/flashbang/de_dust2_flashbang_ee9c4e72_crosshair.jpg",
-        "landing": "images/de_dust2/flashbang/de_dust2_flashbang_ee9c4e72_landing.jpg"
-      },
-      "thrower": null,
-      "demo_source": null
-    },
-    {
       "id": "de_dust2_smoke_13ebe9c4",
       "type": "smoke",
       "team": "T",
