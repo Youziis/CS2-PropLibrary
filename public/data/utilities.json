@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "last_updated": "2026-08-24T16:10:46.896609",
+  "last_updated": "2026-08-24T16:35:45.897571",
   "maps": [
     {
       "name": "de_anubis",
@@ -11,7 +11,7 @@
     {
       "name": "de_dust2",
       "display_name": "Dust2",
-      "utility_count": 15,
+      "utility_count": 14,
       "data_file": "data/de_dust2.json"
     },
     {
@@ -28,7 +28,7 @@
     }
   ],
   "statistics": {
-    "total_utilities": 20,
+    "total_utilities": 19,
     "by_type": {}
   }
 }

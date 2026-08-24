@@ -1825,18 +1825,28 @@ async function submitEditedUtility(event) {
             resultEl.className = 'result-message show success';
             resultEl.textContent = '✓ ' + result.message;
             
-            // 2秒后返回道具管理页面
+            // 3秒后淡出隐藏提示，停留在编辑页面
             setTimeout(() => {
-                cancelEditUtility();
-            }, 2000);
+                resultEl.classList.remove('show');
+            }, 3000);
         } else {
             resultEl.className = 'result-message show error';
             resultEl.textContent = '✗ 保存失败：' + (result.error || '未知错误');
+            
+            // 3秒后淡出隐藏错误提示
+            setTimeout(() => {
+                resultEl.classList.remove('show');
+            }, 3000);
         }
     } catch (error) {
         console.error('保存道具错误:', error);
         resultEl.className = 'result-message show error';
         resultEl.textContent = '✗ 保存失败：网络错误';
+        
+        // 3秒后淡出隐藏错误提示
+        setTimeout(() => {
+            resultEl.classList.remove('show');
+        }, 3000);
     }
 }
 

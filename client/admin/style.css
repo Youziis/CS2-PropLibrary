@@ -875,6 +875,10 @@ body {
     animation: slideDown 0.3s;
 }
 
+.result-message.hiding {
+    animation: slideUp 0.3s forwards;
+}
+
 .result-message.success {
     background: rgba(0, 212, 170, 0.2);
     border-left: 4px solid #00d4aa;
@@ -890,6 +894,11 @@ body {
 @keyframes slideDown {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); display: none; }
 }
 
 /* ========== 加载动画 ========== */
