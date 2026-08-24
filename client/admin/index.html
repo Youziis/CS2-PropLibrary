@@ -440,6 +440,158 @@
                     <div class="loading">加载中</div>
                 </div>
             </div>
+
+            <!-- Tab 6: 编辑道具 -->
+            <div class="tab-content" id="edit-utility-tab">
+                <div class="content-header">
+                    <h2>编辑道具</h2>
+                    <button class="btn" onclick="cancelEditUtility()">← 返回道具管理</button>
+                </div>
+                
+                <div class="info-box">
+                    <h3>说明</h3>
+                    <p>修改道具信息和截图。点击截图可以替换图片。</p>
+                    <p><strong>注意：</strong>编辑后需要重新导出，推送到GitHub后才能在客户端生效。</p>
+                </div>
+                
+                <div class="add-utility-form" style="background: white; padding: 30px; border-radius: 12px; margin-top: 20px; border: 1px solid #E8E1F5; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+                    <h3 style="color: #667eea; margin-bottom: 25px; font-size: 20px;">基本信息</h3>
+                    
+                    <form id="edit-utility-form" onsubmit="submitEditedUtility(event)">
+                        <input type="hidden" id="edit-util-hash">
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="form-group">
+                                <label>道具名称 *</label>
+                                <input type="text" id="edit-util-name" required placeholder="如：A小烟、中门闪">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>地图 *</label>
+                                <select id="edit-util-map" required disabled>
+                                    <option value="">请选择地图</option>
+                                    <option value="de_dust2">Dust2</option>
+                                    <option value="de_mirage">Mirage</option>
+                                    <option value="de_inferno">Inferno</option>
+                                    <option value="de_nuke">Nuke</option>
+                                    <option value="de_ancient">Ancient</option>
+                                    <option value="de_anubis">Anubis</option>
+                                    <option value="de_vertigo">Vertigo</option>
+                                    <option value="de_cache">Cache</option>
+                                </select>
+                                <small style="color: #999;">地图不可修改</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>道具类型 *</label>
+                                <select id="edit-util-type" required>
+                                    <option value="smoke">烟雾弹</option>
+                                    <option value="flashbang">闪光弹</option>
+                                    <option value="hegrenade">手雷</option>
+                                    <option value="incendiary">燃烧弹</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>队伍 *</label>
+                                <select id="edit-util-team" required>
+                                    <option value="T">T (恐怖分子)</option>
+                                    <option value="CT">CT (反恐精英)</option>
+                                    <option value="Unknown">通用</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>投掷方式</label>
+                                <input type="text" id="edit-util-throw-type" placeholder="左键投掷、双键投掷、左键跳投等">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label>备注信息</label>
+                            <textarea id="edit-util-notes" rows="3" placeholder="投掷技巧、注意事项等"></textarea>
+                        </div>
+                        
+                        <h3 style="color: #667eea; margin: 30px 0 20px 0; font-size: 20px;">坐标信息</h3>
+                        <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
+                            在游戏中使用控制台指令获取坐标：
+                            <code style="background: #F6F2FC; padding: 2px 6px; border-radius: 4px; color: #667eea;">getpos</code>
+                        </p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div>
+                                <h4 style="color: #667eea; font-size: 15px; margin-bottom: 10px;">投掷位置 *</h4>
+                                <div class="form-group">
+                                    <label>X坐标</label>
+                                    <input type="number" step="0.1" id="edit-util-throw-x" required placeholder="如：1234.5">
+                                </div>
+                                <div class="form-group">
+                                    <label>Y坐标</label>
+                                    <input type="number" step="0.1" id="edit-util-throw-y" required placeholder="如：-567.8">
+                                </div>
+                                <div class="form-group">
+                                    <label>Z坐标</label>
+                                    <input type="number" step="0.1" id="edit-util-throw-z" required placeholder="如：64.0">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 style="color: #667eea; font-size: 15px; margin-bottom: 10px;">投掷角度 *</h4>
+                                <div class="form-group">
+                                    <label>俯仰角 (pitch)</label>
+                                    <input type="number" step="0.1" id="edit-util-pitch" required placeholder="如：-45.0">
+                                </div>
+                                <div class="form-group">
+                                    <label>偏航角 (yaw)</label>
+                                    <input type="number" step="0.1" id="edit-util-yaw" required placeholder="如：90.5">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 style="color: #667eea; margin: 30px 0 20px 0; font-size: 20px;">截图管理</h3>
+                        <p style="color: #666; font-size: 14px; margin-bottom: 15px;">点击图片可以替换，不替换则保留原图</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
+                            <div class="upload-box">
+                                <label class="upload-label">
+                                    <input type="file" id="edit-util-img-position" accept="image/*" onchange="previewEditImage(this, 'edit-preview-position')" style="display: none;">
+                                    <div class="upload-preview editable" id="edit-preview-position">
+                                        <span style="font-size: 48px; color: #667eea;">📷</span>
+                                        <p style="margin-top: 10px; color: #666;">站位图</p>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <div class="upload-box">
+                                <label class="upload-label">
+                                    <input type="file" id="edit-util-img-crosshair" accept="image/*" onchange="previewEditImage(this, 'edit-preview-crosshair')" style="display: none;">
+                                    <div class="upload-preview editable" id="edit-preview-crosshair">
+                                        <span style="font-size: 48px; color: #667eea;">📷</span>
+                                        <p style="margin-top: 10px; color: #666;">准星图</p>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <div class="upload-box">
+                                <label class="upload-label">
+                                    <input type="file" id="edit-util-img-landing" accept="image/*" onchange="previewEditImage(this, 'edit-preview-landing')" style="display: none;">
+                                    <div class="upload-preview editable" id="edit-preview-landing">
+                                        <span style="font-size: 48px; color: #667eea;">📷</span>
+                                        <p style="margin-top: 10px; color: #666;">落点图</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; justify-content: center;">
+                            <button type="submit" class="btn btn-large btn-primary">💾 保存修改</button>
+                            <button type="button" class="btn btn-large" onclick="cancelEditUtility()">取消</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div id="edit-utility-result" class="result-message" style="margin-top: 20px;"></div>
+            </div>
             
         </main>
     </div>

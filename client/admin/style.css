@@ -1859,3 +1859,22 @@ body {
         gap: 10px;
     }
 }
+
+
+/* ========== 编辑道具页面 - 可编辑图片预览 ========== */
+.upload-preview.editable {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.upload-preview.editable:hover {
+    opacity: 0.8;
+}
+
+.upload-preview.editable img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}

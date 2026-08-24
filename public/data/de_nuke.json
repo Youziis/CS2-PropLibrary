@@ -5,7 +5,7 @@
       "id": "de_nuke_smoke_4fded929",
       "type": "smoke",
       "team": "T",
-      "name": "test",
+      "name": "test01",
       "description": "左键跳投，飞行时间 0.0 秒",
       "position": {
         "x": 233,
@@ -27,7 +27,7 @@
       "command": "setpos 233.00 233.00 233.00; setang 233.00 233.00 0",
       "quality": 3,
       "tags": [],
-      "notes": "",
+      "notes": "67",
       "screenshots": {
         "position": "images/de_nuke/smoke/de_nuke_smoke_4fded929_position.jpg",
         "crosshair": "images/de_nuke/smoke/de_nuke_smoke_4fded929_crosshair.jpg",

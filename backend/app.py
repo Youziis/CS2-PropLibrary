@@ -554,9 +554,28 @@ def delete_exported_utility():
         return jsonify({'success': False, 'message': f'服务器错误: {str(e)}'}), 500
 
 
+@app.route('/api/exported')
+def get_exported_utilities():
+    """获取所有已导出的道具"""
+    try:
+        # 从数据库获取已导出的道具
+        utilities = db.get_utilities(status='exported')
+        
+        return jsonify({
+            'success': True,
+            'utilities': utilities,
+            'count': len(utilities)
+        })
+    except Exception as e:
+        print(f"[获取已导出道具] 错误: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @app.route('/api/edit_exported', methods=['POST'])
 def edit_exported():
-    """编辑已导出道具（兼容旧API）"""
+    """编辑已导出道具（兼容旧API - 仅更新文本字段）"""
     data = request.json
     hash_val = data.get('hash')
     info = data.get('info', {})
@@ -579,6 +598,141 @@ def edit_exported():
         return jsonify({'success': True, 'message': '更新成功'})
     else:
         return jsonify({'success': False, 'message': '道具未找到'}), 404
+
+
+@app.route('/api/update_utility', methods=['POST'])
+def update_utility():
+    """完整更新道具（包括图片、坐标等所有信息）"""
+    try:
+        import hashlib
+        from PIL import Image
+        
+        # 获取表单数据
+        hash_val = request.form.get('hash')
+        
+        if not hash_val:
+            return jsonify({'success': False, 'error': '缺少道具hash'}), 400
+        
+        # 获取原道具信息
+        utility = db.get_utility_by_hash(hash_val)
+        if not utility:
+            return jsonify({'success': False, 'error': '道具未找到'}), 404
+        
+        print(f"[更新道具] 开始处理: {hash_val}")
+        
+        # 获取更新的字段
+        name = request.form.get('name')
+        map_name = request.form.get('map')
+        utility_type = request.form.get('type')
+        team = request.form.get('team')
+        throw_type = request.form.get('throw_type', '未知')
+        notes = request.form.get('notes', '')
+        
+        # 获取坐标数据
+        import json
+        throw_position = json.loads(request.form.get('throw_position', '{}'))
+        throw_angles = json.loads(request.form.get('throw_angles', '{}'))
+        land_position = json.loads(request.form.get('land_position', '{}'))
+        
+        # 构建更新字段
+        import json
+        update_fields = {
+            'display_name': name,
+            'map': map_name,
+            'type': utility_type,
+            'team': team,
+            'throw_type': throw_type,
+            'notes': notes,
+            'throw_position': json.dumps(throw_position),  # 转换为JSON字符串
+            'throw_angles': json.dumps(throw_angles),      # 转换为JSON字符串
+            'land_position': json.dumps(land_position)     # 转换为JSON字符串
+        }
+        
+        # 处理图片更新
+        screenshot_base = utility.get('screenshot_filename_base')
+        if not screenshot_base:
+            screenshot_base = f"{map_name}_{hash_val}"
+        
+        screenshots_dir = Path(__file__).parent.parent / 'output' / 'screenshots'
+        screenshots_dir.mkdir(parents=True, exist_ok=True)
+        
+        # 检查是否有新上传的图片
+        img_position = request.files.get('img_position')
+        img_crosshair = request.files.get('img_crosshair')
+        img_landing = request.files.get('img_landing')
+        
+        updated_images = []
+        
+        # 更新站位图
+        if img_position:
+            try:
+                img_position.save(screenshots_dir / f"{screenshot_base}_position.jpg")
+                updated_images.append('position')
+                print(f"[更新道具] 已更新站位图")
+            except Exception as e:
+                print(f"[更新道具] 保存站位图失败: {e}")
+        
+        # 更新准星图
+        if img_crosshair:
+            try:
+                img_crosshair.save(screenshots_dir / f"{screenshot_base}_crosshair.jpg")
+                updated_images.append('crosshair')
+                print(f"[更新道具] 已更新准星图")
+            except Exception as e:
+                print(f"[更新道具] 保存准星图失败: {e}")
+        
+        # 更新落点图
+        if img_landing:
+            try:
+                img_landing.save(screenshots_dir / f"{screenshot_base}_landing.jpg")
+                updated_images.append('landing')
+                print(f"[更新道具] 已更新落点图")
+            except Exception as e:
+                print(f"[更新道具] 保存落点图失败: {e}")
+        
+        # 更新数据库
+        success = db.update_utility(hash_val, update_fields)
+        
+        if not success:
+            return jsonify({'success': False, 'error': '数据库更新失败'}), 500
+        
+        print(f"[更新道具] 数据库更新成功")
+        
+        # 如果状态是 exported，需要重新导出到 public
+        if utility.get('status') == 'exported':
+            print(f"[更新道具] 道具已导出，开始重新导出...")
+            
+            # 获取更新后的道具数据
+            updated_utility = db.get_utility_by_hash(hash_val)
+            
+            # 重新导出
+            export_success, export_message = export_single_utility(updated_utility, db)
+            
+            if export_success:
+                print(f"[更新道具] 重新导出成功")
+                message = f'道具更新成功'
+                if updated_images:
+                    message += f'（已更新图片: {", ".join(updated_images)}）'
+                message += '，已重新导出到前端'
+                return jsonify({'success': True, 'message': message})
+            else:
+                print(f"[更新道具] 重新导出失败: {export_message}")
+                return jsonify({
+                    'success': False,
+                    'error': f'道具更新成功但重新导出失败: {export_message}'
+                }), 500
+        else:
+            # 未导出的道具，只更新数据库
+            message = f'道具更新成功'
+            if updated_images:
+                message += f'（已更新图片: {", ".join(updated_images)}）'
+            return jsonify({'success': True, 'message': message})
+        
+    except Exception as e:
+        print(f"[更新道具] 异常: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': f'服务器错误: {str(e)}'}), 500
 
 
 def export_single_utility(utility, db_instance):
