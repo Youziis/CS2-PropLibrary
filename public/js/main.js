@@ -323,6 +323,7 @@ function renderUtilities() {
                 src="${utility.screenshots.position}" 
                 alt="${utility.name}"
                 loading="lazy"
+                decoding="async"
             >
             <div class="utility-info">
                 <div class="utility-header">
@@ -391,15 +392,15 @@ function renderDetailPage(utilityId) {
                 <div class="detail-images">
                     <div class="detail-image-item">
                         <h4>站位图</h4>
-                        <img class="detail-image" src="${utility.screenshots.position}" alt="站位图" onclick="openImageViewer('${utility.screenshots.position}', '站位图', 'position')">
+                        <img class="detail-image" src="${utility.screenshots.position}" alt="站位图" loading="lazy" decoding="async" onclick="openImageViewer('${utility.screenshots.position}', '站位图', 'position')">
                     </div>
                     <div class="detail-image-item">
                         <h4>准星位置</h4>
-                        <img class="detail-image detail-image-crosshair" src="${utility.screenshots.crosshair}" alt="准星图" onclick="openImageViewer('${utility.screenshots.crosshair}', '准星位置', 'crosshair')">
+                        <img class="detail-image detail-image-crosshair" src="${utility.screenshots.crosshair}" alt="准星图" loading="lazy" decoding="async" onclick="openImageViewer('${utility.screenshots.crosshair}', '准星位置', 'crosshair')">
                     </div>
                     <div class="detail-image-item">
                         <h4>落点位置</h4>
-                        <img class="detail-image" src="${utility.screenshots.landing}" alt="落点图" onclick="openImageViewer('${utility.screenshots.landing}', '落点位置', 'landing')">
+                        <img class="detail-image" src="${utility.screenshots.landing}" alt="落点图" loading="lazy" decoding="async" onclick="openImageViewer('${utility.screenshots.landing}', '落点位置', 'landing')">
                     </div>
                 </div>
             </div>

@@ -169,12 +169,8 @@
                     <h2>手动添加道具</h2>
                 </div>
                 
-                <div class="info-box">
-                    <h3>说明</h3>
-                    <p>通过此页面可以手动上传道具信息和截图，适用于无法通过 Demo 解析的道具。</p>
-                    <p><strong>注意：</strong>手动添加的道具会直接导出到前端，无需审核和二次导出，立即在客户端生效。</p>
-                </div>
-                
+                <!-- <p class="hint">添加道具</p> -->
+
                 <div class="add-utility-form" style="background: white; padding: 30px; border-radius: 12px; margin-top: 20px; border: 1px solid #E8E1F5; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
                     <h3 style="color: #667eea; margin-bottom: 25px; font-size: 20px;">基本信息</h3>
                     
@@ -360,10 +356,9 @@
                 <div class="info-box">
                     <h3>导出流程</h3>
                     <p>1. 读取已批准的道具数据</p>
-                    <p>2. 压缩截图文件 (1200x900, quality=85)</p>
-                    <p>3. 生成前端 JSON 文件</p>
-                    <p>4. 复制到 <code>public/</code> 目录</p>
-                    <p>5. 标记为已导出</p>
+                    <p>2. 生成前端 JSON 文件</p>
+                    <p>3. 复制到 <code>public/</code> 目录</p>
+                    <p>4. 标记为已导出</p>
                 </div>
                 
                 <div class="export-stats">
@@ -426,7 +421,7 @@
                     <input type="text" 
                            id="exported-search-input" 
                            placeholder="搜索道具ID（如：de_dust2_smoke_7d0b3c27）或名称..." 
-                           style="width: 100%; padding: 12px; font-size: 14px; border: 1px solid #3a506b; background: #0f3460; color: #fff; border-radius: 5px;"
+                           style="width: 100%; padding: 12px; font-size: 14px; border: 1px solid #575c61; background: #DDCEEE; color: #fff; border-radius: 5px;"
                            oninput="filterExportedUtilities()">
                 </div>
                 

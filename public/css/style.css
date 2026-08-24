@@ -1144,3 +1144,69 @@ body.detail-page {
         max-height: 40%;
     }
 }
+
+
+/* ==================== 图片懒加载优化 ==================== */
+.utility-image, .detail-image {
+    background: linear-gradient(
+        135deg,
+        rgba(184, 164, 212, 0.1) 0%,
+        rgba(232, 223, 245, 0.1) 100%
+    );
+    min-height: 200px;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.utility-image[loading="lazy"]:not([src]),
+.detail-image[loading="lazy"]:not([src]) {
+    opacity: 0.5;
+}
+
+.utility-image {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+
+/* 图片加载中的占位动画 */
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+.utility-card img:not([src]),
+.detail-image-item img:not([src]) {
+    background: linear-gradient(
+        90deg,
+        rgba(184, 164, 212, 0.1) 0px,
+        rgba(232, 223, 245, 0.3) 40px,
+        rgba(184, 164, 212, 0.1) 80px
+    );
+    background-size: 200px 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* 图片加载完成后的淡入效果 */
+.utility-card img[src] {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* 优化图片渲染性能 */
+.utility-image,
+.detail-image {
+    image-rendering: -webkit-optimize-contrast;
+    will-change: transform, opacity;
+    contain: layout style paint;
+}
