@@ -627,12 +627,19 @@ def update_utility():
         team = request.form.get('team')
         throw_type = request.form.get('throw_type', '未知')
         notes = request.form.get('notes', '')
+        tags_str = request.form.get('tags', '')  # 获取标签字符串
         
         # 获取坐标数据
         import json
         throw_position = json.loads(request.form.get('throw_position', '{}'))
         throw_angles = json.loads(request.form.get('throw_angles', '{}'))
         land_position = json.loads(request.form.get('land_position', '{}'))
+        
+        # 处理标签：将逗号分隔的字符串转换为数组
+        tags = []
+        if tags_str:
+            tags = [tag.strip() for tag in tags_str.split(',') if tag.strip()]
+            print(f"[更新道具] 标签: {tags}")
         
         # 构建更新字段
         import json
@@ -643,6 +650,7 @@ def update_utility():
             'team': team,
             'throw_type': throw_type,
             'notes': notes,
+            'tags': json.dumps(tags),  # 添加tags字段
             'throw_position': json.dumps(throw_position),  # 转换为JSON字符串
             'throw_angles': json.dumps(throw_angles),      # 转换为JSON字符串
             'land_position': json.dumps(land_position)     # 转换为JSON字符串
@@ -809,7 +817,7 @@ def export_single_utility(utility, db_instance):
             'distance': round(utility.get('distance', 0), 1),
             'command': f"setpos {utility['throw_position']['x']:.2f} {utility['throw_position']['y']:.2f} {utility['throw_position']['z']:.2f}; setang {utility['throw_angles']['pitch']:.2f} {utility['throw_angles']['yaw']:.2f} 0",
             'quality': 3,
-            'tags': [],
+            'tags': utility.get('tags', []),  # 导出标签数据
             'notes': utility.get('notes', ''),
             'screenshots': {
                 'position': f"images/{map_name}/{util_type}/{utility_id}_position.jpg",
@@ -922,11 +930,18 @@ def add_manual_utility():
         throw_type = request.form.get('throw_type', '未知')
         source = request.form.get('source', '手动添加')
         notes = request.form.get('notes', '')
+        tags_str = request.form.get('tags', '')  # 获取标签字符串
         
         # 获取坐标数据
         throw_position = json.loads(request.form.get('throw_position', '{}'))
         throw_angles = json.loads(request.form.get('throw_angles', '{}'))
         land_position = json.loads(request.form.get('land_position', '{}'))
+        
+        # 处理标签：将逗号分隔的字符串转换为数组
+        tags = []
+        if tags_str:
+            tags = [tag.strip() for tag in tags_str.split(',') if tag.strip()]
+            print(f"[手动添加道具] 标签: {tags}")
         
         # 验证必填字段
         if not all([name, map_name, utility_type, team]):
@@ -1006,6 +1021,7 @@ def add_manual_utility():
             'land_position': land_position,
             'display_name': name,
             'notes': notes,
+            'tags': tags,  # 添加标签
             'demo_source': source,
             'screenshot_filename_base': screenshot_base,
             'status': 'approved',  # 临时状态，导出后会变为 exported

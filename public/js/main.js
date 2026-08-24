@@ -375,6 +375,13 @@ function renderDetailPage(utilityId) {
     
     const content = document.getElementById('detail-content');
     
+    // 处理标签显示
+    const tagsHtml = utility.tags && utility.tags.length > 0 
+        ? `<div class="detail-tags">
+               ${utility.tags.map(tag => `<span class="tag-badge">${tag}</span>`).join('')}
+           </div>`
+        : '';
+    
     content.innerHTML = `
         <div class="detail-header">
             <button class="btn-back" onclick="history.back()">← 返回</button>
@@ -384,6 +391,7 @@ function renderDetailPage(utilityId) {
                 <span class="badge badge-team team-${utility.team.toLowerCase()}">${utility.team}</span>
                 <span class="badge badge-throw">${utility.throw_type || '未知'}</span>
             </div>
+            ${tagsHtml}
         </div>
         
         <div class="detail-body">

@@ -1210,3 +1210,28 @@ body.detail-page {
     will-change: transform, opacity;
     contain: layout style paint;
 }
+
+/* ==================== 标签样式 ==================== */
+.detail-tags {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: linear-gradient(135deg, #b8a4d4 0%, #c9a0dc 100%);
+    color: white;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(184, 164, 212, 0.3);
+    transition: all 0.2s ease;
+}
+
+.tag-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(184, 164, 212, 0.4);
+}

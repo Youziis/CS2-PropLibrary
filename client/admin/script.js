@@ -1699,6 +1699,10 @@ function switchToEditUtilityTab(utility) {
     document.getElementById('edit-util-throw-type').value = utility.throw_type || '';
     document.getElementById('edit-util-notes').value = utility.notes || '';
     
+    // 填充标签（数组转换为逗号分隔的字符串）
+    const tags = utility.tags || [];
+    document.getElementById('edit-util-tags').value = Array.isArray(tags) ? tags.join(', ') : '';
+    
     // 填充坐标信息
     if (utility.throw_position) {
         document.getElementById('edit-util-throw-x').value = utility.throw_position.x || 0;
@@ -1790,6 +1794,7 @@ async function submitEditedUtility(event) {
     formData.append('team', document.getElementById('edit-util-team').value);
     formData.append('throw_type', document.getElementById('edit-util-throw-type').value || '未知');
     formData.append('notes', document.getElementById('edit-util-notes').value || '');
+    formData.append('tags', document.getElementById('edit-util-tags').value || '');  // 添加标签
     
     // 坐标信息
     const throwX = parseFloat(document.getElementById('edit-util-throw-x').value);
@@ -2047,6 +2052,7 @@ async function submitManualUtility(event) {
     formData.append('throw_type', document.getElementById('add-throw-type').value || '未知');
     formData.append('source', '手动添加');  // 固定值
     formData.append('notes', document.getElementById('add-notes').value || '');
+    formData.append('tags', document.getElementById('add-tags').value || '');  // 添加标签
     
     // 坐标信息 - 投掷位置
     const throwX = parseFloat(document.getElementById('add-throw-x').value);

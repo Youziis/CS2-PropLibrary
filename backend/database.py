@@ -82,6 +82,7 @@ class Database:
             # - screenshot_filename_base: 截图文件名前缀（格式：map_hash）
             # - display_name: 显示名称（用户可编辑）
             # - notes: 备注说明
+            # - tags: 标签（JSON数组，如：["简单", "常用", "拱门"]）
             # - approved_time: 批准时间
             # - exported_time: 导出时间
             # - raw_data: 原始完整数据JSON
@@ -117,6 +118,7 @@ class Database:
                     -- 审核信息
                     display_name TEXT,
                     notes TEXT,
+                    tags TEXT,
                     approved_time DATETIME,
                     exported_time DATETIME,
                     
@@ -140,6 +142,15 @@ class Database:
                 CREATE INDEX IF NOT EXISTS idx_map_status 
                 ON utilities(map, status)
             """)
+            
+            # 数据库迁移：为已存在的表添加 tags 列（如果不存在）
+            try:
+                cursor.execute("SELECT tags FROM utilities LIMIT 1")
+            except sqlite3.OperationalError:
+                # tags 列不存在，添加它
+                print("[数据库迁移] 添加 tags 列...")
+                cursor.execute("ALTER TABLE utilities ADD COLUMN tags TEXT")
+                print("[数据库迁移] tags 列添加成功")
     
     def add_utilities(self, utilities: List[Dict]) -> tuple:
         """
@@ -199,8 +210,8 @@ class Database:
                         throw_position, throw_angles, land_position,
                         throw_type, source_demo, parse_time, 
                         status, screenshot_filename_base,
-                        display_name, notes, approved_time, raw_data
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        display_name, notes, tags, approved_time, raw_data
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
                     utility_data['hash'],
                     utility_data['map'],
@@ -216,6 +227,7 @@ class Database:
                     utility_data.get('screenshot_filename_base'),
                     utility_data.get('display_name'),
                     utility_data.get('notes'),
+                    json.dumps(utility_data.get('tags', [])),  # 添加tags字段
                     utility_data.get('approved_time'),
                     json.dumps(utility_data)  # 保存完整数据
                 ))
@@ -379,6 +391,14 @@ class Database:
                 full_data['team'] = d['team']
             if d.get('throw_type'):
                 full_data['throw_type'] = d['throw_type']
+            # ✅ 新增：覆盖tags字段
+            if d.get('tags'):
+                try:
+                    full_data['tags'] = json.loads(d['tags'])
+                except:
+                    full_data['tags'] = []
+            else:
+                full_data['tags'] = []
             return full_data
         
         # 解析JSON字段
@@ -388,6 +408,15 @@ class Database:
                     d[field] = json.loads(d[field])
                 except:
                     pass
+        
+        # 解析tags字段
+        if d.get('tags'):
+            try:
+                d['tags'] = json.loads(d['tags'])
+            except:
+                d['tags'] = []
+        else:
+            d['tags'] = []
         
         return d
 

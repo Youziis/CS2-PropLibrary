@@ -26,7 +26,9 @@
       "distance": 0,
       "command": "setpos 233.00 233.00 233.00; setang 233.00 233.00 0",
       "quality": 3,
-      "tags": [],
+      "tags": [
+        "三楼"
+      ],
       "notes": "67",
       "screenshots": {
         "position": "images/de_nuke/smoke/de_nuke_smoke_4fded929_position.jpg",
