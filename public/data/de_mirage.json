@@ -5,7 +5,7 @@
       "id": "de_mirage_smoke_221f1977",
       "type": "smoke",
       "team": "T",
-      "name": "拱门内测烟（沙袋）",
+      "name": "拱门内测烟",
       "description": "stand，飞行时间 3.9 秒",
       "position": {
         "x": 343.30230712890625,
@@ -26,7 +26,9 @@
       "distance": 1086.2,
       "command": "setpos 343.30 -621.62 -162.33; setang -42.80 -150.67 0",
       "quality": 3,
-      "tags": [],
+      "tags": [
+        "沙袋"
+      ],
       "notes": "抵住中路沙袋车轮投掷。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_221f1977_position.jpg",
@@ -41,7 +43,7 @@
       "id": "de_mirage_smoke_5b008d1b",
       "type": "smoke",
       "team": "T",
-      "name": "VIP烟（沙袋）",
+      "name": "VIP烟",
       "description": "跑两步投掷，飞行时间 2.8 秒",
       "position": {
         "x": 463.9847106933594,
@@ -62,7 +64,9 @@
       "distance": 1619.0,
       "command": "setpos 463.98 -646.10 -159.97; setang -13.70 179.28 0",
       "quality": 3,
-      "tags": [],
+      "tags": [
+        "沙袋"
+      ],
       "notes": "中路沙袋，前脚踩在沙袋后突起的台阶，跑两步左键投掷。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_5b008d1b_position.jpg",
