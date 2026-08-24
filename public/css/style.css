@@ -1235,3 +1235,25 @@ body.detail-page {
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(184, 164, 212, 0.4);
 }
+
+/* ==================== 道具卡片中的迷你标签 ==================== */
+.utility-tags {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.mini-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: linear-gradient(135deg, #b8a4d4 0%, #c9a0dc 100%);
+    color: white;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+}

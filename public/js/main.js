@@ -316,24 +316,35 @@ function renderUtilities() {
     
     emptyState.style.display = 'none';
     
-    grid.innerHTML = state.filteredUtilities.map(utility => `
-        <div class="utility-card" onclick="router.navigate('/utility/${utility.id}')">
-            <img 
-                class="utility-image" 
-                src="${utility.screenshots.position}" 
-                alt="${utility.name}"
-                loading="lazy"
-                decoding="async"
-            >
-            <div class="utility-info">
-                <div class="utility-header">
-                    <span class="utility-team team-${utility.team.toLowerCase()}">${utility.team}</span>
+    grid.innerHTML = state.filteredUtilities.map(utility => {
+        // 获取前5个标签
+        const tags = utility.tags && utility.tags.length > 0 
+            ? utility.tags.slice(0, 5)
+            : [];
+        
+        const tagsHtml = tags.length > 0
+            ? `<div class="utility-tags">
+                   ${tags.map(tag => `<span class="mini-tag">${tag}</span>`).join('')}
+               </div>`
+            : '';
+        
+        return `
+            <div class="utility-card" onclick="router.navigate('/utility/${utility.id}')">
+                <img 
+                    class="utility-image" 
+                    src="${utility.screenshots.position}" 
+                    alt="${utility.name}"
+                    loading="lazy"
+                    decoding="async"
+                >
+                <div class="utility-info">
+                    <div class="utility-name">${utility.name}</div>
+                    <div class="utility-meta">${utility.description}</div>
+                    ${tagsHtml}
                 </div>
-                <div class="utility-name">${utility.name}</div>
-                <div class="utility-meta">${utility.description}</div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function updateStats() {
@@ -386,11 +397,6 @@ function renderDetailPage(utilityId) {
         <div class="detail-header">
             <button class="btn-back" onclick="history.back()">← 返回</button>
             <h1 class="detail-title">${utility.name}</h1>
-            <div class="detail-badges">
-                <span class="badge badge-type">${getUtilityTypeName(utility.type)}</span>
-                <span class="badge badge-team team-${utility.team.toLowerCase()}">${utility.team}</span>
-                <span class="badge badge-throw">${utility.throw_type || '未知'}</span>
-            </div>
             ${tagsHtml}
         </div>
         

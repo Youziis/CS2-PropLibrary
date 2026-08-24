@@ -635,9 +635,11 @@ def update_utility():
         throw_angles = json.loads(request.form.get('throw_angles', '{}'))
         land_position = json.loads(request.form.get('land_position', '{}'))
         
-        # 处理标签：将逗号分隔的字符串转换为数组
+        # 处理标签：将逗号分隔的字符串转换为数组（支持全角和半角逗号）
         tags = []
         if tags_str:
+            # 先将全角逗号替换为半角逗号，然后分割
+            tags_str = tags_str.replace('，', ',')  # 全角逗号转半角
             tags = [tag.strip() for tag in tags_str.split(',') if tag.strip()]
             print(f"[更新道具] 标签: {tags}")
         
@@ -937,9 +939,11 @@ def add_manual_utility():
         throw_angles = json.loads(request.form.get('throw_angles', '{}'))
         land_position = json.loads(request.form.get('land_position', '{}'))
         
-        # 处理标签：将逗号分隔的字符串转换为数组
+        # 处理标签：将逗号分隔的字符串转换为数组（支持全角和半角逗号）
         tags = []
         if tags_str:
+            # 先将全角逗号替换为半角逗号，然后分割
+            tags_str = tags_str.replace('，', ',')  # 全角逗号转半角
             tags = [tag.strip() for tag in tags_str.split(',') if tag.strip()]
             print(f"[手动添加道具] 标签: {tags}")
         
