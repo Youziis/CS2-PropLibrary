@@ -306,8 +306,8 @@ async function loadDemos() {
                     <p>大小: ${formatFileSize(demo.size)}</p>
                     ${demo.parsed ? '<span class="badge badge-success">已解析</span>' : ''}
                 </div>
-                <button class="btn btn-primary" onclick="parseDemo('${demo.name}')" ${demo.parsed ? 'disabled' : ''}>
-                    ${demo.parsed ? '已解析' : '解析'}
+                <button class="btn btn-primary" onclick="parseDemo('${demo.name}')">
+                    ${demo.parsed ? '重新解析' : '解析'}
                 </button>
             </div>
         `).join('');
@@ -317,11 +317,18 @@ async function loadDemos() {
 }
 
 async function parseDemo(demoName) {
-    if (!confirm(`确定要解析 ${demoName} 吗？\n\n解析可能需要几分钟时间。`)) {
+    // 获取按钮文本来判断是否是重新解析
+    const btn = event.target;
+    const isReparse = btn.textContent.trim() === '重新解析';
+    
+    const message = isReparse 
+        ? `确定要重新解析 ${demoName} 吗？\n\n这将覆盖已有的解析数据（不会删除已截图和已批准的道具）。\n\n解析可能需要几分钟时间。`
+        : `确定要解析 ${demoName} 吗？\n\n解析可能需要几分钟时间。`;
+    
+    if (!confirm(message)) {
         return;
     }
     
-    const btn = event.target;
     btn.disabled = true;
     btn.textContent = '解析中...';
     
@@ -338,6 +345,7 @@ async function parseDemo(demoName) {
             alert(`${result.message}`);
             loadStats();
             loadTypeStats();
+            loadDemos(); // 刷新Demo列表
         } else {
             alert(`${result.message}`);
         }
@@ -345,7 +353,8 @@ async function parseDemo(demoName) {
         alert('解析失败: ' + error.message);
     } finally {
         btn.disabled = false;
-        btn.textContent = '解析';
+        // 恢复按钮文本
+        btn.textContent = isReparse ? '重新解析' : '解析';
     }
 }
 
