@@ -66,7 +66,12 @@ def extract_utilities(demo_data):
     )
     
     # 过滤重复道具
+    before_dedup = len(utilities)
     utilities = filter_duplicate_utilities(utilities)
+    after_dedup = len(utilities)
+    
+    print(f"去重前: {before_dedup} 个，去重后: {after_dedup} 个（过滤 {before_dedup - after_dedup} 个重复）")
+    print(f"最终提取到 {after_dedup} 个有效道具\n")
     
     return utilities
 
@@ -75,6 +80,20 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
     """匹配投掷和爆炸事件"""
     utilities = []
     used_detonations = set()
+    
+    # 统计未匹配的原因
+    stats = {
+        'total_throws': len(throw_events),
+        'weapon_mismatch': 0,
+        'time_too_short': 0,
+        'time_too_long': 0,
+        'distance_too_far': 0,
+        'no_match_found': 0,
+        'matched': 0
+    }
+    
+    # 统计武器类型不匹配的详细信息
+    weapon_mismatch_details = {}
     
     # 辅助函数：获取字段值（支持 user_ 前缀）
     def get_field(event, field_name):
@@ -94,6 +113,7 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
         # 查找匹配的爆炸事件
         best_match = None
         min_score = float('inf')
+        match_failed_reason = 'no_match_found'
         
         for idx, det_event in enumerate(detonate_events):
             if idx in used_detonations:
@@ -106,16 +126,22 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
             
             # 1. 武器类型匹配
             if det_weapon != throw_weapon:
+                match_failed_reason = 'weapon_mismatch'
+                # 记录不匹配的武器类型组合
+                mismatch_key = f"{throw_weapon} -> {det_weapon}"
+                weapon_mismatch_details[mismatch_key] = weapon_mismatch_details.get(mismatch_key, 0) + 1
                 continue
             
             # 2. 爆炸在投掷之后
             tick_diff = det_tick - throw_tick
             if tick_diff < 0:
+                match_failed_reason = 'time_too_short'
                 continue
             
             # 3. 时间差在合理范围内（5秒）
             time_diff = tick_diff / tick_rate
             if time_diff > 5.0:
+                match_failed_reason = 'time_too_long'
                 continue
             
             # 4. 【新增】烟雾弹的飞行时间合理性检查
@@ -142,6 +168,7 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
             
             # 距离太远（超过3000单位）的不匹配
             if distance > 3000:
+                match_failed_reason = 'distance_too_far'
                 continue
             
             # 6. 综合评分
@@ -174,6 +201,30 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
                 grenade_velocities
             )
             utilities.append(utility)
+            stats['matched'] += 1
+        else:
+            stats[match_failed_reason] += 1
+    
+    # 输出匹配统计
+    print(f"\n[投掷-爆炸匹配统计]")
+    print(f"总投掷事件: {stats['total_throws']} 个")
+    print(f"成功匹配: {stats['matched']} 个 ({stats['matched']/stats['total_throws']*100:.1f}%)")
+    if stats['total_throws'] - stats['matched'] > 0:
+        print(f"未匹配原因:")
+        if stats['weapon_mismatch'] > 0:
+            print(f"  - 武器类型不匹配: {stats['weapon_mismatch']} 个")
+            if weapon_mismatch_details:
+                print(f"    详细类型不匹配:")
+                for mismatch, count in sorted(weapon_mismatch_details.items(), key=lambda x: -x[1])[:10]:
+                    print(f"      {mismatch}: {count} 次")
+        if stats['time_too_short'] > 0:
+            print(f"  - 爆炸在投掷之前: {stats['time_too_short']} 个")
+        if stats['time_too_long'] > 0:
+            print(f"  - 时间间隔太长(>5秒): {stats['time_too_long']} 个")
+        if stats['distance_too_far'] > 0:
+            print(f"  - 距离太远(>3000单位): {stats['distance_too_far']} 个")
+        if stats['no_match_found'] > 0:
+            print(f"  - 找不到合适的爆炸事件: {stats['no_match_found']} 个")
     
     return utilities
 
