@@ -731,7 +731,18 @@ function applySelectionFilters() {
         const statusMatch = currentFilterScreenshot === 'all' || 
                            (currentFilterScreenshot === 'yes' && isRejected) ||
                            (currentFilterScreenshot === 'no' && !isRejected);
-        const typeMatch = currentFilterType === 'all' || utilType === currentFilterType;
+        
+        // 类型筛选：将incendiary和molotov视为同一类型（燃烧弹）
+        let typeMatch;
+        if (currentFilterType === 'all') {
+            typeMatch = true;
+        } else if (currentFilterType === 'incendiary') {
+            // 选择"燃烧弹"时，同时匹配incendiary和molotov
+            typeMatch = (utilType === 'incendiary' || utilType === 'molotov');
+        } else {
+            // 其他类型正常匹配
+            typeMatch = (utilType === currentFilterType);
+        }
         
         if (mapMatch && demoMatch && statusMatch && typeMatch) {
             card.style.display = '';
@@ -905,7 +916,18 @@ function applyFilters() {
         
         if (mapFilter && map !== mapFilter) return false;
         if (demoFilter && demo !== demoFilter) return false;
-        if (typeFilter && type !== typeFilter) return false;
+        
+        // 类型筛选：将incendiary和molotov视为同一类型（燃烧弹）
+        if (typeFilter) {
+            if (typeFilter === 'incendiary') {
+                // 选择"燃烧弹"时，同时匹配incendiary和molotov
+                if (type !== 'incendiary' && type !== 'molotov') return false;
+            } else {
+                // 其他类型正常匹配
+                if (type !== typeFilter) return false;
+            }
+        }
+        
         if (teamFilter && team !== teamFilter) return false;
         return true;
     });

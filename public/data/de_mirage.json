@@ -175,7 +175,7 @@
       "tags": [
         "B小"
       ],
-      "notes": "（B小）贴住水管旁的墙壁，左键跳投。",
+      "notes": "贴住B小水管旁的墙壁，左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_7168125b_position.jpg",
         "crosshair": "images/de_mirage/smoke/de_mirage_smoke_7168125b_crosshair.jpg",
@@ -294,7 +294,7 @@
       "id": "de_mirage_smoke_c9b095ef",
       "type": "smoke",
       "team": "T",
-      "name": "中路过点烟（5号位）",
+      "name": "中路沙袋过点烟（5号位）",
       "description": "左键投掷，飞行时间 4.8 秒",
       "position": {
         "x": 1216.0,
@@ -315,7 +315,9 @@
       "distance": 1257.0,
       "command": "setpos 1216.00 -211.00 -163.97; setang -56.90 -167.72 0",
       "quality": 3,
-      "tags": [],
+      "tags": [
+        "快烟"
+      ],
       "notes": "",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_c9b095ef_position.jpg",
@@ -323,7 +325,8 @@
         "landing": "images/de_mirage/smoke/de_mirage_smoke_c9b095ef_landing.jpg"
       },
       "thrower": "rain",
-      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem",
+      "hash": "c9b095efc2a3affc"
     }
   ]
 }

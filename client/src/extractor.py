@@ -27,6 +27,9 @@ def extract_utilities(demo_data):
     throw_events = []
     detonate_events = []
     
+    # 统计武器类型
+    weapon_types = {}
+    
     for event in events:
         event_name = event.get('event_name', '')
         
@@ -35,10 +38,22 @@ def extract_utilities(demo_data):
             weapon = event.get('weapon', '')
             if is_grenade_weapon(weapon):
                 throw_events.append(event)
+                # 统计武器类型
+                normalized = normalize_weapon_name(weapon)
+                weapon_types[normalized] = weapon_types.get(normalized, 0) + 1
         
         # 爆炸/激活事件
         elif 'detonate' in event_name or 'startburn' in event_name or 'started' in event_name:
             detonate_events.append(event)
+    
+    # 输出统计信息
+    print(f"\n[道具解析统计]")
+    print(f"投掷事件: {len(throw_events)} 个")
+    print(f"爆炸事件: {len(detonate_events)} 个")
+    if weapon_types:
+        print(f"武器类型分布:")
+        for weapon_type, count in sorted(weapon_types.items()):
+            print(f"  - {weapon_type}: {count} 个")
     
     # 匹配投掷和爆炸事件
     utilities = match_throw_detonate(
@@ -390,14 +405,19 @@ def normalize_weapon_name(weapon):
         'hegrenade': 'hegrenade',
         'flashbang': 'flashbang',
         'smokegrenade': 'smoke',
+        'smoke': 'smoke',  # 支持简写
         'molotov': 'molotov',
         'incgrenade': 'incendiary',
+        'incendiary': 'incendiary',  # 支持简写
         'decoy': 'decoy'
     }
     
     for key, value in mapping.items():
         if key in weapon_lower:
             return value
+    
+    # 如果没有匹配，打印日志帮助调试
+    print(f"[警告] 未识别的武器名称: {weapon}")
     return weapon
 
 
