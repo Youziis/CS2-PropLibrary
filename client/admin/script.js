@@ -1019,6 +1019,11 @@ function renderUtilityCard(u) {
                 </div>
                 
                 <div class="form-group">
+                    <label>标签</label>
+                    <input type="text" class="util-tags" placeholder="用逗号分隔多个标签，如：三楼,A1" value="${u.tags ? (Array.isArray(u.tags) ? u.tags.join(',') : u.tags) : ''}">
+                </div>
+                
+                <div class="form-group">
                     <label>类型</label>
                     <select class="util-type">
                         <option value="smoke" ${type === 'smoke' ? 'selected' : ''}>烟雾弹</option>
@@ -1175,9 +1180,14 @@ async function approveUtility(hash) {
         return;
     }
     
+    // 收集标签
+    const tagsInput = card.querySelector('.util-tags');
+    const tags = tagsInput ? tagsInput.value.trim() : '';
+    
     // 收集所有表单数据
     const utilityInfo = {
         display_name: name,
+        tags: tags,
         type: card.querySelector('.util-type').value,
         team: card.querySelector('.util-team').value,
         throw_type: card.querySelector('.util-throw-type').value.trim(),

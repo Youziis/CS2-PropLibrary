@@ -77,6 +77,17 @@ def approve_utility_legacy():
     # 添加可选字段
     if 'display_name' in info:
         update_fields['display_name'] = info['display_name']
+    if 'tags' in info:
+        tags_value = info['tags']
+        # 如果是字符串，转换为JSON数组
+        if isinstance(tags_value, str):
+            # 处理全角逗号和半角逗号
+            tags_value = tags_value.replace('，', ',')
+            # 分割并清理标签
+            tags_list = [tag.strip() for tag in tags_value.split(',') if tag.strip()]
+            update_fields['tags'] = json.dumps(tags_list, ensure_ascii=False)
+        elif isinstance(tags_value, list):
+            update_fields['tags'] = json.dumps(tags_value, ensure_ascii=False)
     if 'notes' in info:
         update_fields['notes'] = info['notes']
     if 'type' in info:
