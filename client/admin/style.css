@@ -1887,3 +1887,38 @@ body {
     object-fit: cover;
     border-radius: 8px;
 }
+
+
+/* ========== 屏幕中央提示消息 ========== */
+.center-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    padding: 18px 30px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    min-width: 250px;
+    text-align: center;
+}
+
+.center-message.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+}
+
+.center-message.success {
+    background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+}
+
+.center-message.error {
+    background: linear-gradient(135deg, #ff4757 0%, #e74c3c 100%);
+}

@@ -1758,8 +1758,8 @@ function previewEditImage(input, previewId) {
 }
 
 // 取消编辑，返回道具管理页面
-function cancelEditUtility() {
-    if (confirm('确定要取消编辑吗？未保存的更改将丢失。')) {
+function cancelEditUtility(skipConfirm = false) {
+    if (skipConfirm || confirm('确定要取消编辑吗？未保存的更改将丢失。')) {
         // 切换回道具管理标签页
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
@@ -1778,11 +1778,6 @@ function cancelEditUtility() {
 // 提交编辑后的道具
 async function submitEditedUtility(event) {
     event.preventDefault();
-    
-    const resultEl = document.getElementById('edit-utility-result');
-    resultEl.className = 'result-message';
-    resultEl.textContent = '正在保存...';
-    resultEl.classList.add('show');
     
     const formData = new FormData();
     
@@ -1827,32 +1822,42 @@ async function submitEditedUtility(event) {
         const result = await response.json();
         
         if (result.success) {
-            resultEl.className = 'result-message show success';
-            resultEl.textContent = '✓ ' + result.message;
+            // 显示成功提示（屏幕中央）
+            showCenterMessage('～(∠・ω<) ' + result.message, 'success');
             
-            // 3秒后淡出隐藏提示，停留在编辑页面
+            // 2秒后返回道具管理页面（跳过确认对话框）
             setTimeout(() => {
-                resultEl.classList.remove('show');
-            }, 3000);
+                cancelEditUtility(true);
+            }, 2000);
         } else {
-            resultEl.className = 'result-message show error';
-            resultEl.textContent = '✗ 保存失败：' + (result.error || '未知错误');
-            
-            // 3秒后淡出隐藏错误提示
-            setTimeout(() => {
-                resultEl.classList.remove('show');
-            }, 3000);
+            // 显示错误提示（屏幕中央）
+            showCenterMessage('✗ 保存失败：' + (result.error || '未知错误'), 'error');
         }
     } catch (error) {
         console.error('保存道具错误:', error);
-        resultEl.className = 'result-message show error';
-        resultEl.textContent = '✗ 保存失败：网络错误';
-        
-        // 3秒后淡出隐藏错误提示
-        setTimeout(() => {
-            resultEl.classList.remove('show');
-        }, 3000);
+        showCenterMessage('✗ 保存失败：网络错误', 'error');
     }
+}
+
+// 显示屏幕中央提示消息
+function showCenterMessage(message, type) {
+    // 创建或获取提示元素
+    let messageEl = document.getElementById('center-message');
+    if (!messageEl) {
+        messageEl = document.createElement('div');
+        messageEl.id = 'center-message';
+        document.body.appendChild(messageEl);
+    }
+    
+    // 设置样式和内容
+    messageEl.className = `center-message ${type}`;
+    messageEl.textContent = message;
+    messageEl.classList.add('show');
+    
+    // 2秒后自动隐藏
+    setTimeout(() => {
+        messageEl.classList.remove('show');
+    }, 2000);
 }
 
 function closeEditModal(event) {
