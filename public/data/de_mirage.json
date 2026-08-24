@@ -81,7 +81,7 @@
       "id": "de_mirage_smoke_7168125b",
       "type": "smoke",
       "team": "CT",
-      "name": "A2楼烟（B小）",
+      "name": "A2楼烟",
       "description": "左键跳投，飞行时间 4.9 秒",
       "position": {
         "x": -911.17724609375,
@@ -102,7 +102,9 @@
       "distance": 2209.8,
       "command": "setpos -911.18 -310.34 -158.00; setang -18.34 -61.79 0",
       "quality": 3,
-      "tags": [],
+      "tags": [
+        "B小"
+      ],
       "notes": "（B小）贴住水管旁的墙壁，左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_7168125b_position.jpg",

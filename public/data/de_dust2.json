@@ -461,7 +461,7 @@
       "id": "de_dust2_smoke_f9054ee8",
       "type": "smoke",
       "team": "T",
-      "name": "警家过点烟（A大厕所丢）",
+      "name": "警家过点烟",
       "description": "按住d+左键跳投，飞行时间 4.3 秒",
       "position": {
         "x": 1768.92333984375,
@@ -482,7 +482,9 @@
       "distance": 1636.6,
       "command": "setpos 1768.92 676.96 56.03; setang 5.60 111.41 0",
       "quality": 3,
-      "tags": [],
+      "tags": [
+        "厕所"
+      ],
       "notes": "走上楼梯的最高一层投掷。",
       "screenshots": {
         "position": "images/de_dust2/smoke/de_dust2_smoke_f9054ee8_position.jpg",
@@ -490,7 +492,8 @@
         "landing": "images/de_dust2/smoke/de_dust2_smoke_f9054ee8_landing.jpg"
       },
       "thrower": "sh1ro",
-      "demo_source": "100-thieves-vs-spirit-m3-dust2.dem"
+      "demo_source": "100-thieves-vs-spirit-m3-dust2.dem",
+      "hash": "f9054ee84a8e1289"
     }
   ]
 }
