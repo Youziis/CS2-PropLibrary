@@ -5,7 +5,7 @@
       "id": "de_mirage_smoke_221f1977",
       "type": "smoke",
       "team": "T",
-      "name": "拱门内测烟（沙袋补）",
+      "name": "拱门内测烟（沙袋）",
       "description": "stand，飞行时间 3.9 秒",
       "position": {
         "x": 343.30230712890625,
@@ -34,13 +34,14 @@
         "landing": "images/de_mirage/smoke/de_mirage_smoke_221f1977_landing.jpg"
       },
       "thrower": "magixx",
-      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem",
+      "hash": "221f1977dc285942"
     },
     {
       "id": "de_mirage_smoke_5b008d1b",
       "type": "smoke",
       "team": "T",
-      "name": "VIP烟",
+      "name": "VIP烟（沙袋）",
       "description": "跑两步投掷，飞行时间 2.8 秒",
       "position": {
         "x": 463.9847106933594,
@@ -62,20 +63,21 @@
       "command": "setpos 463.98 -646.10 -159.97; setang -13.70 179.28 0",
       "quality": 3,
       "tags": [],
-      "notes": "（中路沙袋）前脚踩在沙袋后突起的台阶，跑两步左键投掷。",
+      "notes": "中路沙袋，前脚踩在沙袋后突起的台阶，跑两步左键投掷。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_5b008d1b_position.jpg",
         "crosshair": "images/de_mirage/smoke/de_mirage_smoke_5b008d1b_crosshair.jpg",
         "landing": "images/de_mirage/smoke/de_mirage_smoke_5b008d1b_landing.jpg"
       },
       "thrower": "magixx",
-      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem",
+      "hash": "5b008d1bcb0a61d9"
     },
     {
       "id": "de_mirage_smoke_7168125b",
       "type": "smoke",
       "team": "CT",
-      "name": "A2楼烟",
+      "name": "A2楼烟（B小）",
       "description": "左键跳投，飞行时间 4.9 秒",
       "position": {
         "x": -911.17724609375,
@@ -104,7 +106,8 @@
         "landing": "images/de_mirage/smoke/de_mirage_smoke_7168125b_landing.jpg"
       },
       "thrower": "zont1x",
-      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem",
+      "hash": "7168125b6f098b2a"
     },
     {
       "id": "de_mirage_smoke_754c0f16",
