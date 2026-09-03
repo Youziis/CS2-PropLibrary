@@ -415,6 +415,22 @@ body {
     background: #ff4757;
 }
 
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c0392b;
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
 .btn:disabled {
     background: #E8E1F5;
     color: #999;

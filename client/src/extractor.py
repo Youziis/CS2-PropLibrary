@@ -27,8 +27,9 @@ def extract_utilities(demo_data):
     throw_events = []
     detonate_events = []
     
-    # 统计武器类型
-    weapon_types = {}
+    # 统计武器类型（投掷和爆炸分别统计）
+    throw_weapon_types = {}
+    detonate_weapon_types = {}
     
     for event in events:
         event_name = event.get('event_name', '')
@@ -40,20 +41,39 @@ def extract_utilities(demo_data):
                 throw_events.append(event)
                 # 统计武器类型
                 normalized = normalize_weapon_name(weapon)
-                weapon_types[normalized] = weapon_types.get(normalized, 0) + 1
+                throw_weapon_types[normalized] = throw_weapon_types.get(normalized, 0) + 1
         
         # 爆炸/激活事件
         elif 'detonate' in event_name or 'startburn' in event_name or 'started' in event_name:
             detonate_events.append(event)
+            # 统计爆炸类型
+            det_weapon = get_weapon_from_event(event)
+            detonate_weapon_types[det_weapon] = detonate_weapon_types.get(det_weapon, 0) + 1
     
     # 输出统计信息
     print(f"\n[道具解析统计]")
     print(f"投掷事件: {len(throw_events)} 个")
+    if throw_weapon_types:
+        print(f"  投掷类型分布:")
+        for weapon_type, count in sorted(throw_weapon_types.items()):
+            print(f"    - {weapon_type}: {count} 个")
+    
     print(f"爆炸事件: {len(detonate_events)} 个")
-    if weapon_types:
-        print(f"武器类型分布:")
-        for weapon_type, count in sorted(weapon_types.items()):
-            print(f"  - {weapon_type}: {count} 个")
+    if detonate_weapon_types:
+        print(f"  爆炸类型分布:")
+        for weapon_type, count in sorted(detonate_weapon_types.items()):
+            print(f"    - {weapon_type}: {count} 个")
+    
+    # 对比投掷和爆炸数量差异
+    all_types = set(throw_weapon_types.keys()) | set(detonate_weapon_types.keys())
+    if all_types:
+        print(f"  类型数量对比:")
+        for weapon_type in sorted(all_types):
+            throw_count = throw_weapon_types.get(weapon_type, 0)
+            det_count = detonate_weapon_types.get(weapon_type, 0)
+            diff = throw_count - det_count
+            diff_str = f"({diff:+d})" if diff != 0 else ""
+            print(f"    - {weapon_type}: 投掷{throw_count} vs 爆炸{det_count} {diff_str}")
     
     # 匹配投掷和爆炸事件
     utilities = match_throw_detonate(
@@ -85,6 +105,7 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
     stats = {
         'total_throws': len(throw_events),
         'weapon_mismatch': 0,
+        'player_mismatch': 0,
         'time_too_short': 0,
         'time_too_long': 0,
         'distance_too_far': 0,
@@ -92,8 +113,8 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
         'matched': 0
     }
     
-    # 统计武器类型不匹配的详细信息
-    weapon_mismatch_details = {}
+    # 记录未匹配的投掷事件详情（用于调试）
+    unmatched_throws = []
     
     # 辅助函数：获取字段值（支持 user_ 前缀）
     def get_field(event, field_name):
@@ -115,8 +136,19 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
         min_score = float('inf')
         match_failed_reason = 'no_match_found'
         
+        # 统计遇到的问题（用于理解为什么没匹配上）
+        rejection_counts = {
+            'weapon_mismatch': 0,
+            'player_mismatch': 0,
+            'time_negative': 0,
+            'time_too_long': 0,
+            'distance_too_far': 0,
+            'already_used': 0
+        }
+        
         for idx, det_event in enumerate(detonate_events):
             if idx in used_detonations:
+                rejection_counts['already_used'] += 1
                 continue
             
             det_tick = det_event.get('tick', 0)
@@ -125,24 +157,39 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
             det_name = get_field(det_event, 'name')  # 【新增】获取爆炸事件的玩家名字
             
             # 1. 武器类型匹配
-            if det_weapon != throw_weapon:
+            # 特殊处理：molotov 和 incendiary 在爆炸时都是 inferno_startburn 事件
+            # 所以把它们视为可以互相匹配
+            is_match = (det_weapon == throw_weapon) or \
+                       (throw_weapon in ['molotov', 'incendiary'] and det_weapon in ['molotov', 'incendiary'])
+            
+            if not is_match:
+                rejection_counts['weapon_mismatch'] += 1
                 match_failed_reason = 'weapon_mismatch'
-                # 记录不匹配的武器类型组合
-                mismatch_key = f"{throw_weapon} -> {det_weapon}"
-                weapon_mismatch_details[mismatch_key] = weapon_mismatch_details.get(mismatch_key, 0) + 1
+                continue
+            
+            # 1.5. 【新增】强制同玩家匹配（避免错误配对）
+            # 投掷者和爆炸者必须是同一人
+            player_match = False
+            if det_user_id and throw_user_id and det_user_id == throw_user_id:
+                player_match = True
+            elif det_name and throw_name and det_name == throw_name:
+                player_match = True
+            
+            if not player_match:
+                rejection_counts['player_mismatch'] = rejection_counts.get('player_mismatch', 0) + 1
+                match_failed_reason = 'player_mismatch'
                 continue
             
             # 2. 爆炸在投掷之后
             tick_diff = det_tick - throw_tick
             if tick_diff < 0:
+                rejection_counts['time_negative'] += 1
                 match_failed_reason = 'time_too_short'
                 continue
             
-            # 3. 时间差在合理范围内（5秒）
+            # 3. 时间差在合理范围内（去除限制，只要爆炸在投掷之后即可）
             time_diff = tick_diff / tick_rate
-            if time_diff > 5.0:
-                match_failed_reason = 'time_too_long'
-                continue
+            # 不再限制最大时间间隔
             
             # 4. 【新增】烟雾弹的飞行时间合理性检查
             # 烟雾弹正常飞行时间：1-3秒（跳投可能短至0.5秒，远投可能长至4秒）
@@ -166,22 +213,17 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
             }
             distance = calculate_distance(throw_pos, det_pos)
             
-            # 距离太远（超过3000单位）的不匹配
-            if distance > 3000:
+            # 放宽距离限制：道具可以飞很远（特别是远投的烟雾弹）
+            # 只过滤明显不合理的超远距离（>5000单位）
+            if distance > 5000:
+                rejection_counts['distance_too_far'] += 1
                 match_failed_reason = 'distance_too_far'
                 continue
             
             # 6. 综合评分
-            # - 优先匹配相同玩家（通过name或user_id）
-            # - 优先匹配时间较长的（更符合物理）
+            # - 优先匹配时间较近的爆炸（更可能是正确匹配）
             # - 距离作为次要因素
-            score = tick_diff * -1 + distance * 0.1 + time_penalty  # 时间越长分数越低（越优先）
-            
-            # 【重点修改】玩家匹配优先级最高
-            if det_user_id and throw_user_id and det_user_id == throw_user_id:
-                score -= 10000  # user_id匹配
-            elif det_name and throw_name and det_name == throw_name:
-                score -= 10000  # 名字匹配（同样重要）
+            score = tick_diff + distance * 0.01 + time_penalty  # 时间越短分数越低（越优先）
             
             if score < min_score:
                 best_match = (idx, det_event, tick_diff)
@@ -204,27 +246,58 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
             stats['matched'] += 1
         else:
             stats[match_failed_reason] += 1
+            # 记录未匹配的投掷事件（只记录前5个用于调试）
+            if len(unmatched_throws) < 5:
+                unmatched_throws.append({
+                    'player': throw_name or 'Unknown',
+                    'weapon': throw_weapon,
+                    'tick': throw_tick,
+                    'reason': match_failed_reason,
+                    'rejection_counts': rejection_counts.copy()
+                })
     
     # 输出匹配统计
     print(f"\n[投掷-爆炸匹配统计]")
     print(f"总投掷事件: {stats['total_throws']} 个")
     print(f"成功匹配: {stats['matched']} 个 ({stats['matched']/stats['total_throws']*100:.1f}%)")
     if stats['total_throws'] - stats['matched'] > 0:
-        print(f"未匹配原因:")
+        unmatched = stats['total_throws'] - stats['matched']
+        print(f"\n未匹配: {unmatched} 个投掷事件 ({unmatched/stats['total_throws']*100:.1f}%)")
+        print(f"未匹配原因分布:")
         if stats['weapon_mismatch'] > 0:
-            print(f"  - 武器类型不匹配: {stats['weapon_mismatch']} 个")
-            if weapon_mismatch_details:
-                print(f"    详细类型不匹配:")
-                for mismatch, count in sorted(weapon_mismatch_details.items(), key=lambda x: -x[1])[:10]:
-                    print(f"      {mismatch}: {count} 次")
+            print(f"  - 找不到同类型爆炸事件: {stats['weapon_mismatch']} 个")
+        if stats['player_mismatch'] > 0:
+            print(f"  - 玩家不匹配: {stats['player_mismatch']} 个")
         if stats['time_too_short'] > 0:
             print(f"  - 爆炸在投掷之前: {stats['time_too_short']} 个")
         if stats['time_too_long'] > 0:
             print(f"  - 时间间隔太长(>5秒): {stats['time_too_long']} 个")
         if stats['distance_too_far'] > 0:
-            print(f"  - 距离太远(>3000单位): {stats['distance_too_far']} 个")
+            print(f"  - 距离太远(>5000单位): {stats['distance_too_far']} 个")
         if stats['no_match_found'] > 0:
-            print(f"  - 找不到合适的爆炸事件: {stats['no_match_found']} 个")
+            print(f"  - 所有爆炸事件已被占用: {stats['no_match_found']} 个")
+        
+        # 显示详细的未匹配样本
+        if unmatched_throws:
+            print(f"\n未匹配投掷事件样本（前{len(unmatched_throws)}个）:")
+            for i, ut in enumerate(unmatched_throws, 1):
+                print(f"  {i}. {ut['player']} 投掷 {ut['weapon']} (tick:{ut['tick']}) - 原因: {ut['reason']}")
+                rc = ut['rejection_counts']
+                if sum(rc.values()) > 0:
+                    details = []
+                    if rc['weapon_mismatch'] > 0:
+                        details.append(f"类型不匹配×{rc['weapon_mismatch']}")
+                    if rc.get('player_mismatch', 0) > 0:
+                        details.append(f"玩家不匹配×{rc['player_mismatch']}")
+                    if rc['time_negative'] > 0:
+                        details.append(f"时间倒退×{rc['time_negative']}")
+                    if rc['time_too_long'] > 0:
+                        details.append(f"时间太长×{rc['time_too_long']}")
+                    if rc['distance_too_far'] > 0:
+                        details.append(f"距离太远×{rc['distance_too_far']}")
+                    if rc['already_used'] > 0:
+                        details.append(f"已被占用×{rc['already_used']}")
+                    print(f"     检查了 {sum(rc.values())} 个爆炸事件: {', '.join(details)}")
     
     return utilities
 

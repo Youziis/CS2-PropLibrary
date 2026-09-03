@@ -492,7 +492,10 @@ async function loadTypeStats() {
         html += '<span id="visible-count" class="count">0</span>';
         html += '<span class="label">个</span>';
         html += '</div>';
+        html += '<div class="button-group">';
         html += '<button class="btn btn-large btn-primary" onclick="saveSelectedUtilities()">保存选择并准备截图</button>';
+        html += '<button class="btn btn-large btn-danger" onclick="deleteSelectedUtilities()">批量删除</button>';
+        html += '</div>';
         html += '</div>';
         
         html += '</div>'; // 结束 selection-controls
@@ -813,6 +816,86 @@ async function saveSelectedUtilities() {
         }
     } catch (error) {
         alert('保存失败: ' + error.message);
+    }
+}
+
+async function deleteSelectedUtilities() {
+    if (selectedUtilities.size === 0) {
+        alert('请至少选择一个道具');
+        return;
+    }
+    
+    const confirmMessage = `⚠️ 确定要删除选中的 ${selectedUtilities.size} 个道具吗？\n\n` +
+        `此操作将：\n` +
+        `• 从数据库中删除道具记录\n` +
+        `• 删除相关的截图文件（如果有）\n` +
+        `• 删除前端JSON数据（如果已导出）\n\n` +
+        `此操作不可撤销！`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // 二次确认
+    if (!confirm(`再次确认：真的要删除这 ${selectedUtilities.size} 个道具吗？`)) {
+        return;
+    }
+    
+    const selectedHashArray = Array.from(selectedUtilities);
+    
+    try {
+        const btn = event.target;
+        btn.disabled = true;
+        btn.textContent = '删除中...';
+        
+        // 批量调用删除API
+        let successCount = 0;
+        let failCount = 0;
+        const errors = [];
+        
+        for (const hash of selectedHashArray) {
+            try {
+                const response = await fetch(`/api/utilities/${hash}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    successCount++;
+                } else {
+                    failCount++;
+                    errors.push(`${hash}: ${result.message}`);
+                }
+            } catch (error) {
+                failCount++;
+                errors.push(`${hash}: ${error.message}`);
+            }
+        }
+        
+        // 显示结果
+        let message = `删除完成！\n\n成功: ${successCount} 个\n失败: ${failCount} 个`;
+        if (errors.length > 0 && errors.length <= 5) {
+            message += '\n\n失败详情:\n' + errors.join('\n');
+        }
+        
+        alert(message);
+        
+        // 清空选择
+        selectedUtilities.clear();
+        
+        // 刷新页面数据
+        loadStats();
+        loadTypeStats();
+        
+    } catch (error) {
+        alert('删除失败: ' + error.message);
+    } finally {
+        const btn = event.target;
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = '批量删除';
+        }
     }
 }
 
