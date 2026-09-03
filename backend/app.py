@@ -861,8 +861,8 @@ def export_single_utility(utility, db_instance):
         # 添加新道具
         existing_utilities.append(utility_data)
         
-        # 按ID排序
-        existing_utilities.sort(key=lambda u: u['id'])
+        # 按sort_id排序（如果没有sort_id则放在最后）
+        existing_utilities.sort(key=lambda u: u.get('sort_id', 999999))
         
         # 保存更新后的数据
         with open(map_data_file, 'w', encoding='utf-8') as f:
