@@ -61,7 +61,9 @@
       "distance": 2427.7,
       "command": "setpos 1089.17 -1014.90 -257.79; setang -29.29 -143.84 0",
       "quality": 3,
-      "tags": [],
+      "tags": [
+        "A1"
+      ],
       "notes": "对准拐角墙壁的中间贴住，左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_058bd2a7_position.jpg",
@@ -69,7 +71,8 @@
         "landing": "images/de_mirage/smoke/de_mirage_smoke_058bd2a7_landing.jpg"
       },
       "thrower": "sh1ro",
-      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem",
+      "hash": "058bd2a7bd6a114a"
     },
     {
       "id": "de_mirage_smoke_0923f5ee",
@@ -104,7 +107,8 @@
         "landing": "images/de_mirage/smoke/de_mirage_smoke_0923f5ee_landing.jpg"
       },
       "thrower": "sh1ro",
-      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem",
+      "hash": "0923f5ee1208d4f3"
     },
     {
       "id": "de_mirage_smoke_0f359351",
@@ -139,6 +143,76 @@
         "landing": "images/de_mirage/smoke/de_mirage_smoke_0f359351_landing.jpg"
       },
       "thrower": "sh1ro",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_1b58ee68",
+      "type": "smoke",
+      "team": "T",
+      "name": "VIP快烟（3号位）",
+      "description": "w + 左键跳投，飞行时间 7.4 秒",
+      "position": {
+        "x": 1216.0,
+        "y": -16.0,
+        "z": -163.96875
+      },
+      "angles": {
+        "pitch": -43.46087646484375,
+        "yaw": -166.01406860351562
+      },
+      "land_position": {
+        "x": -1212.733154296875,
+        "y": -643.7478637695312,
+        "z": -165.96875
+      },
+      "throw_type": "w + 左键跳投",
+      "flight_time": 7.39,
+      "distance": 2508.5,
+      "command": "setpos 1216.00 -16.00 -163.97; setang -43.46 -166.01 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "瞄准白色窗边左侧大概位置，w+左键跳投。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_1b58ee68_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_1b58ee68_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_1b58ee68_landing.jpg"
+      },
+      "thrower": "magixx",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_1d4676c3",
+      "type": "smoke",
+      "team": "T",
+      "name": "超市窗口烟",
+      "description": "左键跳投，飞行时间 1973.8 秒",
+      "position": {
+        "x": -160.046630859375,
+        "y": 887.9411010742188,
+        "z": -135.32757568359375
+      },
+      "angles": {
+        "pitch": -48.3123779296875,
+        "yaw": -146.49478149414062
+      },
+      "land_position": {
+        "x": -676.3484497070312,
+        "y": -798.9611206054688,
+        "z": -261.96875
+      },
+      "throw_type": "左键跳投",
+      "flight_time": 1973.8,
+      "distance": 1768.7,
+      "command": "setpos -160.05 887.94 -135.33; setang -48.31 -146.49 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "抵住左侧墙角，左键跳投。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_1d4676c3_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_1d4676c3_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_1d4676c3_landing.jpg"
+      },
+      "thrower": "magixx",
       "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
     },
     {
@@ -178,6 +252,181 @@
       "thrower": "magixx",
       "demo_source": "100-thieves-vs-spirit-m2-mirage.dem",
       "hash": "221f1977dc285942"
+    },
+    {
+      "id": "de_mirage_smoke_268503f4",
+      "type": "smoke",
+      "team": "T",
+      "name": "VIP烟",
+      "description": "跑两步左键跳投，飞行时间 891.8 秒",
+      "position": {
+        "x": 1385.1646728515625,
+        "y": -90.32061767578125,
+        "z": -156.796875
+      },
+      "angles": {
+        "pitch": -21.104400634765625,
+        "yaw": 163.4051513671875
+      },
+      "land_position": {
+        "x": -1163.727294921875,
+        "y": -643.2526245117188,
+        "z": -165.969970703125
+      },
+      "throw_type": "跑两步左键跳投",
+      "flight_time": 891.78,
+      "distance": 2608.2,
+      "command": "setpos 1385.16 -90.32 -156.80; setang -21.10 163.41 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "瞄准红色墙壁右上角和右侧墙壁污渍延伸的交点处，向左跑两步左键跳投。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_268503f4_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_268503f4_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_268503f4_landing.jpg"
+      },
+      "thrower": "sh1ro",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_2b88a30b",
+      "type": "smoke",
+      "team": "T",
+      "name": "中路沙袋过点烟（2号位）",
+      "description": "左键投掷，飞行时间 5.1 秒",
+      "position": {
+        "x": 1296.0,
+        "y": 32.0,
+        "z": -167.96875
+      },
+      "angles": {
+        "pitch": -51.051055908203125,
+        "yaw": -161.01870727539062
+      },
+      "land_position": {
+        "x": 42.377235412597656,
+        "y": -492.2238464355469,
+        "z": -182.60287475585938
+      },
+      "throw_type": "左键投掷",
+      "flight_time": 5.14,
+      "distance": 1358.9,
+      "command": "setpos 1296.00 32.00 -167.97; setang -51.05 -161.02 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_2b88a30b_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_2b88a30b_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_2b88a30b_landing.jpg"
+      },
+      "thrower": "magixx",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_3283e78a",
+      "type": "smoke",
+      "team": "T",
+      "name": "连接烟",
+      "description": "左键跳投，飞行时间 7.2 秒",
+      "position": {
+        "x": 1003.96875,
+        "y": -1210.031494140625,
+        "z": -98.625
+      },
+      "angles": {
+        "pitch": -14.345062255859375,
+        "yaw": -169.0833740234375
+      },
+      "land_position": {
+        "x": -657.1446533203125,
+        "y": -1631.8140869140625,
+        "z": -169.96875
+      },
+      "throw_type": "左键跳投",
+      "flight_time": 7.19,
+      "distance": 1715.3,
+      "command": "setpos 1003.97 -1210.03 -98.62; setang -14.35 -169.08 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "背靠第二根木条中间，左键跳投。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_3283e78a_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_3283e78a_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_3283e78a_landing.jpg"
+      },
+      "thrower": "Gizmy",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_39efbbec",
+      "type": "smoke",
+      "team": "CT",
+      "name": "A2楼烟",
+      "description": "跑两步左键跳投，飞行时间 4.6 秒",
+      "position": {
+        "x": -796.0748901367188,
+        "y": -2251.215087890625,
+        "z": -179.10791015625
+      },
+      "angles": {
+        "pitch": -10.309295654296875,
+        "yaw": 58.88226318359375
+      },
+      "land_position": {
+        "x": 92.14009857177734,
+        "y": -2294.634521484375,
+        "z": -37.96875
+      },
+      "throw_type": "跑两步左键跳投",
+      "flight_time": 4.64,
+      "distance": 900.4,
+      "command": "setpos -796.07 -2251.22 -179.11; setang -10.31 58.88 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "从警家往前走，直到看到左侧墙壁超出右侧墙壁，跑两步左键跳投。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_39efbbec_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_39efbbec_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_39efbbec_landing.jpg"
+      },
+      "thrower": "sirah",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_4485a7db",
+      "type": "smoke",
+      "team": "T",
+      "name": "警家隔断烟",
+      "description": "左键跳投，飞行时间 5.0 秒",
+      "position": {
+        "x": 908.3911743164062,
+        "y": -1036.028564453125,
+        "z": -246.90625
+      },
+      "angles": {
+        "pitch": -25.013809204101562,
+        "yaw": -149.13597106933594
+      },
+      "land_position": {
+        "x": -798.71337890625,
+        "y": -2170.1044921875,
+        "z": 18.03125
+      },
+      "throw_type": "左键跳投",
+      "flight_time": 5.02,
+      "distance": 2066.5,
+      "command": "setpos 908.39 -1036.03 -246.91; setang -25.01 -149.14 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "瞄准两块砖的顶部中间位置，左键跳投---用于拱门进攻，隔断警家枪线。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_4485a7db_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_4485a7db_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_4485a7db_landing.jpg"
+      },
+      "thrower": "magixx",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
     },
     {
       "id": "de_mirage_smoke_471d8aec",
@@ -286,6 +535,41 @@
       "thrower": "magixx",
       "demo_source": "100-thieves-vs-spirit-m2-mirage.dem",
       "hash": "5b008d1bcb0a61d9"
+    },
+    {
+      "id": "de_mirage_smoke_6c7a61fa",
+      "type": "smoke",
+      "team": "T",
+      "name": "跳台烟",
+      "description": "左键跳投，飞行时间 8.8 秒",
+      "position": {
+        "x": 1239.5765380859375,
+        "y": -1127.6634521484375,
+        "z": -254.30718994140625
+      },
+      "angles": {
+        "pitch": -58.189430236816406,
+        "yaw": -166.38038635253906
+      },
+      "land_position": {
+        "x": -756.530517578125,
+        "y": -1512.3134765625,
+        "z": -165.96875
+      },
+      "throw_type": "左键跳投",
+      "flight_time": 8.77,
+      "distance": 2034.7,
+      "command": "setpos 1239.58 -1127.66 -254.31; setang -58.19 -166.38 0",
+      "quality": 3,
+      "tags": [],
+      "notes": "",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_6c7a61fa_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_6c7a61fa_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_6c7a61fa_landing.jpg"
+      },
+      "thrower": "donk",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
     },
     {
       "id": "de_mirage_smoke_7168125b",
