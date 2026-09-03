@@ -855,8 +855,9 @@ def export_single_utility(utility, db_instance):
             except Exception as e:
                 print(f"[警告] 读取已有地图数据失败: {e}")
         
-        # 移除旧的同ID道具（如果存在）
-        existing_utilities = [u for u in existing_utilities if u.get('id') != utility_id]
+        # 移除旧的同hash道具（如果存在），使用hash去重
+        utility_hash = utility['hash']
+        existing_utilities = [u for u in existing_utilities if u.get('hash') != utility_hash]
         
         # 添加新道具
         existing_utilities.append(utility_data)

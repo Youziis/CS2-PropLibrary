@@ -147,6 +147,7 @@ def export_utilities():
                 map_utilities.append({
                     'id': utility_id,  # 使用legacy_id作为唯一标识符
                     'sort_id': util.get('sort_id'),  # 用于排序的数字ID
+                    'hash': util['hash'],  # 添加hash字段用于去重
                     'type': util_type,
                     'team': util.get('team', 'Unknown'),
                     'name': util.get('display_name', f'{util_type}_{util_hash}'),
@@ -174,25 +175,26 @@ def export_utilities():
             
             # 读取已有的地图数据
             existing_utilities = []
-            existing_ids = set()
+            existing_hashes = set()
             
             if map_data_file.exists():
                 try:
                     with open(map_data_file, 'r', encoding='utf-8') as f:
                         existing_data = json.load(f)
                         existing_utilities = existing_data.get('utilities', [])
-                        # 记录已有道具的ID
-                        existing_ids = {u['id'] for u in existing_utilities}
+                        # 记录已有道具的hash（用于去重）
+                        existing_hashes = {u.get('hash') for u in existing_utilities if u.get('hash')}
                 except Exception as e:
                     print(f"[警告] 读取已有地图数据失败: {e}")
             
-            # 合并道具列表：更新已有道具或添加新道具
+            # 合并道具列表：使用hash去重
             merged_utilities = []
-            new_utility_ids = {u['id'] for u in map_utilities}
+            new_utility_hashes = {u['hash'] for u in map_utilities}
             
-            # 保留未被更新的已有道具
+            # 保留未被更新的已有道具（通过hash判断）
             for existing_util in existing_utilities:
-                if existing_util['id'] not in new_utility_ids:
+                existing_hash = existing_util.get('hash')
+                if existing_hash and existing_hash not in new_utility_hashes:
                     merged_utilities.append(existing_util)
             
             # 添加所有新道具（包括更新的道具）
