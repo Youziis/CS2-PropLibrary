@@ -41,7 +41,6 @@
     {
       "id": "de_mirage_smoke_1b58ee68",
       "sort_id": 20003,
-      "hash": "1b58ee681a6eeda9",
       "type": "smoke",
       "team": "T",
       "name": "VIP快烟（3号位）",
@@ -63,7 +62,9 @@
       "flight_time": 7.39,
       "distance": 2508.5,
       "command": "setpos 1216.00 -16.00 -163.97; setang -43.46 -166.01 0",
-      "tags": [],
+      "tags": [
+        "快烟"
+      ],
       "notes": "瞄准白色窗边左侧大概位置，w+左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_1b58ee68_position.jpg",
@@ -71,12 +72,12 @@
         "landing": "images/de_mirage/smoke/de_mirage_smoke_1b58ee68_landing.jpg"
       },
       "thrower": "magixx",
-      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem",
+      "hash": "1b58ee681a6eeda9"
     },
     {
       "id": "de_mirage_smoke_0923f5ee",
       "sort_id": 20004,
-      "hash": "0923f5ee1208d4f3",
       "type": "smoke",
       "team": "T",
       "name": "VIP快烟（4号位）",
@@ -98,7 +99,9 @@
       "flight_time": 7.97,
       "distance": 2475.9,
       "command": "setpos 1216.00 -115.00 -163.97; setang -44.39 -167.88 0",
-      "tags": [],
+      "tags": [
+        "快烟"
+      ],
       "notes": "",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_0923f5ee_position.jpg",
@@ -106,7 +109,8 @@
         "landing": "images/de_mirage/smoke/de_mirage_smoke_0923f5ee_landing.jpg"
       },
       "thrower": "sh1ro",
-      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem",
+      "hash": "0923f5ee1208d4f3"
     },
     {
       "id": "de_mirage_smoke_471d8aec",
