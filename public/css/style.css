@@ -1229,11 +1229,27 @@ body.detail-page {
     font-weight: 500;
     box-shadow: 0 2px 4px rgba(184, 164, 212, 0.3);
     transition: all 0.2s ease;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+a.tag-badge {
+    text-decoration: none !important;
+    color: white;
+}
+
+a.tag-badge:hover,
+a.tag-badge:focus,
+a.tag-badge:active,
+a.tag-badge:visited {
+    text-decoration: none !important;
+    color: white;
 }
 
 .tag-badge:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(184, 164, 212, 0.4);
+    background: linear-gradient(135deg, #c9a0dc 0%, #d4b0e8 100%);
 }
 
 /* ==================== 道具卡片中的迷你标签 ==================== */

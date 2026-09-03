@@ -32,6 +32,9 @@ const router = {
         } else if (hash.startsWith('/map/')) {
             const mapName = hash.split('/')[2];
             this.routes['/map/:name'](mapName);
+        } else if (hash.startsWith('/tag/')) {
+            const tagName = decodeURIComponent(hash.split('/')[2]);
+            this.routes['/tag/:name'](tagName);
         } else if (hash.startsWith('/utility/')) {
             const utilityId = hash.split('/')[2];
             this.routes['/utility/:id'](utilityId);
@@ -59,6 +62,7 @@ function initRouter() {
     router.register('/maps', showMapsPage);
     router.register('/utilities', showUtilitiesPage);
     router.register('/map/:name', showMapUtilitiesPage);
+    router.register('/tag/:name', showTagUtilitiesPage);
     router.register('/utility/:id', showDetailPage);
     router.init();
 }
@@ -270,6 +274,26 @@ async function showMapUtilitiesPage(mapName) {
     applyFilters();
 }
 
+// ✅ 新增：标签页面
+async function showTagUtilitiesPage(tagName) {
+    hideAllViews();
+    document.getElementById('utilities-view').style.display = 'block';
+    state.currentView = 'tag';
+    
+    document.getElementById('utilities-title').textContent = `标签: ${tagName}`;
+    
+    // 加载所有道具（如果还没加载）
+    await loadAllUtilities();
+    
+    // 筛选该标签的道具
+    state.allUtilities = state.allUtilities.filter(u => 
+        u.tags && Array.isArray(u.tags) && u.tags.includes(tagName)
+    );
+    
+    setupUtilitiesFilters();
+    applyFilters();
+}
+
 function setupUtilitiesFilters() {
     // 重置筛选状态
     state.currentType = 'all';
@@ -405,10 +429,10 @@ function renderDetailPage(utilityId) {
     
     const content = document.getElementById('detail-content');
     
-    // 处理标签显示
+    // 处理标签显示（可点击跳转）
     const tagsHtml = utility.tags && utility.tags.length > 0 
         ? `<div class="detail-tags">
-               ${utility.tags.map(tag => `<span class="tag-badge">${tag}</span>`).join('')}
+               ${utility.tags.map(tag => `<a href="#/tag/${encodeURIComponent(tag)}" class="tag-badge">${tag}</a>`).join('')}
            </div>`
         : '';
     
