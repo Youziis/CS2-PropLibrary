@@ -3,7 +3,7 @@
   "utilities": [
     {
       "id": "de_mirage_incendiary_3c8c242b",
-      "sort_id": 20001,
+      "sort_id": 20007,
       "hash": "3c8c242bdce06b99",
       "type": "incendiary",
       "team": "CT",
@@ -75,7 +75,7 @@
     },
     {
       "id": "de_mirage_smoke_754c0f16",
-      "sort_id": 20003,
+      "sort_id": 20019,
       "hash": "754c0f1633667cc5",
       "type": "smoke",
       "team": "T",
@@ -110,7 +110,7 @@
     },
     {
       "id": "de_mirage_smoke_39efbbec",
-      "sort_id": 20004,
+      "sort_id": 20020,
       "hash": "39efbbecf4e6a593",
       "type": "smoke",
       "team": "CT",
@@ -221,7 +221,7 @@
     },
     {
       "id": "de_mirage_smoke_c69e2315",
-      "sort_id": 20007,
+      "sort_id": 20001,
       "hash": "c69e231583736c57",
       "type": "smoke",
       "team": "T",
@@ -657,7 +657,7 @@
     },
     {
       "id": "de_mirage_smoke_1b58ee68",
-      "sort_id": 20019,
+      "sort_id": 20003,
       "hash": "1b58ee681a6eeda9",
       "type": "smoke",
       "team": "T",
@@ -692,7 +692,7 @@
     },
     {
       "id": "de_mirage_smoke_0923f5ee",
-      "sort_id": 20020,
+      "sort_id": 20004,
       "hash": "0923f5ee1208d4f3",
       "type": "smoke",
       "team": "T",

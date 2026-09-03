@@ -66,7 +66,9 @@ function initRouter() {
 // ==================== 数据加载 ====================
 async function loadData() {
     try {
-        const indexResponse = await fetch('data/utilities.json');
+        // 添加时间戳参数防止缓存
+        const timestamp = new Date().getTime();
+        const indexResponse = await fetch(`data/utilities.json?t=${timestamp}`);
         
         if (!indexResponse.ok) {
             if (indexResponse.status === 404) {
@@ -114,9 +116,10 @@ async function loadAllUtilitiesData() {
     
     // 加载所有地图的道具数据
     const allUtilities = [];
+    const timestamp = new Date().getTime(); // 添加时间戳防止缓存
     for (const map of state.maps) {
         try {
-            const response = await fetch(map.data_file);
+            const response = await fetch(`${map.data_file}?t=${timestamp}`);
             const mapData = await response.json();
             allUtilities.push(...mapData.utilities);
         } catch (error) {
@@ -132,7 +135,8 @@ async function loadMapData(mapName) {
         const map = state.maps.find(m => m.name === mapName);
         if (!map) return;
         
-        const response = await fetch(map.data_file);
+        const timestamp = new Date().getTime(); // 添加时间戳防止缓存
+        const response = await fetch(`${map.data_file}?t=${timestamp}`);
         const mapData = await response.json();
         state.allUtilities = mapData.utilities;
         
@@ -144,8 +148,9 @@ async function loadMapData(mapName) {
 async function loadAllUtilities() {
     try {
         state.allUtilities = [];
+        const timestamp = new Date().getTime(); // 添加时间戳防止缓存
         for (const map of state.maps) {
-            const response = await fetch(map.data_file);
+            const response = await fetch(`${map.data_file}?t=${timestamp}`);
             const mapData = await response.json();
             state.allUtilities.push(...mapData.utilities);
         }
@@ -295,7 +300,7 @@ function applyFilters() {
     if (state.searchQuery) {
         filtered = filtered.filter(u => 
             u.name.toLowerCase().includes(state.searchQuery) ||
-            u.description.toLowerCase().includes(state.searchQuery)
+            (u.throw_type && u.throw_type.toLowerCase().includes(state.searchQuery))
         );
     }
     
@@ -339,7 +344,7 @@ function renderUtilities() {
                 >
                 <div class="utility-info">
                     <div class="utility-name">${utility.name}</div>
-                    <div class="utility-meta">${utility.description}</div>
+                    <div class="utility-meta">${utility.throw_type || '未知投掷方式'}</div>
                     ${tagsHtml}
                 </div>
             </div>
