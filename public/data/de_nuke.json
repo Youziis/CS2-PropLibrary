@@ -43,10 +43,10 @@
     },
     {
       "id": "de_nuke_smoke_4fded929",
+      "sort_id": 40001,
       "type": "smoke",
       "team": "T",
       "name": "test-nuke",
-      "description": "左键跳投，飞行时间 0.0 秒",
       "position": {
         "x": 233,
         "y": 233,
@@ -65,7 +65,6 @@
       "flight_time": 0,
       "distance": 0,
       "command": "setpos 233.00 233.00 233.00; setang 233.00 233.00 0",
-      "quality": 3,
       "tags": [
         "1",
         "2",
@@ -78,8 +77,7 @@
         "landing": "images/de_nuke/smoke/de_nuke_smoke_4fded929_landing.jpg"
       },
       "thrower": null,
-      "demo_source": null,
-      "hash": "4fded929bbf6d29b"
+      "demo_source": null
     }
   ]
 }

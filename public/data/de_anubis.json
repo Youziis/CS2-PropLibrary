@@ -38,6 +38,40 @@
       "demo_source": "100-thieves-vs-spirit-m1-anubis.dem"
     },
     {
+      "id": "de_anubis_smoke_29dad53a",
+      "sort_id": 60001,
+      "type": "smoke",
+      "team": "T",
+      "name": "黑屋烟",
+      "position": {
+        "x": -568.0576171875,
+        "y": -1279.054443359375,
+        "z": 17.734375
+      },
+      "angles": {
+        "pitch": -30.195236206054688,
+        "yaw": 95.64630126953125
+      },
+      "land_position": {
+        "x": 819.0543823242188,
+        "y": -170.39060974121094,
+        "z": -93.96875
+      },
+      "throw_type": "左键跳投",
+      "flight_time": 3.58,
+      "distance": 1779.2,
+      "command": "setpos -568.06 -1279.05 17.73; setang -30.20 95.65 0",
+      "tags": [],
+      "notes": "抵住台阶投掷。",
+      "screenshots": {
+        "position": "images/de_anubis/smoke/de_anubis_smoke_29dad53a_position.jpg",
+        "crosshair": "images/de_anubis/smoke/de_anubis_smoke_29dad53a_crosshair.jpg",
+        "landing": "images/de_anubis/smoke/de_anubis_smoke_29dad53a_landing.jpg"
+      },
+      "thrower": "magixx",
+      "demo_source": "100-thieves-vs-spirit-m1-anubis.dem"
+    },
+    {
       "id": 60002,
       "legacy_id": "de_anubis_smoke_93060c54",
       "sort_id": 60002,
@@ -74,46 +108,11 @@
       "demo_source": "100-thieves-vs-spirit-m1-anubis.dem"
     },
     {
-      "id": "de_anubis_smoke_29dad53a",
-      "type": "smoke",
-      "team": "T",
-      "name": "黑屋烟",
-      "description": "左键跳投，飞行时间 3.6 秒",
-      "position": {
-        "x": -568.0576171875,
-        "y": -1279.054443359375,
-        "z": 17.734375
-      },
-      "angles": {
-        "pitch": -30.195236206054688,
-        "yaw": 95.64630126953125
-      },
-      "land_position": {
-        "x": 819.0543823242188,
-        "y": -170.39060974121094,
-        "z": -93.96875
-      },
-      "throw_type": "左键跳投",
-      "flight_time": 3.58,
-      "distance": 1779.2,
-      "command": "setpos -568.06 -1279.05 17.73; setang -30.20 95.65 0",
-      "quality": 3,
-      "tags": [],
-      "notes": "抵住台阶投掷。",
-      "screenshots": {
-        "position": "images/de_anubis/smoke/de_anubis_smoke_29dad53a_position.jpg",
-        "crosshair": "images/de_anubis/smoke/de_anubis_smoke_29dad53a_crosshair.jpg",
-        "landing": "images/de_anubis/smoke/de_anubis_smoke_29dad53a_landing.jpg"
-      },
-      "thrower": "magixx",
-      "demo_source": "100-thieves-vs-spirit-m1-anubis.dem"
-    },
-    {
       "id": "de_anubis_smoke_93060c54",
+      "sort_id": 60002,
       "type": "smoke",
       "team": "T",
       "name": "警家隔断烟",
-      "description": "左键跳投，飞行时间 4.7 秒",
       "position": {
         "x": -937.8806762695312,
         "y": -1363.441650390625,
@@ -132,7 +131,6 @@
       "flight_time": 4.7,
       "distance": 1649.1,
       "command": "setpos -937.88 -1363.44 75.64; setang -11.99 99.90 0",
-      "quality": 3,
       "tags": [],
       "notes": "走上楼梯，贴住墙壁拐角投掷。",
       "screenshots": {

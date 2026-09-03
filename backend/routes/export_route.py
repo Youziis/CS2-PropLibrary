@@ -145,13 +145,11 @@ def export_utilities():
                 
                 # 生成道具数据
                 map_utilities.append({
-                    'id': util.get('sort_id', utility_id),  # ✅ 使用sort_id作为前端ID
-                    'legacy_id': utility_id,  # 保留原ID作为备用
-                    'sort_id': util.get('sort_id'),  # 显式包含sort_id字段
+                    'id': utility_id,  # 使用legacy_id作为唯一标识符
+                    'sort_id': util.get('sort_id'),  # 用于排序的数字ID
                     'type': util_type,
                     'team': util.get('team', 'Unknown'),
                     'name': util.get('display_name', f'{util_type}_{util_hash}'),
-                    'description': f"{util.get('throw_type', '投掷')}，飞行时间 {util.get('flight_time', 0):.1f} 秒",
                     'position': util.get('throw_position', {}),
                     'angles': util.get('throw_angles', {}),
                     'land_position': util.get('land_position', {}),

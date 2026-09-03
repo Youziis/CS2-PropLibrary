@@ -818,10 +818,10 @@ def export_single_utility(utility, db_instance):
         # 2. 生成道具数据
         utility_data = {
             'id': utility_id,
+            'sort_id': utility.get('sort_id'),
             'type': util_type,
             'team': utility.get('team', 'Unknown'),
             'name': utility.get('display_name', f'{util_type}_{util_hash}'),
-            'description': f"{utility.get('throw_type', '投掷')}，飞行时间 {utility.get('flight_time', 0):.1f} 秒",
             'position': utility.get('throw_position', {}),
             'angles': utility.get('throw_angles', {}),
             'land_position': utility.get('land_position', {}),
