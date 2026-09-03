@@ -27,7 +27,6 @@
       "flight_time": 1973.8,
       "distance": 1768.7,
       "command": "setpos -160.05 887.94 -135.33; setang -48.31 -146.49 0",
-      "quality": 3,
       "tags": [],
       "notes": "抵住左侧墙角，左键跳投。",
       "screenshots": {
@@ -64,7 +63,6 @@
       "flight_time": 891.78,
       "distance": 2608.2,
       "command": "setpos 1385.16 -90.32 -156.80; setang -21.10 163.41 0",
-      "quality": 3,
       "tags": [
         "匪家"
       ],
@@ -103,7 +101,6 @@
       "flight_time": 249.59,
       "distance": 338.8,
       "command": "setpos 343.33 -621.60 -162.33; setang -39.88 -179.02 0",
-      "quality": 3,
       "tags": [
         "沙袋"
       ],
@@ -142,7 +139,6 @@
       "flight_time": 5.02,
       "distance": 2066.5,
       "command": "setpos 908.39 -1036.03 -246.91; setang -25.01 -149.14 0",
-      "quality": 3,
       "tags": [],
       "notes": "瞄准两块砖的顶部中间位置，左键跳投---用于拱门进攻，隔断警家枪线。",
       "screenshots": {
@@ -179,7 +175,6 @@
       "flight_time": 8.77,
       "distance": 2034.7,
       "command": "setpos 1239.58 -1127.66 -254.31; setang -58.19 -166.38 0",
-      "quality": 3,
       "tags": [],
       "notes": "",
       "screenshots": {
@@ -216,7 +211,6 @@
       "flight_time": 5.66,
       "distance": 2427.7,
       "command": "setpos 1089.17 -1014.90 -257.79; setang -29.29 -143.84 0",
-      "quality": 3,
       "tags": [
         "A1"
       ],
@@ -255,7 +249,6 @@
       "flight_time": 5.14,
       "distance": 1358.9,
       "command": "setpos 1296.00 32.00 -167.97; setang -51.05 -161.02 0",
-      "quality": 3,
       "tags": [],
       "notes": "",
       "screenshots": {
@@ -292,7 +285,6 @@
       "flight_time": 7.39,
       "distance": 2508.5,
       "command": "setpos 1216.00 -16.00 -163.97; setang -43.46 -166.01 0",
-      "quality": 3,
       "tags": [],
       "notes": "瞄准白色窗边左侧大概位置，w+左键跳投。",
       "screenshots": {
@@ -329,7 +321,6 @@
       "flight_time": 7.97,
       "distance": 2475.9,
       "command": "setpos 1216.00 -115.00 -163.97; setang -44.39 -167.88 0",
-      "quality": 3,
       "tags": [],
       "notes": "",
       "screenshots": {
@@ -366,7 +357,6 @@
       "flight_time": 7.19,
       "distance": 1715.3,
       "command": "setpos 1003.97 -1210.03 -98.62; setang -14.35 -169.08 0",
-      "quality": 3,
       "tags": [],
       "notes": "背靠第二根木条中间，左键跳投。",
       "screenshots": {
@@ -403,7 +393,6 @@
       "flight_time": 2.06,
       "distance": 1407.8,
       "command": "setpos -895.47 -2346.40 -167.97; setang -12.63 43.58 0",
-      "quality": 3,
       "tags": [],
       "notes": "用于开局默认防止土匪第一时间进A，对准描点跑丢即可。",
       "screenshots": {
@@ -440,7 +429,6 @@
       "flight_time": 3.53,
       "distance": 1112.2,
       "command": "setpos -832.96 294.91 -166.55; setang -11.04 -81.91 0",
-      "quality": 3,
       "tags": [
         "B小"
       ],
@@ -479,7 +467,6 @@
       "flight_time": 4.44,
       "distance": 1482.2,
       "command": "setpos 1422.94 36.47 -167.97; setang -42.34 -160.50 0",
-      "quality": 3,
       "tags": [],
       "notes": "贴住垃圾桶右侧投掷。",
       "screenshots": {
@@ -516,7 +503,6 @@
       "flight_time": 4.64,
       "distance": 900.4,
       "command": "setpos -796.07 -2251.22 -179.11; setang -10.31 58.88 0",
-      "quality": 3,
       "tags": [
         "警家"
       ],
@@ -555,7 +541,6 @@
       "flight_time": 3.89,
       "distance": 1439.8,
       "command": "setpos 502.95 -64.03 -160.00; setang -14.37 -147.16 0",
-      "quality": 3,
       "tags": [
         "匪口"
       ],
@@ -594,7 +579,6 @@
       "flight_time": 2.78,
       "distance": 1619.0,
       "command": "setpos 463.98 -646.10 -159.97; setang -13.70 179.28 0",
-      "quality": 3,
       "tags": [
         "沙袋"
       ],
@@ -633,7 +617,6 @@
       "flight_time": 4.94,
       "distance": 1261.0,
       "command": "setpos 1295.43 -352.06 -167.97; setang -42.52 -174.03 0",
-      "quality": 3,
       "tags": [
         "快烟"
       ],
@@ -672,7 +655,6 @@
       "flight_time": 3.17,
       "distance": 907.7,
       "command": "setpos 283.07 -1594.24 -175.97; setang -14.71 -178.79 0",
-      "quality": 3,
       "tags": [
         "A1近点"
       ],
@@ -711,7 +693,6 @@
       "flight_time": 3.92,
       "distance": 1086.2,
       "command": "setpos 343.30 -621.62 -162.33; setang -42.80 -150.67 0",
-      "quality": 3,
       "tags": [
         "沙袋"
       ],
@@ -750,7 +731,6 @@
       "flight_time": 4.91,
       "distance": 2209.8,
       "command": "setpos -911.18 -310.34 -158.00; setang -18.34 -61.79 0",
-      "quality": 3,
       "tags": [
         "B小"
       ],
@@ -789,7 +769,6 @@
       "flight_time": 4.77,
       "distance": 1257.0,
       "command": "setpos 1216.00 -211.00 -163.97; setang -56.90 -167.72 0",
-      "quality": 3,
       "tags": [
         "快烟"
       ],

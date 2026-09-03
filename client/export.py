@@ -193,7 +193,6 @@ class UtilityExporter:
             'command': self.generate_command(utility),
             
             # 审核信息
-            'quality': 3,  # 默认3星，后续可添加审核系统
             'tags': self.generate_tags(utility),
             'notes': utility.get('notes', ''),  # 备注信息
             

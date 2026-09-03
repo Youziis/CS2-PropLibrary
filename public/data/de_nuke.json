@@ -27,7 +27,6 @@
       "flight_time": 0,
       "distance": 0,
       "command": "setpos 233.00 233.00 233.00; setang 233.00 233.00 0",
-      "quality": 3,
       "tags": [
         "1",
         "2",

@@ -159,7 +159,6 @@ def export_utilities():
                     'flight_time': round(util.get('flight_time', 0), 2),
                     'distance': round(util.get('distance', 0), 1),
                     'command': f"setpos {util['throw_position']['x']:.2f} {util['throw_position']['y']:.2f} {util['throw_position']['z']:.2f}; setang {util['throw_angles']['pitch']:.2f} {util['throw_angles']['yaw']:.2f} 0",
-                    'quality': 3,
                     'tags': util.get('tags', []),
                     'notes': util.get('notes', ''),
                     'screenshots': {

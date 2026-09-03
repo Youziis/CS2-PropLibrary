@@ -829,7 +829,6 @@ def export_single_utility(utility, db_instance):
             'flight_time': round(utility.get('flight_time', 0), 2),
             'distance': round(utility.get('distance', 0), 1),
             'command': f"setpos {utility['throw_position']['x']:.2f} {utility['throw_position']['y']:.2f} {utility['throw_position']['z']:.2f}; setang {utility['throw_angles']['pitch']:.2f} {utility['throw_angles']['yaw']:.2f} 0",
-            'quality': 3,
             'tags': utility.get('tags', []),  # 导出标签数据
             'notes': utility.get('notes', ''),
             'screenshots': {
