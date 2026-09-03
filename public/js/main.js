@@ -127,6 +127,13 @@ async function loadAllUtilitiesData() {
         }
     }
     
+    // 按 sort_id 排序（确保多地图混合时也按正确顺序显示）
+    allUtilities.sort((a, b) => {
+        const sortIdA = a.sort_id || 999999;
+        const sortIdB = b.sort_id || 999999;
+        return sortIdA - sortIdB;
+    });
+    
     state.allUtilities = allUtilities;
 }
 
@@ -154,6 +161,13 @@ async function loadAllUtilities() {
             const mapData = await response.json();
             state.allUtilities.push(...mapData.utilities);
         }
+        
+        // 按 sort_id 排序
+        state.allUtilities.sort((a, b) => {
+            const sortIdA = a.sort_id || 999999;
+            const sortIdB = b.sort_id || 999999;
+            return sortIdA - sortIdB;
+        });
     } catch (error) {
         console.error('加载所有道具失败:', error);
     }
