@@ -442,43 +442,6 @@
       "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
     },
     {
-      "id": "de_mirage_smoke_0f359351",
-      "sort_id": 20014,
-      "hash": "0f359351133666fc",
-      "type": "smoke",
-      "team": "T",
-      "name": "VIP烟",
-      "position": {
-        "x": 343.32525634765625,
-        "y": -621.5986328125,
-        "z": -162.33331298828125
-      },
-      "angles": {
-        "pitch": -39.880035400390625,
-        "yaw": -179.01878356933594
-      },
-      "land_position": {
-        "x": 34.9090461730957,
-        "y": -483.0321044921875,
-        "z": -184.1378631591797
-      },
-      "throw_type": "左键投掷",
-      "flight_time": 249.59,
-      "distance": 338.8,
-      "command": "setpos 343.33 -621.60 -162.33; setang -39.88 -179.02 0",
-      "tags": [
-        "沙袋"
-      ],
-      "notes": "用准星的2y对准最右侧电线杆的顶端，左键投掷。",
-      "screenshots": {
-        "position": "images/de_mirage/smoke/de_mirage_smoke_0f359351_position.jpg",
-        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_0f359351_crosshair.jpg",
-        "landing": "images/de_mirage/smoke/de_mirage_smoke_0f359351_landing.jpg"
-      },
-      "thrower": "sh1ro",
-      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
-    },
-    {
       "id": "de_mirage_smoke_4485a7db",
       "sort_id": 20015,
       "hash": "4485a7db18546eb1",

@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "last_updated": "2026-09-03T22:33:20.620475",
+  "last_updated": "2026-09-04T00:11:45.763346",
   "maps": [
     {
       "name": "de_anubis",
@@ -17,7 +17,7 @@
     {
       "name": "de_mirage",
       "display_name": "Mirage",
-      "utility_count": 21,
+      "utility_count": 20,
       "data_file": "data/de_mirage.json"
     },
     {
@@ -28,7 +28,7 @@
     }
   ],
   "statistics": {
-    "total_utilities": 38,
+    "total_utilities": 37,
     "by_type": {}
   }
 }

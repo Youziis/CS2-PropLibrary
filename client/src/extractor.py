@@ -187,20 +187,28 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
                 match_failed_reason = 'time_too_short'
                 continue
             
-            # 3. 时间差在合理范围内（去除限制，只要爆炸在投掷之后即可）
+            # 3. ✅ 飞行时间必须在合理范围内（根据实际游戏测试数据）
             time_diff = tick_diff / tick_rate
-            # 不再限制最大时间间隔
             
-            # 4. 【新增】烟雾弹的飞行时间合理性检查
-            # 烟雾弹正常飞行时间：1-3秒（跳投可能短至0.5秒，远投可能长至4秒）
-            # 如果时间太短（<0.5秒），可能是匹配错误
-            if throw_weapon == 'smoke' and time_diff < 0.5:
-                # 时间太短，降低优先级（但不完全排除，因为可能是近距离投掷）
-                time_penalty = 1000
-            else:
-                time_penalty = 0
+            # 不同道具的合理飞行时间范围
+            FLIGHT_TIME_LIMITS = {
+                'smoke': (0.5, 15.0),      # 烟雾弹：0.5-15秒
+                'flashbang': (0.5, 5.0),   # 闪光弹：0.5-5秒
+                'hegrenade': (0.5, 5.0),   # 手雷：0.5-5秒
+                'molotov': (0.5, 5.0),     # 燃烧弹：0.5-5秒
+                'incendiary': (0.5, 5.0),  # 燃烧弹：0.5-5秒
+                'decoy': (0.5, 5.0)        # 诱饵弹：0.5-5秒
+            }
             
-            # 5. 检查距离是否合理（不能太远）
+            min_time, max_time = FLIGHT_TIME_LIMITS.get(throw_weapon, (0.5, 10.0))
+            
+            # 超出合理范围，跳过这个爆炸事件
+            if time_diff > max_time or time_diff < min_time:
+                rejection_counts['time_too_long'] += 1
+                match_failed_reason = 'time_out_of_range'
+                continue
+            
+            # 4. 检查距离是否合理（不能太远）
             throw_pos = {
                 'x': get_field(throw_event, 'X'),
                 'y': get_field(throw_event, 'Y'),
@@ -220,10 +228,10 @@ def match_throw_detonate(throw_events, detonate_events, tick_rate, map_name, smo
                 match_failed_reason = 'distance_too_far'
                 continue
             
-            # 6. 综合评分
+            # 5. 综合评分
             # - 优先匹配时间较近的爆炸（更可能是正确匹配）
             # - 距离作为次要因素
-            score = tick_diff + distance * 0.01 + time_penalty  # 时间越短分数越低（越优先）
+            score = tick_diff + distance * 0.01  # 时间越短分数越低（越优先）
             
             if score < min_score:
                 best_match = (idx, det_event, tick_diff)
@@ -691,7 +699,8 @@ def filter_duplicate_utilities(utilities):
     - 相同的道具类型
     - 投掷位置接近（50单位内）
     - 投掷角度接近（5度内）
-    - 落点位置接近（100单位内）
+    
+    注意：不检查落点位置，因为相同的投掷位置+角度理论上应该产生相同的落点
     
     只保留第一个匹配的道具
     
@@ -707,7 +716,6 @@ def filter_duplicate_utilities(utilities):
     # 相似度阈值
     POSITION_THRESHOLD = 50.0  # 投掷位置差异阈值（单位）
     ANGLE_THRESHOLD = 5.0      # 角度差异阈值（度）
-    LANDING_THRESHOLD = 100.0  # 落点差异阈值（单位）
     
     filtered = []
     
@@ -739,15 +747,8 @@ def filter_duplicate_utilities(utilities):
             if pitch_diff > ANGLE_THRESHOLD or yaw_diff > ANGLE_THRESHOLD:
                 continue
             
-            # 4. 落点位置接近
-            land_dist = calculate_distance(
-                util['land_position'],
-                existing['land_position']
-            )
-            if land_dist > LANDING_THRESHOLD:
-                continue
-            
-            # 所有条件都满足，判定为重复
+            # ✅ 所有条件都满足（位置+角度相同），判定为重复
+            # 不再检查落点，因为相同的投掷条件应该产生相同的落点
             is_duplicate = True
             break
         
