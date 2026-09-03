@@ -105,6 +105,17 @@ def export_utilities():
                 by_map[map_name] = []
             by_map[map_name].append(util)
         
+        # ✅ 为没有sort_id的道具分配sort_id（只在导出时分配）
+        for map_name, utilities in by_map.items():
+            for util in utilities:
+                if not util.get('sort_id'):
+                    # 获取该地图的下一个sort_id
+                    sort_id = db._get_next_sort_id(map_name)
+                    # 更新数据库
+                    db.update_utility(util['hash'], {'sort_id': sort_id})
+                    # 更新当前对象
+                    util['sort_id'] = sort_id
+        
         # 导出每个地图
         exported_maps = []
         total_exported = 0
@@ -134,7 +145,9 @@ def export_utilities():
                 
                 # 生成道具数据
                 map_utilities.append({
-                    'id': utility_id,
+                    'id': util.get('sort_id', utility_id),  # ✅ 使用sort_id作为前端ID
+                    'legacy_id': utility_id,  # 保留原ID作为备用
+                    'sort_id': util.get('sort_id'),  # 显式包含sort_id字段
                     'type': util_type,
                     'team': util.get('team', 'Unknown'),
                     'name': util.get('display_name', f'{util_type}_{util_hash}'),
@@ -147,7 +160,7 @@ def export_utilities():
                     'distance': round(util.get('distance', 0), 1),
                     'command': f"setpos {util['throw_position']['x']:.2f} {util['throw_position']['y']:.2f} {util['throw_position']['z']:.2f}; setang {util['throw_angles']['pitch']:.2f} {util['throw_angles']['yaw']:.2f} 0",
                     'quality': 3,
-                    'tags': [],
+                    'tags': util.get('tags', []),
                     'notes': util.get('notes', ''),
                     'screenshots': {
                         'position': f"images/{map_name}/{util_type}/{utility_id}_position.jpg",
@@ -188,8 +201,8 @@ def export_utilities():
             # 添加所有新道具（包括更新的道具）
             merged_utilities.extend(map_utilities)
             
-            # 按ID排序，保持稳定顺序
-            merged_utilities.sort(key=lambda u: u['id'])
+            # ✅ 按sort_id排序，保持稳定顺序（从小到大）
+            merged_utilities.sort(key=lambda u: u.get('sort_id', 999999))
             
             # 保存合并后的数据
             with open(map_data_file, 'w', encoding='utf-8') as f:

@@ -11,6 +11,20 @@ from typing import List, Dict, Optional
 
 
 class Database:
+    # 地图ID映射（用于生成sort_id）
+    MAP_ID_PREFIX = {
+        'de_dust2': 1,
+        'de_mirage': 2,
+        'de_inferno': 3,
+        'de_nuke': 4,
+        'de_ancient': 5,
+        'de_anubis': 6,
+        'de_vertigo': 7,
+        'de_cache': 8,
+        'de_overpass': 9,
+        'de_train': 10,
+    }
+    
     def __init__(self, db_path=None):
         if db_path is None:
             # 使用绝对路径，基于项目根目录
@@ -65,6 +79,7 @@ class Database:
             # 创建道具表
             # 字段说明：
             # - id: 自增主键
+            # - sort_id: 排序ID，格式：地图编号+递增序号（如：10001, 20001），用于前端展示排序
             # - hash: 唯一标识，基于投掷位置、角度、落点的MD5值（16位）
             # - map: 地图名称（de_dust2, de_mirage等）
             # - type: 道具类型（smoke/flashbang/hegrenade/incendiary）
@@ -89,6 +104,7 @@ class Database:
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS utilities (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    sort_id INTEGER,
                     hash TEXT UNIQUE NOT NULL,
                     
                     -- 基础信息
@@ -151,6 +167,63 @@ class Database:
                 print("[数据库迁移] 添加 tags 列...")
                 cursor.execute("ALTER TABLE utilities ADD COLUMN tags TEXT")
                 print("[数据库迁移] tags 列添加成功")
+            
+            # 数据库迁移：为已存在的表添加 sort_id 列（如果不存在）
+            try:
+                cursor.execute("SELECT sort_id FROM utilities LIMIT 1")
+            except sqlite3.OperationalError:
+                # sort_id 列不存在，添加它
+                print("[数据库迁移] 添加 sort_id 列...")
+                cursor.execute("ALTER TABLE utilities ADD COLUMN sort_id INTEGER")
+                print("[数据库迁移] sort_id 列添加成功")
+                # 为现有数据生成 sort_id
+                self._generate_sort_ids_for_existing_data(conn)
+    
+    def _generate_sort_ids_for_existing_data(self, conn):
+        """为现有已导出的道具生成sort_id"""
+        print("[数据库迁移] 为已导出道具生成 sort_id...")
+        cursor = conn.cursor()
+        
+        # 只为已导出的道具（status='exported'）分配sort_id
+        for map_name, map_prefix in self.MAP_ID_PREFIX.items():
+            cursor.execute("""
+                SELECT id FROM utilities 
+                WHERE map = ? AND status = 'exported' AND (sort_id IS NULL OR sort_id = 0)
+                ORDER BY parse_time ASC
+            """, (map_name,))
+            
+            rows = cursor.fetchall()
+            for index, row in enumerate(rows, start=1):
+                sort_id = map_prefix * 10000 + index
+                cursor.execute("""
+                    UPDATE utilities SET sort_id = ? WHERE id = ?
+                """, (sort_id, row['id']))
+        
+        print(f"[数据库迁移] sort_id 生成完成")
+    
+    def _get_next_sort_id(self, map_name: str) -> int:
+        """获取指定地图的下一个sort_id"""
+        map_prefix = self.MAP_ID_PREFIX.get(map_name, 99)  # 未知地图使用99
+        
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # 获取该地图当前最大的sort_id（只统计已有sort_id的道具）
+            cursor.execute("""
+                SELECT MAX(sort_id) as max_id 
+                FROM utilities 
+                WHERE map = ? AND sort_id IS NOT NULL
+            """, (map_name,))
+            
+            result = cursor.fetchone()
+            max_id = result['max_id'] if result and result['max_id'] else None
+            
+            # 如果没有任何sort_id，从起始值开始
+            start_id = map_prefix * 10000
+            if max_id is None or max_id < start_id:
+                return start_id + 1
+            
+            return max_id + 1
     
     def add_utilities(self, utilities: List[Dict]) -> tuple:
         """
@@ -204,6 +277,7 @@ class Database:
             
             try:
                 # 准备基础字段（使用默认值填充缺失字段）
+                # 不在这里生成sort_id，只在导出时生成
                 cursor.execute("""
                     INSERT INTO utilities (
                         hash, map, type, team, 
@@ -227,7 +301,7 @@ class Database:
                     utility_data.get('screenshot_filename_base'),
                     utility_data.get('display_name'),
                     utility_data.get('notes'),
-                    json.dumps(utility_data.get('tags', [])),  # 添加tags字段
+                    json.dumps(utility_data.get('tags', [])),
                     utility_data.get('approved_time'),
                     json.dumps(utility_data)  # 保存完整数据
                 ))
@@ -380,6 +454,7 @@ class Database:
         if d.get('raw_data'):
             full_data = json.loads(d['raw_data'])
             # 覆盖数据库中可能被审核修改的字段
+            full_data['sort_id'] = d.get('sort_id')  # ✅ 添加sort_id
             full_data['status'] = d['status']
             full_data['screenshot_filename_base'] = d.get('screenshot_filename_base')
             full_data['display_name'] = d.get('display_name')
