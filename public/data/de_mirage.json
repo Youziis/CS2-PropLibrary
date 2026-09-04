@@ -370,41 +370,6 @@
       "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
     },
     {
-      "id": "de_mirage_smoke_1d4676c3",
-      "sort_id": 20012,
-      "hash": "1d4676c3be7022f5",
-      "type": "smoke",
-      "team": "T",
-      "name": "超市窗口烟",
-      "position": {
-        "x": -160.046630859375,
-        "y": 887.9411010742188,
-        "z": -135.32757568359375
-      },
-      "angles": {
-        "pitch": -48.3123779296875,
-        "yaw": -146.49478149414062
-      },
-      "land_position": {
-        "x": -676.3484497070312,
-        "y": -798.9611206054688,
-        "z": -261.96875
-      },
-      "throw_type": "左键跳投",
-      "flight_time": 1973.8,
-      "distance": 1768.7,
-      "command": "setpos -160.05 887.94 -135.33; setang -48.31 -146.49 0",
-      "tags": [],
-      "notes": "抵住左侧墙角，左键跳投。",
-      "screenshots": {
-        "position": "images/de_mirage/smoke/de_mirage_smoke_1d4676c3_position.jpg",
-        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_1d4676c3_crosshair.jpg",
-        "landing": "images/de_mirage/smoke/de_mirage_smoke_1d4676c3_landing.jpg"
-      },
-      "thrower": "magixx",
-      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
-    },
-    {
       "id": "de_mirage_smoke_268503f4",
       "sort_id": 20013,
       "hash": "268503f483343471",
@@ -725,6 +690,292 @@
         "landing": "images/de_mirage/smoke/de_mirage_smoke_886a5920_landing.jpg"
       },
       "thrower": "poiii",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_b97961e0",
+      "sort_id": 20022,
+      "hash": "b97961e0b823e4d8",
+      "type": "smoke",
+      "team": "T",
+      "name": "超市窗口烟",
+      "position": {
+        "x": -160.046630859375,
+        "y": 887.9411010742188,
+        "z": -135.32757568359375
+      },
+      "angles": {
+        "pitch": -48.3123779296875,
+        "yaw": -146.49478149414062
+      },
+      "land_position": {
+        "x": -1927.9149169921875,
+        "y": -344.63079833984375,
+        "z": -165.96875
+      },
+      "throw_type": "左键跳投",
+      "flight_time": 7.5,
+      "distance": 2155.3,
+      "command": "setpos -160.05 887.94 -135.33; setang -48.31 -146.49 0",
+      "tags": [],
+      "notes": "抵住左侧墙角，左键跳投---没有破窗的情况下也可以封满。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_b97961e0_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_b97961e0_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_b97961e0_landing.jpg"
+      },
+      "thrower": "magixx",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_50fccb00",
+      "sort_id": 20023,
+      "hash": "50fccb00da78bedd",
+      "type": "smoke",
+      "team": "T",
+      "name": "连接烟",
+      "position": {
+        "x": 1239.3984375,
+        "y": -1127.6973876953125,
+        "z": -253.96875
+      },
+      "angles": {
+        "pitch": -21.0096435546875,
+        "yaw": -169.15786743164062
+      },
+      "land_position": {
+        "x": -521.3831787109375,
+        "y": -1554.32470703125,
+        "z": -37.96875
+      },
+      "throw_type": "w + 左键跳投",
+      "flight_time": 6.81,
+      "distance": 1824.6,
+      "command": "setpos 1239.40 -1127.70 -253.97; setang -21.01 -169.16 0",
+      "tags": [],
+      "notes": "",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_50fccb00_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_50fccb00_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_50fccb00_landing.jpg"
+      },
+      "thrower": "donk",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_d946a361",
+      "sort_id": 20024,
+      "hash": "d946a361444db07c",
+      "type": "smoke",
+      "team": "T",
+      "name": "中路沙袋过点烟",
+      "position": {
+        "x": 1387.44921875,
+        "y": 70.93704986572266,
+        "z": -158.140625
+      },
+      "angles": {
+        "pitch": -29.177627563476562,
+        "yaw": -164.08251953125
+      },
+      "land_position": {
+        "x": -736.8623657226562,
+        "y": -580.2597045898438,
+        "z": -269.1018371582031
+      },
+      "throw_type": "双键跳投",
+      "flight_time": 7.03,
+      "distance": 2224.7,
+      "command": "setpos 1387.45 70.94 -158.14; setang -29.18 -164.08 0",
+      "tags": [],
+      "notes": "贴住垃圾桶左侧双键跳投。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_d946a361_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_d946a361_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_d946a361_landing.jpg"
+      },
+      "thrower": "donk",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_ac1a232b",
+      "sort_id": 20025,
+      "hash": "ac1a232bd61746ed",
+      "type": "smoke",
+      "team": "T",
+      "name": "VIP快烟（2号位）",
+      "position": {
+        "x": 1294.689208984375,
+        "y": 31.669692993164062,
+        "z": -157.09375
+      },
+      "angles": {
+        "pitch": -28.990509033203125,
+        "yaw": -165.84686279296875
+      },
+      "land_position": {
+        "x": -1163.704345703125,
+        "y": -637.7835693359375,
+        "z": -165.96875
+      },
+      "throw_type": "w + 左键跳投",
+      "flight_time": 6.84,
+      "distance": 2547.9,
+      "command": "setpos 1294.69 31.67 -157.09; setang -28.99 -165.85 0",
+      "tags": [
+        "快烟"
+      ],
+      "notes": "瞄准墙角突起的那一块大概位置即可，容错非常高。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_ac1a232b_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_ac1a232b_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_ac1a232b_landing.jpg"
+      },
+      "thrower": "zont1x",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_dd290ab5",
+      "sort_id": 20026,
+      "hash": "dd290ab56cceeace",
+      "type": "smoke",
+      "team": "CT",
+      "name": "A2楼烟",
+      "position": {
+        "x": -938.3208618164062,
+        "y": -2572.30224609375,
+        "z": -167.96875
+      },
+      "angles": {
+        "pitch": -6.7366790771484375,
+        "yaw": 61.22406005859375
+      },
+      "land_position": {
+        "x": 136.34657287597656,
+        "y": -2312.71044921875,
+        "z": -37.96875
+      },
+      "throw_type": "跑两步左键跳投",
+      "flight_time": 5.83,
+      "distance": 1113.2,
+      "command": "setpos -938.32 -2572.30 -167.97; setang -6.74 61.22 0",
+      "tags": [
+        "警家"
+      ],
+      "notes": "跑到快碰到箱子的时候左键跳投。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_dd290ab5_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_dd290ab5_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_dd290ab5_landing.jpg"
+      },
+      "thrower": "dev1ce",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_b4c0ceb4",
+      "sort_id": 20027,
+      "hash": "b4c0ceb4f4d6828e",
+      "type": "smoke",
+      "team": "T",
+      "name": "VIP烟",
+      "position": {
+        "x": 343.32525634765625,
+        "y": -621.5986328125,
+        "z": -162.33331298828125
+      },
+      "angles": {
+        "pitch": -39.880035400390625,
+        "yaw": -179.01878356933594
+      },
+      "land_position": {
+        "x": -1201.9613037109375,
+        "y": -650.118408203125,
+        "z": -165.96875
+      },
+      "throw_type": "左键投掷",
+      "flight_time": 5.2,
+      "distance": 1545.6,
+      "command": "setpos 343.33 -621.60 -162.33; setang -39.88 -179.02 0",
+      "tags": [
+        "沙袋"
+      ],
+      "notes": "用准星的2y对准最右侧电线杆的顶端，左键投掷。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_b4c0ceb4_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_b4c0ceb4_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_b4c0ceb4_landing.jpg"
+      },
+      "thrower": "sh1ro",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_e5189049",
+      "sort_id": 20028,
+      "hash": "e5189049ddb8be26",
+      "type": "smoke",
+      "team": "T",
+      "name": "VIP快烟（5号位）",
+      "position": {
+        "x": 1216.0,
+        "y": -211.0,
+        "z": -163.96875
+      },
+      "angles": {
+        "pitch": -45.92010498046875,
+        "yaw": -170.51536560058594
+      },
+      "land_position": {
+        "x": -1206.5577392578125,
+        "y": -634.3169555664062,
+        "z": -165.96875
+      },
+      "throw_type": "w + 左键跳投",
+      "flight_time": 8.03,
+      "distance": 2459.3,
+      "command": "setpos 1216.00 -211.00 -163.97; setang -45.92 -170.52 0",
+      "tags": [],
+      "notes": "",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_e5189049_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_e5189049_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_e5189049_landing.jpg"
+      },
+      "thrower": "sh1ro",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_73141097",
+      "sort_id": 20029,
+      "hash": "73141097698e7056",
+      "type": "smoke",
+      "team": "T",
+      "name": "中路沙袋过点烟（3号位）",
+      "position": {
+        "x": 1216.0,
+        "y": -16.0,
+        "z": -163.96875
+      },
+      "angles": {
+        "pitch": -57.05131530761719,
+        "yaw": -159.51461791992188
+      },
+      "land_position": {
+        "x": -74.6426773071289,
+        "y": -501.58856201171875,
+        "z": -165.90945434570312
+      },
+      "throw_type": "左键投掷",
+      "flight_time": 5.66,
+      "distance": 1379.0,
+      "command": "setpos 1216.00 -16.00 -163.97; setang -57.05 -159.51 0",
+      "tags": [],
+      "notes": "",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_73141097_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_73141097_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_73141097_landing.jpg"
+      },
+      "thrower": "Gizmy",
       "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
     }
   ]
