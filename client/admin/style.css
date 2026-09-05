@@ -2031,7 +2031,294 @@ body {
     font-weight: 700;
 }
 
-/* 组合设置区域 */
+/* 组合设置面板 */
+.combo-settings-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.combo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.combo-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.combo-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+#selected-count-badge {
+    color: #666;
+    font-size: 14px;
+}
+
+#selected-count-badge strong {
+    color: #667eea;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.combo-input-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+    align-items: end;
+    margin-bottom: 10px;
+}
+
+.combo-input-row label {
+    display: block;
+}
+
+.combo-input-row label span {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.combo-input {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 14px;
+    border: 2px solid #d0d0d0;
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+.combo-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.combo-hint {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* 搜索结果容器（工作区） */
+#search-result-container {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    min-height: 400px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-content: start;
+}
+
+/* 空状态单独显示 */
+#search-result-container .empty-state {
+    grid-column: 1 / -1;
+    padding: 60px 20px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+/* 搜索结果卡片 */
+.search-result-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.search-result-card.selected {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.search-result-card.selected::before {
+    content: attr(data-order);
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 32px;
+    height: 32px;
+    background: #667eea;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.search-result-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+/* 搜索结果卡片内的截图 */
+.search-result-card .screenshots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    padding: 10px;
+    background: #f8f9fa;
+}
+
+.search-result-card .screenshots img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 1px solid #d0d0d0;
+}
+
+.search-result-card .screenshots img:hover {
+    transform: scale(1.05);
+    border-color: #667eea;
+    z-index: 10;
+}
+
+.search-result-card .utility-info {
+    padding: 15px;
+}
+
+.search-result-card .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+}
+
+.search-result-card .info-row:last-child {
+    border-bottom: none;
+}
+
+.search-result-card .info-row .label {
+    font-weight: 600;
+    color: #666;
+    font-size: 11px;
+    flex-shrink: 0;
+    margin-right: 10px;
+}
+
+.search-result-card .info-row .value {
+    color: #333;
+    font-size: 12px;
+    text-align: right;
+    word-break: break-word;
+}
+
+.search-result-card .tp-command-box {
+    margin: 10px;
+    padding: 10px;
+    background: #f0f7ff;
+    border-radius: 6px;
+    border: 1px solid #b3d9ff;
+}
+
+.search-result-card .tp-command-box label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+    font-size: 11px;
+}
+
+.search-result-card .command-input-wrapper {
+    display: flex;
+    gap: 5px;
+}
+
+.search-result-card .tp-command-input {
+    flex: 1;
+    padding: 6px 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background: white;
+}
+
+.search-result-card .btn-copy {
+    padding: 6px 12px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: background 0.3s;
+    white-space: nowrap;
+}
+
+.search-result-card .btn-copy:hover {
+    background: #5568d3;
+}
+
+.search-result-card .actions {
+    padding: 12px 15px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.search-result-card .actions button {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+}
+
+.search-result-card.selected .actions button.btn-primary {
+    background: #dc3545;
+    border-color: #dc3545;
+}
+
+.search-result-card.selected .actions button.btn-primary:hover {
+    background: #c82333;
+}
+
+/* 响应式：小屏幕时2列 */
+@media (max-width: 1400px) {
+    #search-result-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 响应式：更小屏幕时1列 */
+@media (max-width: 768px) {
+    #search-result-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .combo-input-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 组合设置区域（旧样式，保留兼容） */
 .combo-settings {
     background: #f8f9fa;
     border: 2px solid #e0e0e0;
@@ -2174,8 +2461,157 @@ body {
 }
 
 #search-result-container h3 {
-    margin: 0 0 15px 0;
+    margin: 0 0 20px 0;
     color: #333;
+}
+
+#search-result-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.search-result-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.search-result-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+/* 搜索结果卡片内的截图 */
+.search-result-card .screenshots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    padding: 10px;
+    background: #f8f9fa;
+}
+
+.search-result-card .screenshots img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 1px solid #d0d0d0;
+}
+
+.search-result-card .screenshots img:hover {
+    transform: scale(1.05);
+    border-color: #667eea;
+    z-index: 10;
+}
+
+.search-result-card .utility-info {
+    padding: 15px;
+}
+
+.search-result-card .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+}
+
+.search-result-card .info-row:last-child {
+    border-bottom: none;
+}
+
+.search-result-card .info-row .label {
+    font-weight: 600;
+    color: #666;
+    font-size: 11px;
+    flex-shrink: 0;
+    margin-right: 10px;
+}
+
+.search-result-card .info-row .value {
+    color: #333;
+    font-size: 12px;
+    text-align: right;
+    word-break: break-word;
+}
+
+.search-result-card .tp-command-box {
+    margin: 10px;
+    padding: 10px;
+    background: #f0f7ff;
+    border-radius: 6px;
+    border: 1px solid #b3d9ff;
+}
+
+.search-result-card .tp-command-box label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+    font-size: 11px;
+}
+
+.search-result-card .command-input-wrapper {
+    display: flex;
+    gap: 5px;
+}
+
+.search-result-card .tp-command-input {
+    flex: 1;
+    padding: 6px 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background: white;
+}
+
+.search-result-card .btn-copy {
+    padding: 6px 12px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: background 0.3s;
+    white-space: nowrap;
+}
+
+.search-result-card .btn-copy:hover {
+    background: #5568d3;
+}
+
+.search-result-card .actions {
+    padding: 12px 15px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.search-result-card .actions button {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+}
+
+/* 响应式：小屏幕时2列 */
+@media (max-width: 1400px) {
+    #search-result-content {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 响应式：更小屏幕时1列 */
+@media (max-width: 768px) {
+    #search-result-content {
+        grid-template-columns: 1fr;
+    }
 }
 
 .search-result-item {
@@ -2534,4 +2970,113 @@ body {
     .relations-table {
         overflow-x: auto;
     }
+}
+
+
+/* ==================== 编辑关联子页面 ==================== */
+
+.relations-list-section {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.relation-group-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+}
+
+.relation-group-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.relation-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.relation-group-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.relation-group-title h4 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.relation-group-badge {
+    background: #667eea;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.relation-group-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.relation-group-utilities {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.relation-utility-item {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.relation-utility-item:hover {
+    background: #e7f3ff;
+    border-color: #667eea;
+}
+
+.relation-utility-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.relation-utility-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.relation-utility-meta {
+    font-size: 11px;
+    color: #666;
+    margin-top: 2px;
+}
+
+.relation-utility-item button {
+    padding: 4px 8px;
+    font-size: 11px;
+    flex-shrink: 0;
 }

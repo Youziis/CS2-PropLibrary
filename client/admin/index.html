@@ -609,16 +609,36 @@
             <div class="tab-content" id="relations-tab">
                 <div class="content-header">
                     <h2>🔗 道具关联管理</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn" onclick="showRelationsSubTab('create')">➕ 创建关联</button>
+                        <button class="btn" onclick="showRelationsSubTab('edit')">✏️ 编辑关联</button>
+                    </div>
+                </div>
+                
+                <!-- 子标签页导航 -->
+                <div class="sub-tabs" style="margin-bottom: 20px;">
+                    <button class="sub-tab active" data-subtab="create" onclick="showRelationsSubTab('create')">
+                        ➕ 创建关联
+                    </button>
+                    <button class="sub-tab" data-subtab="edit" onclick="showRelationsSubTab('edit')">
+                        ✏️ 编辑关联
+                    </button>
+                </div>
+                
+                <!-- 子页面1：创建关联 -->
+                <div class="sub-tab-content active" id="relations-create-tab">
+                <div class="content-header">
+                    <h2>🔗 道具关联管理</h2>
                 </div>
                 
                 <div class="info-box">
                     <h3>💡 使用说明</h3>
                     <p><strong>操作步骤：</strong></p>
                     <ol>
-                        <li>在搜索框输入道具Hash前8位（如：c69e2315），按回车搜索</li>
-                        <li>搜索到的道具会显示在下方，点击"添加到列表"</li>
+                        <li>在搜索框输入<strong>Hash前8位</strong>（如：c69e2315）或<strong>道具名称</strong>（如：跳台烟），按回车搜索</li>
+                        <li>搜索到的道具会显示在下方，点击"添加到关联列表"</li>
                         <li>继续搜索并添加更多道具</li>
-                        <li>选择完成后，点击"批量关联选中道具"按钮</li>
+                        <li>选择完成后，可选填组合名称，点击"批量关联选中道具"按钮</li>
                     </ol>
                     <p style="margin-top: 10px; color: #666; font-size: 13px;">
                         💡 <strong>提示：</strong>Hash值可以从道具详情页URL中获取，格式为 <code>de_mirage_smoke_c69e2315</code>，其中 <code>c69e2315</code> 就是Hash前8位
@@ -630,26 +650,24 @@
                     <div class="search-input-wrapper">
                         <input type="text" 
                                id="hash-search-input" 
-                               placeholder="🔍 输入Hash前8位（如：c69e2315）"
+                               placeholder="🔍 输入Hash前8位（如：c69e2315）或道具名称（如：跳台烟）"
                                class="hash-search-input"
-                               maxlength="16">
+                               maxlength="50">
                         <button class="btn btn-primary" onclick="searchByHash()">搜索</button>
                     </div>
                     <div id="search-result-message" class="search-message"></div>
                 </div>
                 
-                <!-- 已选道具列表 -->
-                <div class="selected-utilities-section">
-                    <div class="section-header">
-                        <h3>📋 待关联道具列表</h3>
-                        <div class="header-actions">
-                            <span id="selected-count-display">已选择 <strong>0</strong> 个道具</span>
-                            <button class="btn btn-small" onclick="clearSelectedUtilities()">清空列表</button>
+                <!-- 组合设置区域 -->
+                <div class="combo-settings-panel">
+                    <div class="combo-header">
+                        <h3>📋 关联设置</h3>
+                        <div class="combo-actions">
+                            <span id="selected-count-badge">已选择 <strong>0</strong> 个道具</span>
+                            <button class="btn btn-small" onclick="clearAllSelected()">清空全部</button>
                         </div>
                     </div>
-                    
-                    <!-- 组合设置 -->
-                    <div class="combo-settings">
+                    <div class="combo-input-row">
                         <label>
                             <span>🏷️ 组合名称（可选）：</span>
                             <input type="text" 
@@ -658,16 +676,6 @@
                                    class="combo-input"
                                    maxlength="50">
                         </label>
-                        <div class="combo-hint">
-                            💡 设置组合名称后，道具会按照列表顺序自动编号（1、2、3...），便于前端按顺序展示
-                        </div>
-                    </div>
-                    
-                    <div id="selected-utilities-list" class="selected-list">
-                        <div class="empty-state">暂无选择道具，请使用上方搜索框搜索并添加</div>
-                    </div>
-                    
-                    <div class="batch-action-bar">
                         <button class="btn btn-large btn-primary" 
                                 onclick="batchLinkSelectedUtilities()" 
                                 id="batch-link-btn" 
@@ -675,12 +683,41 @@
                             🔗 批量关联选中道具
                         </button>
                     </div>
+                    <div class="combo-hint">
+                        💡 设置组合名称后，道具会按照选择顺序自动编号（1、2、3...）
+                    </div>
                 </div>
                 
-                <!-- 搜索结果区域 -->
-                <div id="search-result-container" style="display: none;">
-                    <h3>🔍 搜索结果</h3>
-                    <div id="search-result-content"></div>
+                <!-- 搜索结果区域（同时也是工作区） -->
+                <div id="search-result-container">
+                    <div class="empty-state">请使用上方搜索框输入Hash值搜索道具</div>
+                </div>
+                </div>
+                
+                <!-- 子页面2：编辑关联 -->
+                <div class="sub-tab-content" id="relations-edit-tab">
+                    <div class="info-box">
+                        <h3>💡 使用说明</h3>
+                        <p>在这里可以编辑已存在的关联关系：</p>
+                        <ul>
+                            <li>查看所有已关联的道具组</li>
+                            <li>为关联组添加新道具</li>
+                            <li>从关联组中移除道具</li>
+                            <li>删除整个关联组</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 关联组列表 -->
+                    <div class="relations-list-section">
+                        <div class="section-header">
+                            <h3>📋 已有关联组</h3>
+                            <button class="btn btn-primary" onclick="loadRelationGroups()">🔄 刷新列表</button>
+                        </div>
+                        
+                        <div id="relation-groups-container">
+                            <div class="loading">加载中...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             

@@ -63,6 +63,74 @@ def remove_relation():
         return jsonify({'error': '关联移除失败'}), 500
 
 
+@bp.route('/api/relations/search', methods=['GET'])
+def search_utilities():
+    """搜索道具（支持hash或名称）"""
+    query = request.args.get('q', '').strip()
+    
+    if not query:
+        return jsonify({'error': '搜索关键词不能为空'}), 400
+    
+    try:
+        with db.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # 先尝试按hash前缀搜索
+            cursor.execute("""
+                SELECT * FROM utilities 
+                WHERE hash LIKE ? 
+                AND status = 'exported'
+                LIMIT 10
+            """, (query + '%',))
+            
+            results = cursor.fetchall()
+            
+            # 如果没找到，尝试按名称模糊搜索
+            if not results:
+                cursor.execute("""
+                    SELECT * FROM utilities 
+                    WHERE (display_name LIKE ? OR display_name LIKE ?)
+                    AND status = 'exported'
+                    LIMIT 10
+                """, ('%' + query + '%', query + '%'))
+                results = cursor.fetchall()
+            
+            if not results:
+                return jsonify({'error': '未找到匹配的道具'}), 404
+            
+            # 解析结果
+            import json
+            utilities = []
+            for row in results:
+                utility = dict(row)
+                # 解析JSON字段
+                for field in ['throw_position', 'throw_angles', 'land_position']:
+                    if utility.get(field):
+                        try:
+                            utility[field] = json.loads(utility[field])
+                        except:
+                            pass
+                if utility.get('tags'):
+                    try:
+                        utility['tags'] = json.loads(utility['tags'])
+                    except:
+                        utility['tags'] = []
+                else:
+                    utility['tags'] = []
+                utilities.append(utility)
+            
+            return jsonify({
+                'utilities': utilities,
+                'count': len(utilities)
+            }), 200
+            
+    except Exception as e:
+        import traceback
+        print(f"搜索出错: {e}")
+        print(traceback.format_exc())
+        return jsonify({'error': f'搜索失败: {str(e)}'}), 500
+
+
 @bp.route('/api/relations/get/<hash>', methods=['GET'])
 def get_relations(hash):
     """获取道具的所有关联（支持完整hash或前8位hash）"""
@@ -210,4 +278,136 @@ def get_relation_stats():
                 'combo_groups': combo_groups
             }), 200
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/api/relations/groups', methods=['GET'])
+def get_all_groups():
+    """获取所有关联组"""
+    try:
+        import json
+        with db.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            groups = []
+            
+            # 获取所有有组名的关联组
+            cursor.execute("""
+                SELECT DISTINCT combo_group 
+                FROM utility_relations 
+                WHERE combo_group IS NOT NULL
+                ORDER BY combo_group
+            """)
+            
+            for row in cursor.fetchall():
+                combo_group = row['combo_group']
+                
+                # 获取该组的所有道具
+                cursor.execute("""
+                    SELECT DISTINCT u.*, ur.combo_order
+                    FROM utility_relations ur
+                    JOIN utilities u ON ur.utility_hash = u.hash
+                    WHERE ur.combo_group = ?
+                    ORDER BY ur.combo_order, u.hash
+                """, (combo_group,))
+                
+                utilities = []
+                for u_row in cursor.fetchall():
+                    utility = dict(u_row)
+                    # 解析JSON字段
+                    for field in ['throw_position', 'throw_angles', 'land_position']:
+                        if utility.get(field):
+                            try:
+                                utility[field] = json.loads(utility[field])
+                            except:
+                                pass
+                    if utility.get('tags'):
+                        try:
+                            utility['tags'] = json.loads(utility['tags'])
+                        except:
+                            utility['tags'] = []
+                    else:
+                        utility['tags'] = []
+                    utilities.append(utility)
+                
+                groups.append({
+                    'combo_group': combo_group,
+                    'utilities': utilities,
+                    'count': len(utilities)
+                })
+            
+            # 获取没有组名的关联（按第一个hash分组）
+            cursor.execute("""
+                SELECT DISTINCT utility_hash
+                FROM utility_relations
+                WHERE combo_group IS NULL
+            """)
+            
+            for row in cursor.fetchall():
+                hash_value = row['utility_hash']
+                
+                # 获取该hash的所有关联道具（去重）
+                related_hashes = set()
+                cursor.execute("""
+                    SELECT related_hash FROM utility_relations 
+                    WHERE utility_hash = ? AND combo_group IS NULL
+                """, (hash_value,))
+                
+                for r in cursor.fetchall():
+                    related_hashes.add(r['related_hash'])
+                
+                # 加上自己
+                related_hashes.add(hash_value)
+                
+                # 如果这个组已经被添加过（从反向关联），跳过
+                skip = False
+                for existing_group in groups:
+                    if existing_group.get('combo_group') is None:
+                        existing_hashes = {u['hash'] for u in existing_group['utilities']}
+                        if related_hashes == existing_hashes:
+                            skip = True
+                            break
+                
+                if skip:
+                    continue
+                
+                # 获取所有道具详情
+                utilities = []
+                for h in sorted(related_hashes):
+                    cursor.execute("SELECT * FROM utilities WHERE hash = ?", (h,))
+                    u_row = cursor.fetchone()
+                    if u_row:
+                        utility = dict(u_row)
+                        # 解析JSON字段
+                        for field in ['throw_position', 'throw_angles', 'land_position']:
+                            if utility.get(field):
+                                try:
+                                    utility[field] = json.loads(utility[field])
+                                except:
+                                    pass
+                        if utility.get('tags'):
+                            try:
+                                utility['tags'] = json.loads(utility['tags'])
+                            except:
+                                utility['tags'] = []
+                        else:
+                            utility['tags'] = []
+                        utilities.append(utility)
+                
+                if utilities:
+                    groups.append({
+                        'combo_group': None,
+                        'utilities': utilities,
+                        'count': len(utilities)
+                    })
+            
+            return jsonify({
+                'groups': groups,
+                'count': len(groups)
+            }), 200
+            
+    except Exception as e:
+        import traceback
+        print(f"获取关联组出错: {e}")
+        print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
