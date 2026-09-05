@@ -99,6 +99,8 @@ function initTabs() {
             } else if (targetTab === 'exported') {
                 loadExportedStats();
                 loadExportedUtilities();
+            } else if (targetTab === 'relations') {
+                initRelationsTab();
             } else if (targetTab === 'overview') {
                 loadStats();
                 loadOverviewStats();
@@ -2252,3 +2254,265 @@ function showAddResult(message, type) {
         resultDiv.classList.remove('show');
     }, 5000);
 }
+
+
+// ==================== 关联管理功能（通过Hash搜索） ====================
+
+let selectedUtilitiesMap = new Map(); // hash -> utility对象
+
+// 初始化关联管理页面
+function initRelationsTab() {
+    // 清空状态
+    selectedUtilitiesMap.clear();
+    updateSelectedDisplay();
+    
+    // 添加回车键搜索
+    const searchInput = document.getElementById('hash-search-input');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchByHash();
+            }
+        });
+    }
+}
+
+// 通过Hash搜索道具
+async function searchByHash() {
+    const input = document.getElementById('hash-search-input');
+    const hash = input.value.trim();
+    const messageDiv = document.getElementById('search-result-message');
+    const resultContainer = document.getElementById('search-result-container');
+    const resultContent = document.getElementById('search-result-content');
+    
+    // 清空消息
+    messageDiv.textContent = '';
+    messageDiv.className = 'search-message';
+    
+    if (!hash) {
+        messageDiv.textContent = '⚠️ 请输入Hash值';
+        messageDiv.className = 'search-message error';
+        resultContainer.style.display = 'none';
+        return;
+    }
+    
+    // 检查是否已经在列表中
+    if (selectedUtilitiesMap.has(hash)) {
+        messageDiv.textContent = '⚠️ 该道具已在列表中';
+        messageDiv.className = 'search-message error';
+        resultContainer.style.display = 'none';
+        return;
+    }
+    
+    try {
+        // 搜索道具
+        const response = await fetch(`/api/relations/get/${hash}`);
+        
+        if (!response.ok) {
+            throw new Error('未找到该道具');
+        }
+        
+        const data = await response.json();
+        const utility = data.utility;
+        
+        if (!utility) {
+            throw new Error('未找到该道具');
+        }
+        
+        // 显示搜索结果
+        messageDiv.textContent = '✅ 找到道具！';
+        messageDiv.className = 'search-message success';
+        
+        resultContainer.style.display = 'block';
+        resultContent.innerHTML = renderSearchResult(utility);
+        
+    } catch (error) {
+        messageDiv.textContent = '❌ ' + error.message;
+        messageDiv.className = 'search-message error';
+        resultContainer.style.display = 'none';
+    }
+}
+
+// 渲染搜索结果
+function renderSearchResult(utility) {
+    return `
+        <div class="search-result-item">
+            <div class="result-item-info">
+                <div class="result-item-title">${utility.display_name || utility.name || '未命名'}</div>
+                <div class="result-item-meta">
+                    <span>${utility.map.replace('de_', '').toUpperCase()}</span>
+                    <span>${getUtilityTypeIcon(utility.type)} ${utility.type}</span>
+                    <span class="utility-card-hash">${utility.hash}</span>
+                </div>
+            </div>
+            <div class="result-item-actions">
+                <button class="btn btn-primary" onclick='addToSelectedList(${JSON.stringify(utility).replace(/'/g, "\\'")})'>
+                    ➕ 添加到列表
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// 添加到已选列表
+function addToSelectedList(utility) {
+    if (selectedUtilitiesMap.has(utility.hash)) {
+        alert('该道具已在列表中');
+        return;
+    }
+    
+    selectedUtilitiesMap.set(utility.hash, utility);
+    updateSelectedDisplay();
+    
+    // 清空搜索
+    document.getElementById('hash-search-input').value = '';
+    document.getElementById('search-result-message').textContent = '';
+    document.getElementById('search-result-container').style.display = 'none';
+    
+    // 提示
+    const messageDiv = document.getElementById('search-result-message');
+    messageDiv.textContent = `✅ 已添加 "${utility.display_name || utility.name}"`;
+    messageDiv.className = 'search-message success';
+    setTimeout(() => {
+        messageDiv.textContent = '';
+    }, 2000);
+}
+
+// 从已选列表移除
+function removeFromSelectedList(hash) {
+    selectedUtilitiesMap.delete(hash);
+    updateSelectedDisplay();
+}
+
+// 清空已选列表
+function clearSelectedUtilities() {
+    if (selectedUtilitiesMap.size === 0) {
+        return;
+    }
+    
+    if (!confirm(`确定要清空列表吗？（共 ${selectedUtilitiesMap.size} 个道具）`)) {
+        return;
+    }
+    
+    selectedUtilitiesMap.clear();
+    updateSelectedDisplay();
+}
+
+// 更新已选道具显示
+function updateSelectedDisplay() {
+    const listContainer = document.getElementById('selected-utilities-list');
+    const countDisplay = document.getElementById('selected-count-display');
+    const batchBtn = document.getElementById('batch-link-btn');
+    
+    const count = selectedUtilitiesMap.size;
+    countDisplay.innerHTML = `已选择 <strong>${count}</strong> 个道具`;
+    
+    if (count === 0) {
+        listContainer.innerHTML = '<div class="empty-state">暂无选择道具，请使用上方搜索框搜索并添加</div>';
+        batchBtn.disabled = true;
+        batchBtn.textContent = '🔗 批量关联选中道具 (至少2个)';
+        return;
+    }
+    
+    if (count >= 2) {
+        batchBtn.disabled = false;
+        batchBtn.textContent = `🔗 批量关联选中道具 (${count}个)`;
+    } else {
+        batchBtn.disabled = true;
+        batchBtn.textContent = '🔗 批量关联选中道具 (至少2个)';
+    }
+    
+    const html = Array.from(selectedUtilitiesMap.values()).map((util, index) => `
+        <div class="selected-utility-card" data-order="${index + 1}">
+            <div class="utility-card-info">
+                <div class="utility-card-title">${util.display_name || util.name || '未命名'}</div>
+                <div class="utility-card-meta">
+                    <span>${util.map.replace('de_', '').toUpperCase()}</span>
+                    <span>${getUtilityTypeIcon(util.type)} ${util.type}</span>
+                    <span class="utility-card-hash">${util.hash.substring(0, 8)}</span>
+                </div>
+            </div>
+            <div class="utility-card-actions">
+                <button class="btn btn-small btn-danger" onclick="removeFromSelectedList('${util.hash}')">
+                    🗑️ 移除
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    listContainer.innerHTML = html;
+}
+
+// 批量关联选中道具
+async function batchLinkSelectedUtilities() {
+    const hashes = Array.from(selectedUtilitiesMap.keys());
+    
+    if (hashes.length < 2) {
+        alert('至少需要选择2个道具进行关联');
+        return;
+    }
+    
+    // 获取组合名称
+    const comboGroupInput = document.getElementById('combo-group-name');
+    const comboGroup = comboGroupInput.value.trim() || null;
+    
+    const utilityNames = Array.from(selectedUtilitiesMap.values())
+        .map((u, i) => `${i + 1}. ${u.display_name || u.name}`)
+        .join('\n');
+    
+    let confirmMessage = `确定要将以下道具互相关联吗？\n\n${utilityNames}\n\n共 ${hashes.length} 个道具`;
+    
+    if (comboGroup) {
+        confirmMessage += `\n\n📋 组合名称：${comboGroup}\n🔢 将按照列表顺序自动编号`;
+    }
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/relations/batch-link', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                utility_hashes: hashes,
+                combo_group: comboGroup
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            let successMsg = `✅ ${result.message}\n\n这些道具已经互相关联`;
+            if (comboGroup) {
+                successMsg += `\n\n📋 组合名称：${comboGroup}\n🔢 已按顺序编号 1-${hashes.length}`;
+            }
+            alert(successMsg);
+            
+            // 清空列表和组名输入框
+            selectedUtilitiesMap.clear();
+            comboGroupInput.value = '';
+            updateSelectedDisplay();
+        } else {
+            alert('❌ ' + result.error);
+        }
+    } catch (error) {
+        alert('❌ 请求失败：' + error.message);
+    }
+}
+
+// 获取道具类型图标
+function getUtilityTypeIcon(type) {
+    const icons = {
+        'smoke': '💨',
+        'flashbang': '💡',
+        'hegrenade': '💣',
+        'molotov': '🔥',
+        'incendiary': '🔥'
+    };
+    return icons[type] || '❓';
+}
+
+// 修改initTabs，添加relations标签页初始化
+// 在切换到relations标签页时调用initRelationsTab()
+

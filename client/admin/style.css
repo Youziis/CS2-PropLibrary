@@ -1938,3 +1938,600 @@ body {
 .center-message.error {
     background: linear-gradient(135deg, #ff4757 0%, #e74c3c 100%);
 }
+
+
+/* ==================== 关联管理样式 ==================== */
+
+/* 搜索框容器 */
+.search-box-container {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.search-input-wrapper {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.hash-search-input {
+    flex: 1;
+    padding: 15px 20px;
+    font-size: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s;
+}
+
+.hash-search-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.search-message {
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+.search-message.success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.search-message.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* 已选道具区域 */
+.selected-utilities-section {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.section-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+#selected-count-display {
+    color: #666;
+    font-size: 14px;
+}
+
+#selected-count-display strong {
+    color: #667eea;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* 组合设置区域 */
+.combo-settings {
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.combo-settings label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.combo-settings label span {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.combo-input {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 14px;
+    border: 2px solid #d0d0d0;
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+.combo-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.combo-hint {
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
+.selected-list {
+    min-height: 200px;
+    max-height: 500px;
+    overflow-y: auto;
+    border: 2px dashed #e0e0e0;
+    border-radius: 8px;
+    padding: 15px 15px 15px 45px; /* 左侧留空给序号 */
+    background: #fafafa;
+    position: relative;
+}
+
+/* 已选道具卡片 */
+.selected-utility-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.selected-utility-card::before {
+    content: attr(data-order);
+    position: absolute;
+    left: -35px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    background: #667eea;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.selected-utility-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.utility-card-info {
+    flex: 1;
+}
+
+.utility-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.utility-card-meta {
+    font-size: 13px;
+    color: #666;
+    display: flex;
+    gap: 15px;
+}
+
+.utility-card-hash {
+    font-family: 'Courier New', monospace;
+    background: #f0f0f0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #666;
+}
+
+.utility-card-actions button {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+/* 批量操作栏 */
+.batch-action-bar {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #f0f0f0;
+    display: flex;
+    justify-content: center;
+}
+
+/* 搜索结果区域 */
+#search-result-container {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+#search-result-container h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+}
+
+.search-result-item {
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.search-result-item:hover {
+    background: #e7f3ff;
+    border-color: #667eea;
+}
+
+.result-item-info {
+    flex: 1;
+}
+
+.result-item-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.result-item-meta {
+    font-size: 13px;
+    color: #666;
+    display: flex;
+    gap: 15px;
+}
+
+.result-item-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* 空状态 */
+.empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+/* 信息框中的代码样式 */
+.info-box code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #d63384;
+}
+
+/* 批量操作面板 */
+.batch-operation-panel {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.batch-info {
+    color: white;
+    font-size: 16px;
+}
+
+.batch-info strong {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* 筛选区域 */
+.filter-section {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px 15px;
+    font-size: 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.filter-select {
+    padding: 12px 15px;
+    font-size: 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-select:hover {
+    border-color: #667eea;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* 关联道具表格 */
+.relations-table {
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.relations-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.relations-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.relations-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.relations-table tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
+}
+
+.relations-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.relations-table tbody tr.selected {
+    background: #e7f3ff;
+}
+
+.relations-table td {
+    padding: 15px;
+    font-size: 14px;
+}
+
+.relations-table td input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* 关联数量标签 */
+.relation-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.relation-badge.none {
+    background: #f0f0f0;
+    color: #999;
+}
+
+.relation-badge.has {
+    background: #e7f3ff;
+    color: #667eea;
+}
+
+/* 编辑关联弹窗 */
+.current-utility-info {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+.current-utility-info h4 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.current-utility-info p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.relation-section {
+    margin-bottom: 25px;
+}
+
+.relation-section h4 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* 已关联道具列表 */
+.related-utilities-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.relation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #e0e0e0;
+    background: white;
+    transition: background 0.2s;
+}
+
+.relation-item:last-child {
+    border-bottom: none;
+}
+
+.relation-item:hover {
+    background: #f8f9fa;
+}
+
+.relation-item-info {
+    flex: 1;
+}
+
+.relation-item-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.relation-item-meta {
+    font-size: 13px;
+    color: #666;
+}
+
+.relation-item-actions button {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+/* 可添加道具列表 */
+.available-utilities-list {
+    max-height: 350px;
+    overflow-y: auto;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.available-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #e0e0e0;
+    background: white;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.available-item:last-child {
+    border-bottom: none;
+}
+
+.available-item:hover {
+    background: #f0f7ff;
+    transform: translateX(3px);
+}
+
+.available-item-info {
+    flex: 1;
+}
+
+.available-item-name {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 3px;
+}
+
+.available-item-meta {
+    font-size: 12px;
+    color: #999;
+}
+
+/* 加载状态 */
+.loading {
+    padding: 40px 20px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .search-input-wrapper {
+        flex-direction: column;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .batch-operation-panel {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .filter-section {
+        flex-direction: column;
+    }
+    
+    .search-input,
+    .filter-select {
+        width: 100%;
+    }
+    
+    .relations-table {
+        overflow-x: auto;
+    }
+}

@@ -50,6 +50,10 @@
                     <span class="nav-icon">📦</span>
                     <span class="nav-text">道具管理</span>
                 </button>
+                <button class="nav-item" data-tab="relations">
+                    <span class="nav-icon">🔗</span>
+                    <span class="nav-text">关联管理</span>
+                </button>
             </nav>
         </aside>
 
@@ -600,6 +604,86 @@
                 <div id="edit-utility-result" class="result-message" style="margin-top: 20px;"></div>
             </div>
             
+            <!-- Tab 7: 关联管理 -->
+            <!-- Tab 7: 关联管理 -->
+            <div class="tab-content" id="relations-tab">
+                <div class="content-header">
+                    <h2>🔗 道具关联管理</h2>
+                </div>
+                
+                <div class="info-box">
+                    <h3>💡 使用说明</h3>
+                    <p><strong>操作步骤：</strong></p>
+                    <ol>
+                        <li>在搜索框输入道具Hash前8位（如：c69e2315），按回车搜索</li>
+                        <li>搜索到的道具会显示在下方，点击"添加到列表"</li>
+                        <li>继续搜索并添加更多道具</li>
+                        <li>选择完成后，点击"批量关联选中道具"按钮</li>
+                    </ol>
+                    <p style="margin-top: 10px; color: #666; font-size: 13px;">
+                        💡 <strong>提示：</strong>Hash值可以从道具详情页URL中获取，格式为 <code>de_mirage_smoke_c69e2315</code>，其中 <code>c69e2315</code> 就是Hash前8位
+                    </p>
+                </div>
+                
+                <!-- 搜索区域 -->
+                <div class="search-box-container">
+                    <div class="search-input-wrapper">
+                        <input type="text" 
+                               id="hash-search-input" 
+                               placeholder="🔍 输入Hash前8位（如：c69e2315）"
+                               class="hash-search-input"
+                               maxlength="16">
+                        <button class="btn btn-primary" onclick="searchByHash()">搜索</button>
+                    </div>
+                    <div id="search-result-message" class="search-message"></div>
+                </div>
+                
+                <!-- 已选道具列表 -->
+                <div class="selected-utilities-section">
+                    <div class="section-header">
+                        <h3>📋 待关联道具列表</h3>
+                        <div class="header-actions">
+                            <span id="selected-count-display">已选择 <strong>0</strong> 个道具</span>
+                            <button class="btn btn-small" onclick="clearSelectedUtilities()">清空列表</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 组合设置 -->
+                    <div class="combo-settings">
+                        <label>
+                            <span>🏷️ 组合名称（可选）：</span>
+                            <input type="text" 
+                                   id="combo-group-name" 
+                                   placeholder="如：A点execute、中路控制、B点爆弹..."
+                                   class="combo-input"
+                                   maxlength="50">
+                        </label>
+                        <div class="combo-hint">
+                            💡 设置组合名称后，道具会按照列表顺序自动编号（1、2、3...），便于前端按顺序展示
+                        </div>
+                    </div>
+                    
+                    <div id="selected-utilities-list" class="selected-list">
+                        <div class="empty-state">暂无选择道具，请使用上方搜索框搜索并添加</div>
+                    </div>
+                    
+                    <div class="batch-action-bar">
+                        <button class="btn btn-large btn-primary" 
+                                onclick="batchLinkSelectedUtilities()" 
+                                id="batch-link-btn" 
+                                disabled>
+                            🔗 批量关联选中道具
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 搜索结果区域 -->
+                <div id="search-result-container" style="display: none;">
+                    <h3>🔍 搜索结果</h3>
+                    <div id="search-result-content"></div>
+                </div>
+            </div>
+            
         </main>
     </div>
 
@@ -656,6 +740,45 @@
                     <button type="button" class="btn btn-large" onclick="closeEditModal()">取消</button>
                 </div>
             </form>
+        </div>
+    </div>
+    
+    <!-- 编辑关联弹窗 -->
+    <div id="edit-relation-modal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3>✏️ 编辑道具关联</h3>
+                <button class="modal-close" onclick="closeEditRelationModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- 当前道具信息 -->
+                <div class="current-utility-info">
+                    <h4 id="edit-relation-name"></h4>
+                    <p id="edit-relation-info"></p>
+                </div>
+                
+                <!-- 已关联道具列表 -->
+                <div class="relation-section">
+                    <h4>✅ 已关联道具 (<span id="related-count">0</span>)</h4>
+                    <div id="related-list" class="related-utilities-list">
+                        <div class="empty-state">暂无关联道具</div>
+                    </div>
+                </div>
+                
+                <!-- 可添加的道具列表 -->
+                <div class="relation-section">
+                    <h4>➕ 添加关联</h4>
+                    <input type="text" 
+                           id="add-relation-search" 
+                           placeholder="搜索道具..." 
+                           class="search-input"
+                           oninput="filterAvailableUtilities()"
+                           style="margin-bottom: 15px;">
+                    <div id="available-list" class="available-utilities-list">
+                        <div class="loading">加载中...</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

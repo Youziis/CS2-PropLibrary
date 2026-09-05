@@ -145,7 +145,34 @@ class Database:
                 )
             """)
             
+            # 创建道具关联表
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS utility_relations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    utility_hash TEXT NOT NULL,
+                    related_hash TEXT NOT NULL,
+                    combo_group TEXT,
+                    combo_order INTEGER,
+                    created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (utility_hash) REFERENCES utilities(hash) ON DELETE CASCADE,
+                    FOREIGN KEY (related_hash) REFERENCES utilities(hash) ON DELETE CASCADE,
+                    UNIQUE(utility_hash, related_hash)
+                )
+            """)
+            
             # 创建索引
+            cursor.execute("""
+                CREATE INDEX IF NOT EXISTS idx_utility_relations_utility 
+                ON utility_relations(utility_hash)
+            """)
+            cursor.execute("""
+                CREATE INDEX IF NOT EXISTS idx_utility_relations_related 
+                ON utility_relations(related_hash)
+            """)
+            cursor.execute("""
+                CREATE INDEX IF NOT EXISTS idx_utility_relations_combo 
+                ON utility_relations(combo_group)
+            """)
             cursor.execute("""
                 CREATE INDEX IF NOT EXISTS idx_status 
                 ON utilities(status)
@@ -494,6 +521,233 @@ class Database:
             d['tags'] = []
         
         return d
+    
+    # ==================== 道具关联管理 ====================
+    
+    def add_utility_relation(self, utility_hash: str, related_hash: str, 
+                            bidirectional: bool = True, 
+                            combo_group: str = None, 
+                            combo_order: int = None) -> bool:
+        """
+        添加道具关联关系
+        
+        Args:
+            utility_hash: 源道具hash
+            related_hash: 关联道具hash
+            bidirectional: 是否双向关联（默认True）
+            combo_group: 组合分组ID（可选）
+            combo_order: 组内顺序（可选）
+        
+        Returns:
+            bool: 是否成功
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            try:
+                # 添加 A -> B 关联
+                cursor.execute("""
+                    INSERT OR IGNORE INTO utility_relations 
+                    (utility_hash, related_hash, combo_group, combo_order)
+                    VALUES (?, ?, ?, ?)
+                """, (utility_hash, related_hash, combo_group, combo_order))
+                
+                # 如果双向关联，添加 B -> A
+                if bidirectional:
+                    cursor.execute("""
+                        INSERT OR IGNORE INTO utility_relations 
+                        (utility_hash, related_hash, combo_group, combo_order)
+                        VALUES (?, ?, ?, ?)
+                    """, (related_hash, utility_hash, combo_group, combo_order))
+                
+                return True
+            except Exception as e:
+                print(f"添加关联失败: {e}")
+                return False
+    
+    def remove_utility_relation(self, utility_hash: str, related_hash: str, 
+                               bidirectional: bool = True) -> bool:
+        """
+        移除道具关联关系
+        
+        Args:
+            utility_hash: 源道具hash
+            related_hash: 关联道具hash
+            bidirectional: 是否双向移除（默认True）
+        
+        Returns:
+            bool: 是否成功
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            try:
+                # 移除 A -> B 关联
+                cursor.execute("""
+                    DELETE FROM utility_relations 
+                    WHERE utility_hash = ? AND related_hash = ?
+                """, (utility_hash, related_hash))
+                
+                # 如果双向移除，移除 B -> A
+                if bidirectional:
+                    cursor.execute("""
+                        DELETE FROM utility_relations 
+                        WHERE utility_hash = ? AND related_hash = ?
+                    """, (related_hash, utility_hash))
+                
+                return True
+            except Exception as e:
+                print(f"移除关联失败: {e}")
+                return False
+    
+    def get_related_utilities(self, utility_hash: str) -> List[Dict]:
+        """
+        获取某个道具的所有关联道具
+        
+        Args:
+            utility_hash: 道具hash
+        
+        Returns:
+            List[Dict]: 关联道具列表（完整信息）
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # JOIN查询获取关联道具的完整信息
+            cursor.execute("""
+                SELECT u.*, r.combo_group, r.combo_order
+                FROM utilities u
+                INNER JOIN utility_relations r ON u.hash = r.related_hash
+                WHERE r.utility_hash = ?
+                ORDER BY r.combo_order, u.display_name
+            """, (utility_hash,))
+            
+            results = []
+            for row in cursor.fetchall():
+                d = dict(row)
+                results.append(self._parse_utility_row(d))
+            
+            return results
+    
+    def batch_link_utilities(self, utility_hashes: List[str], 
+                            combo_group: str = None) -> int:
+        """
+        批量关联多个道具（互相关联）
+        
+        Args:
+            utility_hashes: 道具hash列表
+            combo_group: 组合分组ID（可选）
+        
+        Returns:
+            int: 创建的关联数量
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            pairs = []
+            count = 0
+            
+            # 生成所有组合对（不包括自己关联自己）
+            for i, hash_a in enumerate(utility_hashes):
+                for j, hash_b in enumerate(utility_hashes):
+                    if i != j:
+                        order = i + 1 if combo_group else None
+                        pairs.append((hash_a, hash_b, combo_group, order))
+            
+            # 批量插入
+            try:
+                cursor.executemany("""
+                    INSERT OR IGNORE INTO utility_relations 
+                    (utility_hash, related_hash, combo_group, combo_order)
+                    VALUES (?, ?, ?, ?)
+                """, pairs)
+                count = cursor.rowcount
+                
+                return count
+            except Exception as e:
+                print(f"批量关联失败: {e}")
+                return 0
+    
+    def get_relation_count(self, utility_hash: str) -> int:
+        """
+        获取某个道具的关联数量
+        
+        Args:
+            utility_hash: 道具hash
+        
+        Returns:
+            int: 关联数量
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            cursor.execute("""
+                SELECT COUNT(*) as count
+                FROM utility_relations
+                WHERE utility_hash = ?
+            """, (utility_hash,))
+            
+            row = cursor.fetchone()
+            return row['count'] if row else 0
+    
+    def get_combo_utilities(self, combo_group: str) -> List[Dict]:
+        """
+        获取某个组合的所有道具
+        
+        Args:
+            combo_group: 组合分组ID
+        
+        Returns:
+            List[Dict]: 组合内的道具列表（按顺序）
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            cursor.execute("""
+                SELECT DISTINCT u.*, r.combo_order
+                FROM utilities u
+                INNER JOIN utility_relations r ON u.hash = r.utility_hash
+                WHERE r.combo_group = ?
+                ORDER BY r.combo_order, u.display_name
+            """, (combo_group,))
+            
+            results = []
+            for row in cursor.fetchall():
+                d = dict(row)
+                results.append(self._parse_utility_row(d))
+            
+            return results
+    
+    def clear_all_relations(self, utility_hash: str) -> bool:
+        """
+        清空某个道具的所有关联（包括双向）
+        
+        Args:
+            utility_hash: 道具hash
+        
+        Returns:
+            bool: 是否成功
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            try:
+                # 删除该道具作为源的所有关联
+                cursor.execute("""
+                    DELETE FROM utility_relations 
+                    WHERE utility_hash = ?
+                """, (utility_hash,))
+                
+                # 删除该道具作为目标的所有关联
+                cursor.execute("""
+                    DELETE FROM utility_relations 
+                    WHERE related_hash = ?
+                """, (utility_hash,))
+                
+                return True
+            except Exception as e:
+                print(f"清空关联失败: {e}")
+                return False
 
 
 # 测试代码

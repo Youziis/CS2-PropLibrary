@@ -14,7 +14,7 @@ from flask_cors import CORS
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from database import Database
-from routes import demo, utility, screenshot, export_route
+from routes import demo, utility, screenshot, export_route, relation
 
 # 创建 Flask 应用
 app = Flask(__name__, 
@@ -30,6 +30,7 @@ app.register_blueprint(demo.bp)
 app.register_blueprint(utility.bp)
 app.register_blueprint(screenshot.bp)
 app.register_blueprint(export_route.bp)
+app.register_blueprint(relation.bp)
 
 
 @app.route('/')
