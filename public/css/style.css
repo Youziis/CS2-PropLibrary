@@ -1254,14 +1254,14 @@ a.tag-badge:visited {
 
 /* 详情页组合标签 */
 .tag-badge.combo-tag {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    box-shadow: 0 2px 4px rgba(245, 87, 108, 0.3);
+    background: linear-gradient(135deg, #d4a5d6 0%, #e0b8e2 100%);
+    box-shadow: 0 2px 4px rgba(212, 165, 214, 0.3);
     cursor: default;
 }
 
 .tag-badge.combo-tag:hover {
-    background: linear-gradient(135deg, #f5a4ff 0%, #ff6b7f 100%);
-    box-shadow: 0 4px 8px rgba(245, 87, 108, 0.4);
+    background: linear-gradient(135deg, #e0b8e2 0%, #ecceee 100%);
+    box-shadow: 0 4px 8px rgba(212, 165, 214, 0.4);
     transform: translateY(-1px);
 }
 
@@ -1289,6 +1289,6 @@ a.tag-badge:visited {
 
 /* 组合标签 - 不同颜色 */
 .mini-tag.combo-tag {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, #d4a5d6 0%, #e0b8e2 100%);
     max-width: 120px;
 }
