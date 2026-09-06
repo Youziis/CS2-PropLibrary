@@ -365,11 +365,19 @@ function renderUtilities() {
             ? utility.tags.slice(0, 5)
             : [];
         
-        const tagsHtml = tags.length > 0
-            ? `<div class="utility-tags">
-                   ${tags.map(tag => `<span class="mini-tag">${tag}</span>`).join('')}
-               </div>`
-            : '';
+        // 构建标签HTML，包括组合标签
+        let tagsHtml = '';
+        if (tags.length > 0 || utility.combo_group) {
+            const tagBadges = tags.map(tag => `<span class="mini-tag">${tag}</span>`).join('');
+            const comboTag = utility.combo_group 
+                ? `<span class="mini-tag combo-tag">${utility.combo_group}</span>` 
+                : '';
+            
+            tagsHtml = `<div class="utility-tags">
+                ${tagBadges}
+                ${comboTag}
+            </div>`;
+        }
         
         return `
             <div class="utility-card" onclick="router.navigate('/utility/${utility.id}')">
@@ -430,11 +438,21 @@ function renderDetailPage(utilityId) {
     const content = document.getElementById('detail-content');
     
     // 处理标签显示（可点击跳转）
-    const tagsHtml = utility.tags && utility.tags.length > 0 
-        ? `<div class="detail-tags">
-               ${utility.tags.map(tag => `<a href="#/tag/${encodeURIComponent(tag)}" class="tag-badge">${tag}</a>`).join('')}
-           </div>`
-        : '';
+    let tagsHtml = '';
+    if (utility.tags && utility.tags.length > 0 || utility.combo_group) {
+        const tagBadges = utility.tags && utility.tags.length > 0
+            ? utility.tags.map(tag => `<a href="#/tag/${encodeURIComponent(tag)}" class="tag-badge">${tag}</a>`).join('')
+            : '';
+        
+        const comboTag = utility.combo_group
+            ? `<span class="tag-badge combo-tag">${utility.combo_group}</span>`
+            : '';
+        
+        tagsHtml = `<div class="detail-tags">
+            ${tagBadges}
+            ${comboTag}
+        </div>`;
+    }
     
     content.innerHTML = `
         <div class="detail-header">

@@ -27,6 +27,7 @@
       "distance": 1779.2,
       "command": "setpos -568.06 -1279.05 17.73; setang -30.20 95.65 0",
       "tags": [],
+      "combo_group": null,
       "notes": "抵住台阶投掷。",
       "screenshots": {
         "position": "images/de_anubis/smoke/de_anubis_smoke_29dad53a_position.jpg",
@@ -62,6 +63,7 @@
       "distance": 1649.1,
       "command": "setpos -937.88 -1363.44 75.64; setang -11.99 99.90 0",
       "tags": [],
+      "combo_group": null,
       "notes": "走上楼梯，贴住墙壁拐角投掷。",
       "screenshots": {
         "position": "images/de_anubis/smoke/de_anubis_smoke_93060c54_position.jpg",

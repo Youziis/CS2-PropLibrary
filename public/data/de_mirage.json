@@ -29,6 +29,7 @@
       "tags": [
         "快烟"
       ],
+      "combo_group": null,
       "notes": "瞄准窗户和左键污渍的中间w+左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_c69e2315_position.jpg",
@@ -66,6 +67,7 @@
       "tags": [
         "快烟"
       ],
+      "combo_group": null,
       "notes": "瞄准墙角突起的那一块大概位置即可，容错非常高。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_ac1a232b_position.jpg",
@@ -103,6 +105,7 @@
       "tags": [
         "快烟"
       ],
+      "combo_group": null,
       "notes": "瞄准白色窗边左侧大概位置，w+左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_1b58ee68_position.jpg",
@@ -140,6 +143,7 @@
       "tags": [
         "快烟"
       ],
+      "combo_group": null,
       "notes": "",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_0923f5ee_position.jpg",
@@ -174,7 +178,10 @@
       "flight_time": 8.03,
       "distance": 2459.3,
       "command": "setpos 1216.00 -211.00 -163.97; setang -45.92 -170.52 0",
-      "tags": [],
+      "tags": [
+        "快烟"
+      ],
+      "combo_group": null,
       "notes": "",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_e5189049_position.jpg",
@@ -212,6 +219,7 @@
       "tags": [
         "沙袋"
       ],
+      "combo_group": null,
       "notes": "中路沙袋，前脚踩在沙袋后突起的台阶，跑两步左键投掷。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_5b008d1b_position.jpg",
@@ -247,6 +255,7 @@
       "distance": 1407.8,
       "command": "setpos -895.47 -2346.40 -167.97; setang -12.63 43.58 0",
       "tags": [],
+      "combo_group": null,
       "notes": "用于开局默认防止土匪第一时间进A，对准描点跑丢即可。",
       "screenshots": {
         "position": "images/de_mirage/incendiary/de_mirage_incendiary_3c8c242b_position.jpg",
@@ -284,6 +293,7 @@
       "tags": [
         "A1近点"
       ],
+      "combo_group": null,
       "notes": "贴住A1出口的墙壁左键投掷。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_4a541e06_position.jpg",
@@ -321,6 +331,7 @@
       "tags": [
         "沙袋"
       ],
+      "combo_group": null,
       "notes": "抵住中路沙袋车轮投掷。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_221f1977_position.jpg",
@@ -358,6 +369,7 @@
       "tags": [
         "B小"
       ],
+      "combo_group": null,
       "notes": "贴住B小水管旁的墙壁，左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_7168125b_position.jpg",
@@ -395,6 +407,7 @@
       "tags": [
         "快烟"
       ],
+      "combo_group": null,
       "notes": "",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_c9b095ef_position.jpg",
@@ -432,6 +445,7 @@
       "tags": [
         "匪家"
       ],
+      "combo_group": null,
       "notes": "瞄准红色墙壁右上角和右侧墙壁污渍延伸的交点处，向左跑两步左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_268503f4_position.jpg",
@@ -467,6 +481,7 @@
       "distance": 2066.5,
       "command": "setpos 908.39 -1036.03 -246.91; setang -25.01 -149.14 0",
       "tags": [],
+      "combo_group": null,
       "notes": "瞄准两块砖的顶部中间位置，左键跳投---用于拱门进攻，隔断警家枪线。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_4485a7db_position.jpg",
@@ -502,6 +517,7 @@
       "distance": 2034.7,
       "command": "setpos 1239.58 -1127.66 -254.31; setang -58.19 -166.38 0",
       "tags": [],
+      "combo_group": "A点进攻组合1",
       "notes": "",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_6c7a61fa_position.jpg",
@@ -539,6 +555,7 @@
       "tags": [
         "A1"
       ],
+      "combo_group": null,
       "notes": "对准拐角墙壁的中间贴住，左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_058bd2a7_position.jpg",
@@ -574,6 +591,7 @@
       "distance": 1358.9,
       "command": "setpos 1296.00 32.00 -167.97; setang -51.05 -161.02 0",
       "tags": [],
+      "combo_group": null,
       "notes": "",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_2b88a30b_position.jpg",
@@ -609,6 +627,7 @@
       "distance": 1482.2,
       "command": "setpos 1422.94 36.47 -167.97; setang -42.34 -160.50 0",
       "tags": [],
+      "combo_group": null,
       "notes": "贴住垃圾桶右侧投掷。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_754c0f16_position.jpg",
@@ -646,6 +665,7 @@
       "tags": [
         "警家"
       ],
+      "combo_group": null,
       "notes": "从警家往前走，直到看到左侧墙壁超出右侧墙壁，跑两步左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_39efbbec_position.jpg",
@@ -681,6 +701,7 @@
       "distance": 1715.3,
       "command": "setpos 1003.97 -1210.03 -98.62; setang -14.35 -169.08 0",
       "tags": [],
+      "combo_group": "A点进攻组合1",
       "notes": "背靠第二根木条中间，左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_3283e78a_position.jpg",
@@ -718,6 +739,7 @@
       "tags": [
         "B小"
       ],
+      "combo_group": null,
       "notes": "贴住B小后的墙壁左键投掷。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_886a5920_position.jpg",
@@ -753,6 +775,7 @@
       "distance": 2155.3,
       "command": "setpos -160.05 887.94 -135.33; setang -48.31 -146.49 0",
       "tags": [],
+      "combo_group": null,
       "notes": "抵住左侧墙角，左键跳投---没有破窗的情况下也可以封满。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_b97961e0_position.jpg",
@@ -788,6 +811,7 @@
       "distance": 1824.6,
       "command": "setpos 1239.40 -1127.70 -253.97; setang -21.01 -169.16 0",
       "tags": [],
+      "combo_group": null,
       "notes": "",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_50fccb00_position.jpg",
@@ -823,6 +847,7 @@
       "distance": 2224.7,
       "command": "setpos 1387.45 70.94 -158.14; setang -29.18 -164.08 0",
       "tags": [],
+      "combo_group": null,
       "notes": "贴住垃圾桶左侧双键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_d946a361_position.jpg",
@@ -860,6 +885,7 @@
       "tags": [
         "警家"
       ],
+      "combo_group": null,
       "notes": "跑到快碰到箱子的时候左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_dd290ab5_position.jpg",
@@ -897,6 +923,7 @@
       "tags": [
         "沙袋"
       ],
+      "combo_group": null,
       "notes": "用准星的2y对准最右侧电线杆的顶端，左键投掷。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_b4c0ceb4_position.jpg",
@@ -932,6 +959,7 @@
       "distance": 1379.0,
       "command": "setpos 1216.00 -16.00 -163.97; setang -57.05 -159.51 0",
       "tags": [],
+      "combo_group": null,
       "notes": "",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_73141097_position.jpg",
@@ -969,6 +997,7 @@
       "tags": [
         "匪口"
       ],
+      "combo_group": null,
       "notes": "匪口出来左侧贴住墙壁拐角左键投掷。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_471d8aec_position.jpg",

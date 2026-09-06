@@ -1252,6 +1252,19 @@ a.tag-badge:visited {
     background: linear-gradient(135deg, #c9a0dc 0%, #d4b0e8 100%);
 }
 
+/* 详情页组合标签 */
+.tag-badge.combo-tag {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 2px 4px rgba(245, 87, 108, 0.3);
+    cursor: default;
+}
+
+.tag-badge.combo-tag:hover {
+    background: linear-gradient(135deg, #f5a4ff 0%, #ff6b7f 100%);
+    box-shadow: 0 4px 8px rgba(245, 87, 108, 0.4);
+    transform: translateY(-1px);
+}
+
 /* ==================== 道具卡片中的迷你标签 ==================== */
 .utility-tags {
     margin-top: 8px;
@@ -1272,4 +1285,10 @@ a.tag-badge:visited {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 80px;
+}
+
+/* 组合标签 - 不同颜色 */
+.mini-tag.combo-tag {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    max-width: 120px;
 }

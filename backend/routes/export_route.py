@@ -129,6 +129,23 @@ def export_utilities():
                 util_hash = util['hash'][:8]  # 使用hash的前8位作为唯一标识
                 utility_id = f"{map_name}_{util_type}_{util_hash}"
                 
+                # 查询该道具的组合信息
+                combo_group = None
+                try:
+                    with db.get_connection() as conn:
+                        cursor = conn.cursor()
+                        cursor.execute("""
+                            SELECT DISTINCT combo_group 
+                            FROM utility_relations 
+                            WHERE utility_hash = ? AND combo_group IS NOT NULL
+                            LIMIT 1
+                        """, (util['hash'],))
+                        result = cursor.fetchone()
+                        if result and result['combo_group']:
+                            combo_group = result['combo_group']
+                except Exception as e:
+                    print(f"[警告] 查询组合信息失败: {e}")
+                
                 # 复制并处理截图
                 screenshot_base = util.get('screenshot_filename_base') or f"{map_name}_{util['hash']}"
                 
@@ -159,6 +176,7 @@ def export_utilities():
                     'distance': round(util.get('distance', 0), 1),
                     'command': f"setpos {util['throw_position']['x']:.2f} {util['throw_position']['y']:.2f} {util['throw_position']['z']:.2f}; setang {util['throw_angles']['pitch']:.2f} {util['throw_angles']['yaw']:.2f} 0",
                     'tags': util.get('tags', []),
+                    'combo_group': combo_group,  # 添加组合组名
                     'notes': util.get('notes', ''),
                     'screenshots': {
                         'position': f"images/{map_name}/{util_type}/{utility_id}_position.jpg",
