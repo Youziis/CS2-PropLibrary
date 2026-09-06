@@ -454,6 +454,32 @@ function renderDetailPage(utilityId) {
         </div>`;
     }
     
+    // 处理关联道具导航
+    let relatedNavHtml = '';
+    if (utility.combo_group) {
+        // 根据combo_group查找同组的其他道具
+        const relatedUtilities = state.allUtilities.filter(u => 
+            u.combo_group === utility.combo_group && u.id !== utility.id
+        );
+        
+        if (relatedUtilities.length > 0) {
+            relatedNavHtml = `
+                <div class="related-utilities-nav">
+                    <h3>关联道具</h3>
+                    <div class="related-nav-grid">
+                        ${relatedUtilities.map(relatedUtil => `
+                            <a href="#/utility/${relatedUtil.id}" class="related-nav-card">
+                                <div class="related-nav-bg" style="background-image: url('${relatedUtil.screenshots.position}')"></div>
+                                <div class="related-nav-overlay"></div>
+                                <div class="related-nav-text">${relatedUtil.name}</div>
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
     content.innerHTML = `
         <div class="detail-header">
             <button class="btn-back" onclick="history.back()">← 返回</button>
@@ -527,6 +553,8 @@ function renderDetailPage(utilityId) {
                 </div>
             </div>
         </div>
+        
+        ${relatedNavHtml}
     `;
 }
 

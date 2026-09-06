@@ -29,7 +29,7 @@
       "tags": [
         "快烟"
       ],
-      "combo_group": "VIP12",
+      "combo_group": null,
       "notes": "瞄准窗户和左键污渍的中间w+左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_c69e2315_position.jpg",
@@ -67,7 +67,7 @@
       "tags": [
         "快烟"
       ],
-      "combo_group": "VIP12",
+      "combo_group": null,
       "notes": "瞄准墙角突起的那一块大概位置即可，容错非常高。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_ac1a232b_position.jpg",
@@ -517,7 +517,7 @@
       "distance": 2034.7,
       "command": "setpos 1239.58 -1127.66 -254.31; setang -58.19 -166.38 0",
       "tags": [],
-      "combo_group": "A点进攻组合1",
+      "combo_group": "连接跳台组合烟1",
       "notes": "",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_6c7a61fa_position.jpg",
@@ -701,7 +701,7 @@
       "distance": 1715.3,
       "command": "setpos 1003.97 -1210.03 -98.62; setang -14.35 -169.08 0",
       "tags": [],
-      "combo_group": "A点进攻组合1",
+      "combo_group": null,
       "notes": "背靠第二根木条中间，左键跳投。",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_3283e78a_position.jpg",
@@ -811,7 +811,7 @@
       "distance": 1824.6,
       "command": "setpos 1239.40 -1127.70 -253.97; setang -21.01 -169.16 0",
       "tags": [],
-      "combo_group": null,
+      "combo_group": "连接跳台组合烟1",
       "notes": "",
       "screenshots": {
         "position": "images/de_mirage/smoke/de_mirage_smoke_50fccb00_position.jpg",
