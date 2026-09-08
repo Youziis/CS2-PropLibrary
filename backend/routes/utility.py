@@ -181,3 +181,61 @@ def edit_utility(hash):
         return jsonify({'success': True, 'message': '更新成功'})
     else:
         return jsonify({'success': False, 'message': '道具未找到'}), 404
+
+
+@bp.route('/api/update_utility', methods=['POST'])
+def update_utility_full():
+    """完整更新道具信息（用于编辑页面）"""
+    try:
+        # 获取表单数据
+        hash_val = request.form.get('hash')
+        
+        print(f"[调试] 开始更新道具: {hash_val}")
+        
+        if not hash_val:
+            return jsonify({'success': False, 'error': '缺少道具hash'}), 400
+        
+        # 准备更新字段
+        fields = {}
+        
+        if request.form.get('name'):
+            fields['display_name'] = request.form.get('name')
+        if request.form.get('type'):
+            fields['type'] = request.form.get('type')
+        if request.form.get('team'):
+            fields['team'] = request.form.get('team')
+        if request.form.get('throw_type'):
+            fields['throw_type'] = request.form.get('throw_type')
+        if request.form.get('notes'):
+            fields['notes'] = request.form.get('notes')
+        
+        # 处理标签（使用新的多表系统）
+        # 即使标签为空，也要调用set_utility_tags清空旧标签
+        tags_str = request.form.get('tags', '')
+        print(f"[调试] 标签字符串: '{tags_str}'")
+        
+        if tags_str.strip():
+            # 有标签内容
+            tag_list = [t.strip() for t in tags_str.split(',') if t.strip()]
+        else:
+            # 空标签，清空所有标签
+            tag_list = []
+        
+        print(f"[调试] 解析后的标签列表: {tag_list}")
+        result = db.set_utility_tags(hash_val, tag_list)
+        print(f"[调试] 标签设置结果: {result}")
+        
+        # 更新基本字段
+        if fields:
+            success = db.update_utility(hash_val, fields)
+            print(f"[调试] 基本字段更新结果: {success}")
+        
+        print(f"[调试] 更新完成")
+        return jsonify({'success': True, 'message': '更新成功'})
+        
+    except Exception as e:
+        import traceback
+        error_msg = traceback.format_exc()
+        print(f"[错误] 更新道具失败: {e}")
+        print(error_msg)
+        return jsonify({'success': False, 'error': str(e)}), 500

@@ -4,6 +4,7 @@
     {
       "id": "de_nuke_smoke_4fded929",
       "sort_id": 40001,
+      "hash": "4fded929bbf6d29b",
       "type": "smoke",
       "team": "T",
       "name": "test-nuke",
@@ -25,10 +26,8 @@
       "flight_time": 0,
       "distance": 0,
       "command": "setpos 233.00 233.00 233.00; setang 233.00 233.00 0",
-      "tags": [
-        "1",
-        "2"
-      ],
+      "tags": [],
+      "combo_group": null,
       "notes": "677",
       "screenshots": {
         "position": "images/de_nuke/smoke/de_nuke_smoke_4fded929_position.jpg",
@@ -36,8 +35,7 @@
         "landing": "images/de_nuke/smoke/de_nuke_smoke_4fded929_landing.jpg"
       },
       "thrower": null,
-      "demo_source": null,
-      "hash": "4fded929bbf6d29b"
+      "demo_source": null
     }
   ]
 }
