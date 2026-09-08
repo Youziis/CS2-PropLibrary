@@ -1948,8 +1948,19 @@ async function submitEditedUtility(event) {
         const result = await response.json();
         
         if (result.success) {
+            // 根据自动导出结果显示不同消息
+            let message = result.message;
+            
+            if (result.auto_exported === true) {
+                message = '～(∠・ω<) ' + message + ' ✓';
+            } else if (result.auto_exported === false) {
+                message = '～(∠・ω<) 更新成功，但自动导出失败：' + (result.export_error || '未知错误');
+            } else {
+                message = '～(∠・ω<) ' + message;
+            }
+            
             // 显示成功提示（屏幕中央）
-            showCenterMessage('～(∠・ω<) ' + result.message, 'success');
+            showCenterMessage(message, 'success');
             
             // 2秒后返回道具管理页面（跳过确认对话框）
             setTimeout(() => {

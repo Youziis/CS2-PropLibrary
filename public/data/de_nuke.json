@@ -26,9 +26,11 @@
       "flight_time": 0,
       "distance": 0,
       "command": "setpos 233.00 233.00 233.00; setang 233.00 233.00 0",
-      "tags": [],
+      "tags": [
+        "1"
+      ],
       "combo_group": null,
-      "notes": "677",
+      "notes": "676767",
       "screenshots": {
         "position": "images/de_nuke/smoke/de_nuke_smoke_4fded929_position.jpg",
         "crosshair": "images/de_nuke/smoke/de_nuke_smoke_4fded929_crosshair.jpg",

@@ -189,11 +189,17 @@ def update_utility_full():
     try:
         # 获取表单数据
         hash_val = request.form.get('hash')
+        auto_export = request.form.get('auto_export', 'true').lower() == 'true'  # 默认开启自动导出
         
-        print(f"[调试] 开始更新道具: {hash_val}")
+        print(f"[调试] 开始更新道具: {hash_val}, 自动导出: {auto_export}")
         
         if not hash_val:
             return jsonify({'success': False, 'error': '缺少道具hash'}), 400
+        
+        # 获取道具信息以确定状态
+        utility = db.get_utility_by_hash(hash_val)
+        if not utility:
+            return jsonify({'success': False, 'error': '道具未找到'}), 404
         
         # 准备更新字段
         fields = {}
@@ -229,6 +235,40 @@ def update_utility_full():
         if fields:
             success = db.update_utility(hash_val, fields)
             print(f"[调试] 基本字段更新结果: {success}")
+        
+        # 🔄 如果道具已导出且启用自动导出，触发重新导出
+        if auto_export and utility.get('status') in ['exported', 'approved']:
+            try:
+                from .export_route import trigger_export_for_map
+                map_name = utility.get('map')
+                print(f"[自动导出] 触发地图 {map_name} 的导出...")
+                
+                # 调用导出函数（只导出该地图）
+                export_result = trigger_export_for_map(map_name)
+                
+                if export_result.get('success'):
+                    print(f"[自动导出] 成功: {export_result.get('message')}")
+                    return jsonify({
+                        'success': True, 
+                        'message': '更新成功并已自动导出',
+                        'auto_exported': True
+                    })
+                else:
+                    print(f"[自动导出] 失败: {export_result.get('error')}")
+                    return jsonify({
+                        'success': True, 
+                        'message': '更新成功，但自动导出失败',
+                        'auto_exported': False,
+                        'export_error': export_result.get('error')
+                    })
+            except Exception as export_err:
+                print(f"[自动导出] 异常: {export_err}")
+                return jsonify({
+                    'success': True, 
+                    'message': '更新成功，但自动导出出错',
+                    'auto_exported': False,
+                    'export_error': str(export_err)
+                })
         
         print(f"[调试] 更新完成")
         return jsonify({'success': True, 'message': '更新成功'})

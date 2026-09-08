@@ -316,3 +316,194 @@ def get_exported():
     """获取已导出的道具"""
     utilities = db.get_utilities(status='exported')
     return jsonify({'utilities': utilities, 'count': len(utilities)})
+
+
+def trigger_export_for_map(map_name: str) -> dict:
+    """
+    触发单个地图的导出（用于自动导出）
+    只导出指定地图的 exported 和 approved 状态的道具
+    
+    Returns:
+        dict: {'success': bool, 'message': str, 'count': int}
+    """
+    try:
+        # 获取该地图的已批准和已导出道具
+        approved = db.get_utilities(status='approved', map_name=map_name)
+        exported = db.get_utilities(status='exported', map_name=map_name)
+        
+        utilities_to_export = approved + exported
+        
+        if not utilities_to_export:
+            return {'success': False, 'error': f'地图 {map_name} 没有可导出的道具'}
+        
+        # 项目根目录
+        root_dir = Path(__file__).parent.parent.parent
+        public_dir = root_dir / 'public'
+        screenshots_dir = root_dir / 'output' / 'screenshots'
+        
+        # 为没有sort_id的道具分配sort_id
+        for util in utilities_to_export:
+            if not util.get('sort_id'):
+                sort_id = db._get_next_sort_id(map_name)
+                db.update_utility(util['hash'], {'sort_id': sort_id})
+                util['sort_id'] = sort_id
+        
+        # 生成地图数据
+        map_utilities = []
+        
+        for util in utilities_to_export:
+            util_type = util['type']
+            util_hash = util['hash'][:8]
+            utility_id = f"{map_name}_{util_type}_{util_hash}"
+            
+            # 查询组合信息
+            combo_group = None
+            try:
+                with db.get_connection() as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("""
+                        SELECT DISTINCT combo_group 
+                        FROM utility_relations 
+                        WHERE utility_hash = ? AND combo_group IS NOT NULL
+                        LIMIT 1
+                    """, (util['hash'],))
+                    result = cursor.fetchone()
+                    if result and result['combo_group']:
+                        combo_group = result['combo_group']
+            except Exception as e:
+                print(f"[警告] 查询组合信息失败: {e}")
+            
+            # 复制并处理截图
+            screenshot_base = util.get('screenshot_filename_base') or f"{map_name}_{util['hash']}"
+            
+            for shot_type in ['position', 'crosshair', 'landing']:
+                src_file = screenshots_dir / f"{screenshot_base}_{shot_type}.jpg"
+                
+                if src_file.exists():
+                    dest_dir = public_dir / 'images' / map_name / util_type
+                    dest_dir.mkdir(parents=True, exist_ok=True)
+                    dest_file = dest_dir / f"{utility_id}_{shot_type}.jpg"
+                    
+                    process_and_save_image(src_file, dest_file, shot_type)
+            
+            # 生成道具数据
+            map_utilities.append({
+                'id': utility_id,
+                'sort_id': util.get('sort_id'),
+                'hash': util['hash'],
+                'type': util_type,
+                'team': util.get('team', 'Unknown'),
+                'name': util.get('display_name', f'{util_type}_{util_hash}'),
+                'position': util.get('throw_position', {}),
+                'angles': util.get('throw_angles', {}),
+                'land_position': util.get('land_position', {}),
+                'throw_type': util.get('throw_type', 'unknown'),
+                'flight_time': round(util.get('flight_time', 0), 2),
+                'distance': round(util.get('distance', 0), 1),
+                'command': f"setpos {util['throw_position']['x']:.2f} {util['throw_position']['y']:.2f} {util['throw_position']['z']:.2f}; setang {util['throw_angles']['pitch']:.2f} {util['throw_angles']['yaw']:.2f} 0",
+                'tags': util.get('tags', []),
+                'combo_group': combo_group,
+                'notes': util.get('notes', ''),
+                'screenshots': {
+                    'position': f"images/{map_name}/{util_type}/{utility_id}_position.jpg",
+                    'crosshair': f"images/{map_name}/{util_type}/{utility_id}_crosshair.jpg",
+                    'landing': f"images/{map_name}/{util_type}/{utility_id}_landing.jpg"
+                },
+                'thrower': util.get('thrower'),
+                'demo_source': util.get('source_demo')
+            })
+        
+        # 保存地图数据（合并模式）
+        map_data_file = public_dir / 'data' / f"{map_name}.json"
+        map_data_file.parent.mkdir(parents=True, exist_ok=True)
+        
+        # 读取已有数据
+        existing_utilities = []
+        existing_hashes = set()
+        
+        if map_data_file.exists():
+            try:
+                with open(map_data_file, 'r', encoding='utf-8') as f:
+                    existing_data = json.load(f)
+                    existing_utilities = existing_data.get('utilities', [])
+                    existing_hashes = {u.get('hash') for u in existing_utilities if u.get('hash')}
+            except Exception as e:
+                print(f"[警告] 读取已有地图数据失败: {e}")
+        
+        # 合并道具列表
+        merged_utilities = []
+        new_utility_hashes = {u['hash'] for u in map_utilities}
+        
+        # 保留未被更新的已有道具
+        for existing_util in existing_utilities:
+            existing_hash = existing_util.get('hash')
+            if existing_hash and existing_hash not in new_utility_hashes:
+                merged_utilities.append(existing_util)
+        
+        # 添加所有新道具
+        merged_utilities.extend(map_utilities)
+        
+        # 按sort_id排序
+        merged_utilities.sort(key=lambda u: u.get('sort_id', 999999))
+        
+        # 保存
+        with open(map_data_file, 'w', encoding='utf-8') as f:
+            json.dump({
+                'map': map_name,
+                'utilities': merged_utilities
+            }, f, ensure_ascii=False, indent=2)
+        
+        # 更新索引文件
+        index_file = public_dir / 'data' / 'utilities.json'
+        existing_maps = {}
+        
+        if index_file.exists():
+            try:
+                with open(index_file, 'r', encoding='utf-8') as f:
+                    existing_data = json.load(f)
+                    for map_info in existing_data.get('maps', []):
+                        existing_maps[map_info['name']] = map_info
+            except:
+                pass
+        
+        # 更新该地图信息
+        existing_maps[map_name] = {
+            'name': map_name,
+            'display_name': map_name.replace('de_', '').title(),
+            'utility_count': len(merged_utilities),
+            'data_file': f"data/{map_name}.json"
+        }
+        
+        all_maps = sorted(existing_maps.values(), key=lambda x: x['name'])
+        total_in_index = sum(m['utility_count'] for m in all_maps)
+        
+        with open(index_file, 'w', encoding='utf-8') as f:
+            json.dump({
+                'version': '1.0.0',
+                'last_updated': datetime.now().isoformat(),
+                'maps': all_maps,
+                'statistics': {
+                    'total_utilities': total_in_index,
+                    'by_type': {}
+                }
+            }, f, ensure_ascii=False, indent=2)
+        
+        # 更新 approved 道具的状态为 exported
+        for util in approved:
+            db.update_status(
+                util['hash'],
+                'exported',
+                exported_time=datetime.now().isoformat()
+            )
+        
+        return {
+            'success': True,
+            'message': f'成功导出地图 {map_name} 的 {len(map_utilities)} 个道具',
+            'count': len(map_utilities)
+        }
+        
+    except Exception as e:
+        import traceback
+        print(f"[错误] 单地图导出失败: {e}")
+        traceback.print_exc()
+        return {'success': False, 'error': str(e)}
