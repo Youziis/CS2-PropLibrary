@@ -175,6 +175,20 @@ def edit_utility(hash):
     if 'notes' in data:
         fields['notes'] = data['notes']
     
+    # 处理标签（使用新的多表系统）
+    if 'tags' in data:
+        tags = data['tags']
+        if isinstance(tags, str):
+            # 如果是字符串，按逗号分割
+            tag_list = [t.strip() for t in tags.split(',') if t.strip()]
+        elif isinstance(tags, list):
+            tag_list = [str(t).strip() for t in tags if str(t).strip()]
+        else:
+            tag_list = []
+        
+        # 使用新的标签系统
+        db.set_utility_tags(hash, tag_list)
+    
     success = db.update_utility(hash, fields)
     
     if success:

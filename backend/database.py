@@ -493,12 +493,12 @@ class Database:
                 full_data['team'] = d['team']
             if d.get('throw_type'):
                 full_data['throw_type'] = d['throw_type']
-            # ✅ 新增：覆盖tags字段
-            if d.get('tags'):
-                try:
-                    full_data['tags'] = json.loads(d['tags'])
-                except:
-                    full_data['tags'] = []
+            
+            # ✅ 从新的标签表获取标签
+            utility_hash = d.get('hash')
+            if utility_hash:
+                tags = self.get_utility_tags(utility_hash)
+                full_data['tags'] = [tag['name'] for tag in tags]
             else:
                 full_data['tags'] = []
             return full_data
@@ -756,3 +756,242 @@ if __name__ == '__main__':
     stats = db.get_statistics()
     print("数据库统计:")
     print(json.dumps(stats, indent=2, ensure_ascii=False))
+
+    # ==================== 标签管理（多表） ====================
+    
+    def get_all_tags(self):
+        """获取所有标签及其使用次数"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT 
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.color,
+                    t.created_time,
+                    COUNT(ut.utility_hash) as usage_count
+                FROM tags t
+                LEFT JOIN utility_tags ut ON t.id = ut.tag_id
+                GROUP BY t.id
+                ORDER BY t.name
+            """)
+            
+            tags = []
+            for row in cursor.fetchall():
+                tags.append({
+                    'id': row['id'],
+                    'name': row['name'],
+                    'description': row['description'],
+                    'color': row['color'],
+                    'usage_count': row['usage_count'],
+                    'created_time': row['created_time']
+                })
+            
+            return tags
+    
+    def get_tag_by_name(self, tag_name):
+        """根据名称获取标签"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM tags WHERE name = ?", (tag_name,))
+            row = cursor.fetchone()
+            return dict(row) if row else None
+    
+    def create_tag(self, name, description=None, color=None):
+        """创建新标签"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO tags (name, description, color)
+                VALUES (?, ?, ?)
+            """, (name, description, color))
+            
+            return cursor.lastrowid
+    
+    def update_tag(self, tag_id, name=None, description=None, color=None):
+        """更新标签信息"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            updates = []
+            params = []
+            
+            if name is not None:
+                updates.append("name = ?")
+                params.append(name)
+            if description is not None:
+                updates.append("description = ?")
+                params.append(description)
+            if color is not None:
+                updates.append("color = ?")
+                params.append(color)
+            
+            if not updates:
+                return False
+            
+            params.append(tag_id)
+            
+            cursor.execute(f"""
+                UPDATE tags 
+                SET {', '.join(updates)}
+                WHERE id = ?
+            """, params)
+            
+            return cursor.rowcount > 0
+    
+    def delete_tag(self, tag_id):
+        """删除标签（自动删除关联关系）"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM tags WHERE id = ?", (tag_id,))
+            return cursor.rowcount > 0
+    
+    def get_utility_tags(self, utility_hash):
+        """获取道具的所有标签"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT t.*
+                FROM tags t
+                JOIN utility_tags ut ON t.id = ut.tag_id
+                WHERE ut.utility_hash = ?
+                ORDER BY t.name
+            """, (utility_hash,))
+            
+            tags = []
+            for row in cursor.fetchall():
+                tags.append({
+                    'id': row['id'],
+                    'name': row['name'],
+                    'description': row['description'],
+                    'color': row['color']
+                })
+            
+            return tags
+    
+    def add_utility_tag(self, utility_hash, tag_name):
+        """为道具添加标签（如果标签不存在则创建）"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # 获取或创建标签
+            cursor.execute("SELECT id FROM tags WHERE name = ?", (tag_name,))
+            row = cursor.fetchone()
+            
+            if row:
+                tag_id = row['id']
+            else:
+                cursor.execute("INSERT INTO tags (name) VALUES (?)", (tag_name,))
+                tag_id = cursor.lastrowid
+            
+            # 创建关联
+            try:
+                cursor.execute("""
+                    INSERT INTO utility_tags (utility_hash, tag_id)
+                    VALUES (?, ?)
+                """, (utility_hash, tag_id))
+                return True
+            except sqlite3.IntegrityError:
+                # 已存在该关联
+                return False
+    
+    def remove_utility_tag(self, utility_hash, tag_name):
+        """移除道具的标签"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            cursor.execute("""
+                DELETE FROM utility_tags
+                WHERE utility_hash = ? 
+                AND tag_id = (SELECT id FROM tags WHERE name = ?)
+            """, (utility_hash, tag_name))
+            
+            return cursor.rowcount > 0
+    
+    def set_utility_tags(self, utility_hash, tag_names):
+        """设置道具的标签列表（覆盖式）"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # 删除现有标签
+            cursor.execute("DELETE FROM utility_tags WHERE utility_hash = ?", (utility_hash,))
+            
+            # 添加新标签
+            for tag_name in tag_names:
+                if not tag_name or not tag_name.strip():
+                    continue
+                
+                tag_name = tag_name.strip()
+                
+                # 获取或创建标签
+                cursor.execute("SELECT id FROM tags WHERE name = ?", (tag_name,))
+                row = cursor.fetchone()
+                
+                if row:
+                    tag_id = row['id']
+                else:
+                    cursor.execute("INSERT INTO tags (name) VALUES (?)", (tag_name,))
+                    tag_id = cursor.lastrowid
+                
+                # 创建关联
+                cursor.execute("""
+                    INSERT OR IGNORE INTO utility_tags (utility_hash, tag_id)
+                    VALUES (?, ?)
+                """, (utility_hash, tag_id))
+            
+            return True
+    
+    def get_utilities_by_tag(self, tag_name, status='exported'):
+        """获取某标签下的所有道具"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT u.*
+                FROM utilities u
+                JOIN utility_tags ut ON u.hash = ut.utility_hash
+                JOIN tags t ON ut.tag_id = t.id
+                WHERE t.name = ? AND u.status = ?
+                ORDER BY u.map, u.type
+            """, (tag_name, status))
+            
+            utilities = []
+            for row in cursor.fetchall():
+                utility = dict(row)
+                self._parse_json_fields(utility)
+                utilities.append(utility)
+            
+            return utilities
+    
+    def merge_tags(self, source_tag_name, target_tag_name):
+        """合并标签（将source的所有道具移到target，然后删除source）"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # 获取两个标签的ID
+            cursor.execute("SELECT id FROM tags WHERE name = ?", (source_tag_name,))
+            source = cursor.fetchone()
+            if not source:
+                return False
+            source_id = source['id']
+            
+            cursor.execute("SELECT id FROM tags WHERE name = ?", (target_tag_name,))
+            target = cursor.fetchone()
+            if not target:
+                # 目标标签不存在，重命名source即可
+                cursor.execute("UPDATE tags SET name = ? WHERE id = ?", 
+                             (target_tag_name, source_id))
+                return True
+            target_id = target['id']
+            
+            # 将source的关联移到target
+            cursor.execute("""
+                UPDATE OR IGNORE utility_tags 
+                SET tag_id = ? 
+                WHERE tag_id = ?
+            """, (target_id, source_id))
+            
+            # 删除source标签（自动删除剩余关联）
+            cursor.execute("DELETE FROM tags WHERE id = ?", (source_id,))
+            
+            return True
