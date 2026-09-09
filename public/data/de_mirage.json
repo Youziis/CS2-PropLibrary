@@ -1006,6 +1006,78 @@
       },
       "thrower": "sh1ro",
       "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_fab53cb1",
+      "sort_id": 20031,
+      "hash": "fab53cb11e472125",
+      "type": "smoke",
+      "team": "T",
+      "name": "gungle烟",
+      "position": {
+        "x": 1239.96875,
+        "y": -1159.970947265625,
+        "z": -246.3935546875
+      },
+      "angles": {
+        "pitch": -49.15763854980469,
+        "yaw": -173.29421997070312
+      },
+      "land_position": {
+        "x": -996.9765625,
+        "y": -1423.0721435546875,
+        "z": -165.0904541015625
+      },
+      "throw_type": "左键跳投",
+      "flight_time": 7.75,
+      "distance": 2253.8,
+      "command": "setpos 1239.97 -1159.97 -246.39; setang -49.16 -173.29 0",
+      "tags": [],
+      "combo_group": null,
+      "notes": "抵住台阶下的拐角左键跳投，配合警家隔断烟与拱门队友夹击。",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_fab53cb1_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_fab53cb1_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_fab53cb1_landing.jpg"
+      },
+      "thrower": "zont1x",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_smoke_fae1aa20",
+      "sort_id": 20032,
+      "hash": "fae1aa20b4c10cf6",
+      "type": "smoke",
+      "team": "T",
+      "name": "b小隔断烟",
+      "position": {
+        "x": -161.03515625,
+        "y": 575.8568115234375,
+        "z": -69.767578125
+      },
+      "angles": {
+        "pitch": -8.337249755859375,
+        "yaw": -154.48529052734375
+      },
+      "land_position": {
+        "x": -2215.51318359375,
+        "y": -84.7109375,
+        "z": -166.80145263671875
+      },
+      "throw_type": "双键跳投",
+      "flight_time": 5.86,
+      "distance": 2160.2,
+      "command": "setpos -161.04 575.86 -69.77; setang -8.34 -154.49 0",
+      "tags": [],
+      "combo_group": null,
+      "notes": "",
+      "screenshots": {
+        "position": "images/de_mirage/smoke/de_mirage_smoke_fae1aa20_position.jpg",
+        "crosshair": "images/de_mirage/smoke/de_mirage_smoke_fae1aa20_crosshair.jpg",
+        "landing": "images/de_mirage/smoke/de_mirage_smoke_fae1aa20_landing.jpg"
+      },
+      "thrower": "rain",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
     }
   ]
 }
