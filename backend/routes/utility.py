@@ -187,6 +187,9 @@ def edit_utility(hash):
 def update_utility_full():
     """完整更新道具信息（用于编辑页面）"""
     try:
+        from pathlib import Path
+        import os
+        
         # 获取表单数据
         hash_val = request.form.get('hash')
         auto_export = request.form.get('auto_export', 'true').lower() == 'true'  # 默认开启自动导出
@@ -214,6 +217,37 @@ def update_utility_full():
             fields['throw_type'] = request.form.get('throw_type')
         if request.form.get('notes'):
             fields['notes'] = request.form.get('notes')
+        
+        # ✅ 处理图片上传
+        print(f"[调试] 检查图片文件...")
+        project_root = Path(__file__).parent.parent.parent
+        screenshots_dir = project_root / 'output' / 'screenshots'
+        screenshots_dir.mkdir(parents=True, exist_ok=True)
+        
+        # 获取原有的截图基名（或生成新的）
+        screenshot_base = utility.get('screenshot_filename_base') or f"{utility.get('map')}_{hash_val}"
+        
+        # 处理三种截图
+        for img_key, shot_type in [('img_position', 'position'), ('img_crosshair', 'crosshair'), ('img_landing', 'landing')]:
+            if img_key in request.files:
+                file = request.files[img_key]
+                if file and file.filename:
+                    print(f"[调试] 上传 {shot_type} 图片: {file.filename}")
+                    try:
+                        # 生成保存路径
+                        filename = f"{screenshot_base}_{shot_type}.jpg"
+                        filepath = screenshots_dir / filename
+                        
+                        # 保存文件
+                        file.save(str(filepath))
+                        print(f"[调试] 已保存图片: {filepath}")
+                    except Exception as e:
+                        print(f"[警告] 保存 {shot_type} 图片失败: {e}")
+        
+        # 更新截图基名（如果还没设置）
+        if not utility.get('screenshot_filename_base'):
+            fields['screenshot_filename_base'] = screenshot_base
+            print(f"[调试] 设置截图基名: {screenshot_base}")
         
         # 处理标签（使用新的多表系统）
         # 即使标签为空，也要调用set_utility_tags清空旧标签
