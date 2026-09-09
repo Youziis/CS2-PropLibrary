@@ -2734,14 +2734,14 @@ function updateRelationsDisplay() {
     const html = sortedList.map((util, index) => {
         const isSelected = selectedUtilitiesMap.has(util.hash);
         const order = isSelected ? Array.from(selectedUtilitiesMap.keys()).indexOf(util.hash) + 1 : 0;
-        return renderUtilityCard(util, isSelected, order);
+        return renderRelationUtilityCard(util, isSelected, order);
     }).join('');
     
     container.innerHTML = html;
 }
 
-// 渲染道具卡片
-function renderUtilityCard(utility, isSelected, order) {
+// 渲染关联管理页面的道具卡片
+function renderRelationUtilityCard(utility, isSelected, order) {
     const screenshotBase = utility.screenshot_filename_base || `${utility.map}_${utility.hash}`;
     const type = utility.type || 'unknown';
     
@@ -2869,3 +2869,11 @@ function getUtilityTypeIcon(type) {
 // 修改initTabs，添加relations标签页初始化
 // 在切换到relations标签页时调用initRelationsTab()
 
+
+
+// ========== 页面初始化 ==========
+// 页面加载完成后初始化
+initTabs();
+loadStats();
+loadOverviewStats();
+loadOverviewPendingStats();
