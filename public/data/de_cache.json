@@ -1,0 +1,41 @@
+{
+  "map": "de_cache",
+  "utilities": [
+    {
+      "id": "de_cache_smoke_edc30c03",
+      "sort_id": 80001,
+      "hash": "edc30c0300e860b1",
+      "type": "smoke",
+      "team": "T",
+      "name": "test-cache",
+      "position": {
+        "x": 1212,
+        "y": 1212,
+        "z": 1212
+      },
+      "angles": {
+        "pitch": 1212,
+        "yaw": 1212
+      },
+      "land_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "throw_type": "test",
+      "flight_time": 0,
+      "distance": 0,
+      "command": "setpos 1212.00 1212.00 1212.00; setang 1212.00 1212.00 0",
+      "tags": [],
+      "combo_group": null,
+      "notes": "233",
+      "screenshots": {
+        "position": "images/de_cache/smoke/de_cache_smoke_edc30c03_position.jpg",
+        "crosshair": "images/de_cache/smoke/de_cache_smoke_edc30c03_crosshair.jpg",
+        "landing": "images/de_cache/smoke/de_cache_smoke_edc30c03_landing.jpg"
+      },
+      "thrower": null,
+      "demo_source": null
+    }
+  ]
+}

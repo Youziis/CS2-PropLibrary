@@ -818,6 +818,17 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- 按功能拆分，保持普通 script 全局作用域；shell.js 必须最后加载（初始化入口） -->
+    <script src="js/state.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/overview.js"></script>
+    <script src="js/demos.js"></script>
+    <script src="js/select.js"></script>
+    <script src="js/review.js"></script>
+    <script src="js/publish.js"></script>
+    <script src="js/edit.js"></script>
+    <script src="js/manual-add.js"></script>
+    <script src="js/relations.js"></script>
+    <script src="js/shell.js"></script>
 </body>
 </html>
