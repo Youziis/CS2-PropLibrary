@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "last_updated": "2026-09-16T13:16:17.500192",
+  "last_updated": "2026-09-16T13:39:35.212147",
   "maps": [
     {
       "name": "de_anubis",
@@ -21,6 +21,12 @@
       "data_file": "data/de_dust2.json"
     },
     {
+      "name": "de_inferno",
+      "display_name": "Inferno",
+      "utility_count": 1,
+      "data_file": "data/de_inferno.json"
+    },
+    {
       "name": "de_mirage",
       "display_name": "Mirage",
       "utility_count": 29,
@@ -34,7 +40,7 @@
     }
   ],
   "statistics": {
-    "total_utilities": 47,
+    "total_utilities": 48,
     "by_type": {}
   }
 }

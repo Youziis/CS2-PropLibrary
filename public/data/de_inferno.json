@@ -1,0 +1,41 @@
+{
+  "map": "de_inferno",
+  "utilities": [
+    {
+      "id": "de_inferno_smoke_db6c4593",
+      "sort_id": 30001,
+      "hash": "db6c4593b757fc72",
+      "type": "smoke",
+      "team": "T",
+      "name": "test-inferno",
+      "position": {
+        "x": 666,
+        "y": 666,
+        "z": 663
+      },
+      "angles": {
+        "pitch": 666,
+        "yaw": 666
+      },
+      "land_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "throw_type": "333",
+      "flight_time": 0,
+      "distance": 0,
+      "command": "setpos 666.00 666.00 663.00; setang 666.00 666.00 0",
+      "tags": [],
+      "combo_group": null,
+      "notes": "🐟",
+      "screenshots": {
+        "position": "images/de_inferno/smoke/de_inferno_smoke_db6c4593_position.jpg",
+        "crosshair": "images/de_inferno/smoke/de_inferno_smoke_db6c4593_crosshair.jpg",
+        "landing": "images/de_inferno/smoke/de_inferno_smoke_db6c4593_landing.jpg"
+      },
+      "thrower": null,
+      "demo_source": null
+    }
+  ]
+}

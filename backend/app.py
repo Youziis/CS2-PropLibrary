@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from database import Database
 from routes import demo, utility, screenshot, export_route, relation
+from client.src.extractor import generate_id
 
 # 创建 Flask 应用
 app = Flask(__name__, 
@@ -626,8 +627,6 @@ def export_single_utility(utility, db_instance=None):
 def add_manual_utility():
     """手动添加道具（用户上传）- 直接导出到前端"""
     try:
-        import hashlib
-        from werkzeug.utils import secure_filename
         import json
         
         # 获取表单数据
@@ -668,23 +667,7 @@ def add_manual_utility():
         if not all([img_position, img_crosshair, img_landing]):
             return jsonify({'success': False, 'error': '请上传所有三张截图'}), 400
         
-        # 使用与Demo解析相同的hash生成规则
-        # 将坐标四舍五入到1位小数
-        throw_pos = (
-            round(throw_position.get('x', 0), 1),
-            round(throw_position.get('y', 0), 1),
-            round(throw_position.get('z', 0), 1)
-        )
-        throw_ang = (
-            round(throw_angles.get('pitch', 0), 1),
-            round(throw_angles.get('yaw', 0), 1)
-        )
-        land_pos = (
-            round(land_position.get('x', 0), 1),
-            round(land_position.get('y', 0), 1),
-            round(land_position.get('z', 0), 1)
-        )
-        
+        # hash 规则与 Demo 解析共用同一份实现（client/src/extractor.py 的 generate_id）
         # 生成weapon字符串（根据类型）
         weapon_map = {
             'smoke': 'weapon_smokegrenade',
@@ -694,12 +677,23 @@ def add_manual_utility():
             'molotov': 'weapon_molotov'
         }
         weapon = weapon_map.get(utility_type, 'unknown')
-        
-        # 组合成字符串（与extractor.py中的逻辑一致）
-        hash_string = f"{throw_pos}_{throw_ang}_{land_pos}_{weapon}"
-        hash_val = hashlib.md5(hash_string.encode()).hexdigest()[:16]
-        
-        print(f"[手动添加道具] Hash生成字符串: {hash_string}")
+
+        hash_val = generate_id(
+            {
+                'X': throw_position.get('x', 0),
+                'Y': throw_position.get('y', 0),
+                'Z': throw_position.get('z', 0),
+                'pitch': throw_angles.get('pitch', 0),
+                'yaw': throw_angles.get('yaw', 0),
+                'weapon': weapon
+            },
+            {
+                'x': land_position.get('x', 0),
+                'y': land_position.get('y', 0),
+                'z': land_position.get('z', 0)
+            }
+        )
+
         print(f"[手动添加道具] 生成的Hash: {hash_val}")
         
         # 保存图片文件到 output/screenshots
