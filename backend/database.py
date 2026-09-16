@@ -425,6 +425,48 @@ class Database:
             
             return cursor.rowcount > 0
     
+    def update_utility_and_raw(self, hash_val: str, column_fields: Dict, raw_patch: Dict) -> bool:
+        """
+        同时更新列字段与 raw_data 内的字段
+
+        读取接口（_row_to_dict）和导出都以 raw_data 为返回主体，
+        只改列不改 raw_data 会导致更新"看不到"，所以两者必须一起写。
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT raw_data FROM utilities WHERE hash = ?", (hash_val,))
+            row = cursor.fetchone()
+            if not row:
+                return False
+
+            updates = [f"{key} = ?" for key in column_fields]
+            params = list(column_fields.values())
+
+            if raw_patch:
+                raw = {}
+                if row['raw_data']:
+                    try:
+                        raw = json.loads(row['raw_data'])
+                    except (ValueError, TypeError):
+                        print(f"[警告] raw_data 不是合法 JSON，将重建: {hash_val}")
+
+                raw.update(raw_patch)
+                updates.append("raw_data = ?")
+                params.append(json.dumps(raw, ensure_ascii=False))
+
+            if not updates:
+                return False
+
+            params.append(hash_val)
+            cursor.execute(f"""
+                UPDATE utilities
+                SET {', '.join(updates)}
+                WHERE hash = ?
+            """, params)
+
+            return cursor.rowcount > 0
+
     def delete_utility(self, hash_val: str) -> bool:
         """删除道具"""
         with self.get_connection() as conn:

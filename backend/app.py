@@ -612,320 +612,14 @@ def edit_exported():
         return jsonify({'success': False, 'message': '道具未找到'}), 404
 
 
-@app.route('/api/update_utility', methods=['POST'])
-def update_utility():
-    """完整更新道具（包括图片、坐标等所有信息）"""
-    try:
-        import hashlib
-        from PIL import Image
-        
-        # 获取表单数据
-        hash_val = request.form.get('hash')
-        
-        if not hash_val:
-            return jsonify({'success': False, 'error': '缺少道具hash'}), 400
-        
-        # 获取原道具信息
-        utility = db.get_utility_by_hash(hash_val)
-        if not utility:
-            return jsonify({'success': False, 'error': '道具未找到'}), 404
-        
-        print(f"[更新道具] 开始处理: {hash_val}")
-        
-        # 获取更新的字段
-        name = request.form.get('name')
-        map_name = request.form.get('map')
-        utility_type = request.form.get('type')
-        team = request.form.get('team')
-        throw_type = request.form.get('throw_type', '未知')
-        notes = request.form.get('notes', '')
-        tags_str = request.form.get('tags', '')  # 获取标签字符串
-        
-        # 获取坐标数据
-        import json
-        throw_position = json.loads(request.form.get('throw_position', '{}'))
-        throw_angles = json.loads(request.form.get('throw_angles', '{}'))
-        land_position = json.loads(request.form.get('land_position', '{}'))
-        
-        # 处理标签：将逗号分隔的字符串转换为数组（支持全角和半角逗号）
-        tags = []
-        if tags_str:
-            # 先将全角逗号替换为半角逗号，然后分割
-            tags_str = tags_str.replace('，', ',')  # 全角逗号转半角
-            tags = [tag.strip() for tag in tags_str.split(',') if tag.strip()]
-            print(f"[更新道具] 标签: {tags}")
-        
-        # 构建更新字段
-        import json
-        update_fields = {
-            'display_name': name,
-            'map': map_name,
-            'type': utility_type,
-            'team': team,
-            'throw_type': throw_type,
-            'notes': notes,
-            'tags': json.dumps(tags),  # 添加tags字段
-            'throw_position': json.dumps(throw_position),  # 转换为JSON字符串
-            'throw_angles': json.dumps(throw_angles),      # 转换为JSON字符串
-            'land_position': json.dumps(land_position)     # 转换为JSON字符串
-        }
-        
-        # 处理图片更新
-        screenshot_base = utility.get('screenshot_filename_base')
-        if not screenshot_base:
-            screenshot_base = f"{map_name}_{hash_val}"
-        
-        screenshots_dir = Path(__file__).parent.parent / 'output' / 'screenshots'
-        screenshots_dir.mkdir(parents=True, exist_ok=True)
-        
-        # 检查是否有新上传的图片
-        img_position = request.files.get('img_position')
-        img_crosshair = request.files.get('img_crosshair')
-        img_landing = request.files.get('img_landing')
-        
-        updated_images = []
-        
-        # 更新站位图
-        if img_position:
-            try:
-                img_position.save(screenshots_dir / f"{screenshot_base}_position.jpg")
-                updated_images.append('position')
-                print(f"[更新道具] 已更新站位图")
-            except Exception as e:
-                print(f"[更新道具] 保存站位图失败: {e}")
-        
-        # 更新准星图
-        if img_crosshair:
-            try:
-                img_crosshair.save(screenshots_dir / f"{screenshot_base}_crosshair.jpg")
-                updated_images.append('crosshair')
-                print(f"[更新道具] 已更新准星图")
-            except Exception as e:
-                print(f"[更新道具] 保存准星图失败: {e}")
-        
-        # 更新落点图
-        if img_landing:
-            try:
-                img_landing.save(screenshots_dir / f"{screenshot_base}_landing.jpg")
-                updated_images.append('landing')
-                print(f"[更新道具] 已更新落点图")
-            except Exception as e:
-                print(f"[更新道具] 保存落点图失败: {e}")
-        
-        # 更新数据库
-        success = db.update_utility(hash_val, update_fields)
-        
-        if not success:
-            return jsonify({'success': False, 'error': '数据库更新失败'}), 500
-        
-        print(f"[更新道具] 数据库更新成功")
-        
-        # 如果状态是 exported，需要重新导出到 public
-        if utility.get('status') == 'exported':
-            print(f"[更新道具] 道具已导出，开始重新导出...")
-            
-            # 获取更新后的道具数据
-            updated_utility = db.get_utility_by_hash(hash_val)
-            
-            # 重新导出
-            export_success, export_message = export_single_utility(updated_utility, db)
-            
-            if export_success:
-                print(f"[更新道具] 重新导出成功")
-                message = f'道具更新成功'
-                if updated_images:
-                    message += f'（已更新图片: {", ".join(updated_images)}）'
-                message += '，已重新导出到前端'
-                return jsonify({'success': True, 'message': message})
-            else:
-                print(f"[更新道具] 重新导出失败: {export_message}")
-                return jsonify({
-                    'success': False,
-                    'error': f'道具更新成功但重新导出失败: {export_message}'
-                }), 500
-        else:
-            # 未导出的道具，只更新数据库
-            message = f'道具更新成功'
-            if updated_images:
-                message += f'（已更新图片: {", ".join(updated_images)}）'
-            return jsonify({'success': True, 'message': message})
-        
-    except Exception as e:
-        print(f"[更新道具] 异常: {e}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'error': f'服务器错误: {str(e)}'}), 500
-
-
-def export_single_utility(utility, db_instance):
+def export_single_utility(utility, db_instance=None):
     """
-    导出单个道具到 public 目录
+    导出单个道具到 public 目录（历史函数）
+    统一走地图级导出，保证与 /api/update_utility 的自动导出结果结构一致
     返回: (success, message)
     """
-    try:
-        from PIL import Image
-        import json
-        
-        root_dir = Path(__file__).parent.parent
-        public_dir = root_dir / 'public'
-        screenshots_dir = root_dir / 'output' / 'screenshots'
-        
-        map_name = utility['map']
-        util_type = utility['type']
-        util_hash = utility['hash'][:8]
-        utility_id = f"{map_name}_{util_type}_{util_hash}"
-        
-        # 1. 处理并复制截图到 public/images
-        screenshot_base = utility.get('screenshot_filename_base') or f"{map_name}_{utility['hash']}"
-        
-        for shot_type in ['position', 'crosshair', 'landing']:
-            src_file = screenshots_dir / f"{screenshot_base}_{shot_type}.jpg"
-            
-            if not src_file.exists():
-                print(f"[警告] 截图文件不存在: {src_file}")
-                continue
-            
-            dest_dir = public_dir / 'images' / map_name / util_type
-            dest_dir.mkdir(parents=True, exist_ok=True)
-            dest_file = dest_dir / f"{utility_id}_{shot_type}.jpg"
-            
-            # 处理图片（裁剪准星图，压缩其他图）
-            try:
-                img = Image.open(src_file)
-                
-                if shot_type == 'crosshair':
-                    # 准星图：裁剪中心区域
-                    width, height = img.size
-                    crop_width = int(width * 0.4)
-                    crop_height = int(height * 0.5)
-                    left = (width - crop_width) // 2
-                    top = (height - crop_height) // 2
-                    right = left + crop_width
-                    bottom = top + crop_height
-                    img = img.crop((left, top, right, bottom))
-                    img.save(dest_file, 'JPEG', quality=85, optimize=True)
-                else:
-                    # 站位图和落点图：压缩
-                    if img.width > 1200 or img.height > 900:
-                        img.thumbnail((1200, 900), Image.Resampling.LANCZOS)
-                    img.save(dest_file, 'JPEG', quality=75, optimize=True)
-                
-                print(f"[导出] 已处理图片: {dest_file}")
-                
-            except Exception as e:
-                print(f"[错误] 处理图片失败 ({shot_type}): {e}")
-                return False, f"处理图片失败: {str(e)}"
-        
-        # 2. 生成道具数据
-        utility_data = {
-            'id': utility_id,
-            'sort_id': utility.get('sort_id'),
-            'type': util_type,
-            'team': utility.get('team', 'Unknown'),
-            'name': utility.get('display_name', f'{util_type}_{util_hash}'),
-            'position': utility.get('throw_position', {}),
-            'angles': utility.get('throw_angles', {}),
-            'land_position': utility.get('land_position', {}),
-            'throw_type': utility.get('throw_type', 'unknown'),
-            'flight_time': round(utility.get('flight_time', 0), 2),
-            'distance': round(utility.get('distance', 0), 1),
-            'command': f"setpos {utility['throw_position']['x']:.2f} {utility['throw_position']['y']:.2f} {utility['throw_position']['z']:.2f}; setang {utility['throw_angles']['pitch']:.2f} {utility['throw_angles']['yaw']:.2f} 0",
-            'tags': utility.get('tags', []),  # 导出标签数据
-            'notes': utility.get('notes', ''),
-            'screenshots': {
-                'position': f"images/{map_name}/{util_type}/{utility_id}_position.jpg",
-                'crosshair': f"images/{map_name}/{util_type}/{utility_id}_crosshair.jpg",
-                'landing': f"images/{map_name}/{util_type}/{utility_id}_landing.jpg"
-            },
-            'thrower': utility.get('thrower'),
-            'demo_source': utility.get('source_demo'),
-            'hash': utility['hash']
-        }
-        
-        # 3. 更新地图数据文件
-        map_data_file = public_dir / 'data' / f"{map_name}.json"
-        map_data_file.parent.mkdir(parents=True, exist_ok=True)
-        
-        # 读取已有数据
-        existing_utilities = []
-        if map_data_file.exists():
-            try:
-                with open(map_data_file, 'r', encoding='utf-8') as f:
-                    existing_data = json.load(f)
-                    existing_utilities = existing_data.get('utilities', [])
-            except Exception as e:
-                print(f"[警告] 读取已有地图数据失败: {e}")
-        
-        # 移除旧的同hash道具（如果存在），使用hash去重
-        utility_hash = utility['hash']
-        existing_utilities = [u for u in existing_utilities if u.get('hash') != utility_hash]
-        
-        # 添加新道具
-        existing_utilities.append(utility_data)
-        
-        # 按sort_id排序（如果没有sort_id则放在最后）
-        existing_utilities.sort(key=lambda u: u.get('sort_id', 999999))
-        
-        # 保存更新后的数据
-        with open(map_data_file, 'w', encoding='utf-8') as f:
-            json.dump({
-                'map': map_name,
-                'utilities': existing_utilities
-            }, f, ensure_ascii=False, indent=2)
-        
-        print(f"[导出] 已更新地图数据: {map_data_file}")
-        
-        # 4. 更新索引文件
-        index_file = public_dir / 'data' / 'utilities.json'
-        existing_maps = {}
-        
-        if index_file.exists():
-            try:
-                with open(index_file, 'r', encoding='utf-8') as f:
-                    existing_data = json.load(f)
-                    for map_info in existing_data.get('maps', []):
-                        existing_maps[map_info['name']] = map_info
-            except:
-                pass
-        
-        # 更新当前地图信息
-        existing_maps[map_name] = {
-            'name': map_name,
-            'display_name': map_name.replace('de_', '').title(),
-            'utility_count': len(existing_utilities),
-            'data_file': f"data/{map_name}.json"
-        }
-        
-        all_maps = sorted(existing_maps.values(), key=lambda x: x['name'])
-        total_in_index = sum(m['utility_count'] for m in all_maps)
-        
-        with open(index_file, 'w', encoding='utf-8') as f:
-            json.dump({
-                'version': '1.0.0',
-                'last_updated': datetime.now().isoformat(),
-                'maps': all_maps,
-                'statistics': {
-                    'total_utilities': total_in_index,
-                    'by_type': {}
-                }
-            }, f, ensure_ascii=False, indent=2)
-        
-        print(f"[导出] 已更新索引文件")
-        
-        # 5. 更新数据库状态为 exported
-        db_instance.update_status(
-            utility['hash'],
-            'exported',
-            exported_time=datetime.now().isoformat()
-        )
-        
-        return True, "导出成功"
-        
-    except Exception as e:
-        print(f"[错误] 导出单个道具失败: {e}")
-        import traceback
-        traceback.print_exc()
-        return False, f"导出失败: {str(e)}"
+    result = export_route.trigger_export_for_map(utility['map'])
+    return result.get('success', False), result.get('message') or result.get('error', '')
 
 
 @app.route('/api/add_manual_utility', methods=['POST'])
@@ -1105,6 +799,24 @@ def not_found(e):
 @app.errorhandler(500)
 def internal_error(e):
     return jsonify({'error': 'Internal server error', 'message': str(e)}), 500
+
+
+def _warn_duplicate_rules(flask_app):
+    """
+    启动自检：同一路径+方法被注册多次时给出警告
+    Werkzeug 只会命中先注册的那条规则，后注册的会静默失效，所以这里主动提示
+    """
+    seen = {}
+    for rule in flask_app.url_map.iter_rules():
+        for method in sorted(rule.methods - {'HEAD', 'OPTIONS'}):
+            key = (str(rule.rule), method)
+            if key in seen:
+                print(f"[警告] 路由重复: {method} {key[0]} -> {seen[key]} / {rule.endpoint}")
+            else:
+                seen[key] = rule.endpoint
+
+
+_warn_duplicate_rules(app)
 
 
 if __name__ == '__main__':

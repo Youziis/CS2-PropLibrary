@@ -1927,8 +1927,7 @@ async function submitEditedUtility(event) {
     const yaw = parseFloat(document.getElementById('edit-util-yaw').value);
     formData.append('throw_angles', JSON.stringify({pitch: pitch, yaw: yaw}));
     
-    // 落点位置（保持默认或从原数据读取）
-    formData.append('land_position', JSON.stringify({x: 0, y: 0, z: 0}));
+    // 落点位置：表单没有对应输入项，不提交，后端会保留数据库中的原值
     
     // 图片文件（如果有新上传的）
     const positionFile = document.getElementById('edit-util-img-position').files[0];

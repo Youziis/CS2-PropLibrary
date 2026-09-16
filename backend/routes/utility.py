@@ -2,6 +2,7 @@
 道具管理路由（CRUD）
 """
 import sys
+import json
 from pathlib import Path
 from flask import Blueprint, request, jsonify
 from datetime import datetime
@@ -12,6 +13,16 @@ from backend.database import Database
 
 bp = Blueprint('utility', __name__)
 db = Database()
+
+
+def _calc_distance(pos_a: dict, pos_b: dict) -> float:
+    """两点欧氏距离，与 client/src/extractor.py 的算法保持一致"""
+    try:
+        return ((pos_b['x'] - pos_a['x']) ** 2 +
+                (pos_b['y'] - pos_a['y']) ** 2 +
+                (pos_b['z'] - pos_a['z']) ** 2) ** 0.5
+    except (KeyError, TypeError):
+        return 0.0
 
 
 @bp.route('/api/utilities', methods=['GET'])
@@ -215,8 +226,29 @@ def update_utility_full():
             fields['team'] = request.form.get('team')
         if request.form.get('throw_type'):
             fields['throw_type'] = request.form.get('throw_type')
-        if request.form.get('notes'):
+        # 备注允许清空，所以不能用真值判断
+        if request.form.get('notes') is not None:
             fields['notes'] = request.form.get('notes')
+
+        # 坐标/角度：表单里是必填项，校验后与 raw_data 同步写入
+        json_fields = {}
+        for form_key in ('throw_position', 'throw_angles', 'land_position'):
+            raw = request.form.get(form_key)
+            if not raw:
+                continue
+            try:
+                parsed = json.loads(raw)
+            except (ValueError, TypeError):
+                return jsonify({'success': False, 'error': f'{form_key} 不是合法的 JSON'}), 400
+            if not isinstance(parsed, dict):
+                return jsonify({'success': False, 'error': f'{form_key} 应为 JSON 对象'}), 400
+            json_fields[form_key] = parsed
+
+        # 前端没有落点输入项，会用 {0,0,0} 占位，这里视为"不修改"，避免覆盖真实落点
+        land = json_fields.get('land_position')
+        if land and all(land.get(axis, 0) == 0 for axis in ('x', 'y', 'z')):
+            json_fields.pop('land_position')
+            print("[调试] 收到全零落点，保留数据库中的原值")
         
         # ✅ 处理图片上传
         print(f"[调试] 检查图片文件...")
@@ -255,8 +287,8 @@ def update_utility_full():
         print(f"[调试] 标签字符串: '{tags_str}'")
         
         if tags_str.strip():
-            # 有标签内容
-            tag_list = [t.strip() for t in tags_str.split(',') if t.strip()]
+            # 有标签内容（兼容中英文逗号）
+            tag_list = [t.strip() for t in tags_str.replace('，', ',').split(',') if t.strip()]
         else:
             # 空标签，清空所有标签
             tag_list = []
@@ -265,10 +297,25 @@ def update_utility_full():
         result = db.set_utility_tags(hash_val, tag_list)
         print(f"[调试] 标签设置结果: {result}")
         
-        # 更新基本字段
-        if fields:
-            success = db.update_utility(hash_val, fields)
-            print(f"[调试] 基本字段更新结果: {success}")
+        # 更新基本字段 + 坐标：列与 raw_data 一起写，
+        # 否则读取接口和导出仍会拿到旧的坐标
+        column_fields = dict(fields)
+        for key, value in json_fields.items():
+            column_fields[key] = json.dumps(value, ensure_ascii=False)
+
+        raw_patch = dict(json_fields)
+        if 'throw_position' in raw_patch:
+            # 位置变了，导出用的修正坐标和距离要一起更新
+            raw_patch['throw_position_corrected'] = raw_patch['throw_position']
+            effective_land = raw_patch.get('land_position') or utility.get('land_position')
+            if effective_land:
+                raw_patch['distance'] = round(
+                    _calc_distance(raw_patch['throw_position'], effective_land), 1
+                )
+
+        if column_fields or raw_patch:
+            success = db.update_utility_and_raw(hash_val, column_fields, raw_patch)
+            print(f"[调试] 字段更新结果: {success}")
         
         # 🔄 如果道具已导出且启用自动导出，触发重新导出
         if auto_export and utility.get('status') in ['exported', 'approved']:
