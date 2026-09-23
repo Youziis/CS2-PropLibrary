@@ -488,7 +488,7 @@ def create_utility_record(throw_event, det_event, tick_diff, tick_rate, map_name
         'id': generate_id(throw_event, det_event),    # 保留 id 以兼容
         'type': weapon_type,
         'thrower': get_field(throw_event, 'name') or 'Unknown',
-        'team': 'T' if (get_field(throw_event, 'team_name') or '').upper() == 'T' else (get_field(throw_event, 'team_name') or 'Unknown'),
+        'team': normalize_team(get_field(throw_event, 'team_name')),
         'map': map_name,
         
         # 投掷信息
@@ -514,6 +514,22 @@ def create_utility_record(throw_event, det_event, tick_diff, tick_rate, map_name
     }
     
     return utility
+
+
+def normalize_team(team_name):
+    """
+    把 demo 里的队名统一成 T / CT
+
+    CS2 demo 的 team_name 实际取值是 'TERRORIST' 与 'CT'，
+    早前直接判断 == 'T' 会让 T 方被原样存成 'TERRORIST'，
+    导致前端按 T 筛选时查不到这些道具。
+    """
+    name = (team_name or '').strip().upper()
+    if name in ('T', 'TERRORIST', 'TERROR'):
+        return 'T'
+    if name in ('CT', 'COUNTERTERRORIST', 'COUNTER-TERRORIST'):
+        return 'CT'
+    return team_name or 'Unknown'
 
 
 def is_grenade_weapon(weapon):
