@@ -384,15 +384,7 @@ function applySelectionFilters() {
                            (currentFilterScreenshot === 'no' && !isRejected);
         
         // 类型筛选：独立处理 molotov 和 incendiary
-        let typeMatch;
-        if (currentFilterType === 'all') {
-            typeMatch = true;
-        } else {
-            typeMatch = (utilType === currentFilterType);
-        }
-            // 其他类型正常匹配
-            typeMatch = (utilType === currentFilterType);
-        }
+        const typeMatch = currentFilterType === 'all' || utilType === currentFilterType;
         
         if (mapMatch && demoMatch && statusMatch && typeMatch) {
             card.style.display = '';

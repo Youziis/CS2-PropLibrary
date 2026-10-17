@@ -81,13 +81,7 @@ function applyFilters() {
         if (demoFilter && demo !== demoFilter) return false;
         
         // 类型筛选：独立处理 molotov 和 incendiary
-        if (typeFilter) {
-            if (type !== typeFilter) return false;
-        }
-                // 其他类型正常匹配
-                if (type !== typeFilter) return false;
-            }
-        }
+        if (typeFilter && type !== typeFilter) return false;
         
         if (teamFilter && team !== teamFilter) return false;
         return true;

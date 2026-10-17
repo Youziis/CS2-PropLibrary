@@ -10,10 +10,20 @@ document.addEventListener('DOMContentLoaded', function() {
     loadOverviewStats();
     loadOverviewPendingStats();
     loadDemos();
-    loadTypeStats();
-    loadPending();
-    loadExportStats();
-    loadPendingExportUtilities();
+    
+    // 只在对应页面存在时才调用这些函数
+    if (typeof loadTypeStats === 'function' && document.getElementById('type-stats')) {
+        loadTypeStats();
+    }
+    if (typeof loadPending === 'function' && document.getElementById('utilities-grid')) {
+        loadPending();
+    }
+    if (typeof loadExportStats === 'function') {
+        loadExportStats();
+    }
+    if (typeof loadPendingExportUtilities === 'function') {
+        loadPendingExportUtilities();
+    }
 });
 
 // 侧边栏收缩展开功能
@@ -76,23 +86,23 @@ function initTabs() {
             
             // 加载对应数据
             if (targetTab === 'demo') {
-                loadDemos();
+                if (typeof loadDemos === 'function') loadDemos();
             } else if (targetTab === 'select') {
-                loadTypeStats();
+                if (typeof loadTypeStats === 'function') loadTypeStats();
             } else if (targetTab === 'review') {
-                loadPending();
+                if (typeof loadPending === 'function') loadPending();
             } else if (targetTab === 'export') {
-                loadExportStats();
-                loadPendingExportUtilities();
+                if (typeof loadExportStats === 'function') loadExportStats();
+                if (typeof loadPendingExportUtilities === 'function') loadPendingExportUtilities();
             } else if (targetTab === 'exported') {
-                loadExportedStats();
-                loadExportedUtilities();
+                if (typeof loadExportedStats === 'function') loadExportedStats();
+                if (typeof loadExportedUtilities === 'function') loadExportedUtilities();
             } else if (targetTab === 'relations') {
-                initRelationsTab();
+                if (typeof initRelationsTab === 'function') initRelationsTab();
             } else if (targetTab === 'overview') {
-                loadStats();
-                loadOverviewStats();
-                loadOverviewPendingStats();
+                if (typeof loadStats === 'function') loadStats();
+                if (typeof loadOverviewStats === 'function') loadOverviewStats();
+                if (typeof loadOverviewPendingStats === 'function') loadOverviewPendingStats();
             }
         });
     });
