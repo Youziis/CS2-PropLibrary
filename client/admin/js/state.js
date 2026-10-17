@@ -14,8 +14,8 @@ const TYPE_NAMES = {
     'smoke': '烟雾弹',
     'flashbang': '闪光弹',
     'hegrenade': '手雷',
-    'molotov': '燃烧弹 (T)',
-    'incendiary': '燃烧弹 (CT)',
+    'molotov': 'T火',
+    'incendiary': 'CT火',
     'decoy': '诱饵弹'
 };
 

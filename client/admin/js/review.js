@@ -80,12 +80,10 @@ function applyFilters() {
         if (mapFilter && map !== mapFilter) return false;
         if (demoFilter && demo !== demoFilter) return false;
         
-        // 类型筛选：将incendiary和molotov视为同一类型（燃烧弹）
+        // 类型筛选：独立处理 molotov 和 incendiary
         if (typeFilter) {
-            if (typeFilter === 'incendiary') {
-                // 选择"燃烧弹"时，同时匹配incendiary和molotov
-                if (type !== 'incendiary' && type !== 'molotov') return false;
-            } else {
+            if (type !== typeFilter) return false;
+        }
                 // 其他类型正常匹配
                 if (type !== typeFilter) return false;
             }

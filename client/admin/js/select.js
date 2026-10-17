@@ -116,7 +116,8 @@ async function loadTypeStats() {
         html += '<button class="btn btn-type" data-type="smoke" onclick="filterByType(\'smoke\')">烟雾弹</button>';
         html += '<button class="btn btn-type" data-type="flashbang" onclick="filterByType(\'flashbang\')">闪光弹</button>';
         html += '<button class="btn btn-type" data-type="hegrenade" onclick="filterByType(\'hegrenade\')">手雷</button>';
-        html += '<button class="btn btn-type" data-type="incendiary" onclick="filterByType(\'incendiary\')">燃烧弹</button>';
+        html += '<button class="btn btn-type" data-type="molotov" onclick="filterByType(\'molotov\')">T火</button>';
+        html += '<button class="btn btn-type" data-type="incendiary" onclick="filterByType(\'incendiary\')">CT火</button>';
         html += '</div>';
         html += '</div>';
         
@@ -382,14 +383,13 @@ function applySelectionFilters() {
                            (currentFilterScreenshot === 'yes' && isRejected) ||
                            (currentFilterScreenshot === 'no' && !isRejected);
         
-        // 类型筛选：将incendiary和molotov视为同一类型（燃烧弹）
+        // 类型筛选：独立处理 molotov 和 incendiary
         let typeMatch;
         if (currentFilterType === 'all') {
             typeMatch = true;
-        } else if (currentFilterType === 'incendiary') {
-            // 选择"燃烧弹"时，同时匹配incendiary和molotov
-            typeMatch = (utilType === 'incendiary' || utilType === 'molotov');
         } else {
+            typeMatch = (utilType === currentFilterType);
+        }
             // 其他类型正常匹配
             typeMatch = (utilType === currentFilterType);
         }

@@ -4,6 +4,49 @@
 
 // ========== 添加道具功能 ==========
 
+// 解析 getpos 命令并自动填充坐标字段
+function parseGetposCommand() {
+    const input = document.getElementById('add-getpos-command');
+    const command = input.value.trim();
+    
+    // 如果输入为空，不做任何处理
+    if (!command) {
+        return;
+    }
+    
+    // 正则表达式匹配格式: setpos X Y Z;setang PITCH YAW ROLL
+    // 支持分号可选，支持大小写不敏感
+    const regex = /setpos\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s*;?\s*setang\s+([-\d.]+)\s+([-\d.]+)/i;
+    const match = command.match(regex);
+    
+    if (match) {
+        // 提取坐标值
+        const x = match[1];
+        const y = match[2];
+        const z = match[3];
+        const pitch = match[4];
+        const yaw = match[5];
+        
+        // 自动填充到对应的输入框
+        document.getElementById('add-throw-x').value = x;
+        document.getElementById('add-throw-y').value = y;
+        document.getElementById('add-throw-z').value = z;
+        document.getElementById('add-pitch').value = pitch;
+        document.getElementById('add-yaw').value = yaw;
+        
+        // 更改输入框样式表示成功
+        input.style.borderColor = '#4CAF50';
+        input.style.background = '#E8F5E9';
+        
+        showAddResult('✓ 坐标已自动填充 (X: ' + x + ', Y: ' + y + ', Z: ' + z + ')', 'success');
+    } else if (command.length > 10) {
+        // 只有在输入足够长时才提示错误，避免用户输入过程中频繁报错
+        input.style.borderColor = '#f44336';
+        input.style.background = '#FFEBEE';
+        showAddResult('⚠️ 命令格式错误，请使用格式: setpos X Y Z;setang PITCH YAW ROLL', 'error');
+    }
+}
+
 // 图片预览功能
 function previewImage(input, previewId) {
     const preview = document.getElementById(previewId);

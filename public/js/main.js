@@ -526,10 +526,12 @@ function renderDetailPage(utilityId) {
                             <span class="info-label">投掷方式</span>
                             <span class="info-value">${utility.throw_type || '未知'}</span>
                         </div>
+                        ${utility.flight_time && utility.flight_time > 0 ? `
                         <div class="info-item">
                             <span class="info-label">飞行时间</span>
                             <span class="info-value">${utility.flight_time} 秒</span>
                         </div>
+                        ` : ''}
                         ${utility.notes ? `
                         <div class="info-item" style="grid-column: 1 / -1;">
                             <span class="info-label">备注</span>
@@ -564,8 +566,8 @@ function getUtilityTypeName(type) {
         'smoke': '烟雾弹',
         'flashbang': '闪光弹',
         'hegrenade': '手雷',
-        'molotov': '燃烧弹 (T)',
-        'incendiary': '燃烧弹 (CT)',
+        'molotov': 'T火',
+        'incendiary': 'CT火',
         'decoy': '诱饵弹'
     };
     return names[type] || type;

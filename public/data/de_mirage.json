@@ -1150,6 +1150,42 @@
       },
       "thrower": "sirah",
       "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_flashbang_dae20cc5",
+      "sort_id": 20047,
+      "hash": "dae20cc569969376",
+      "type": "flashbang",
+      "team": "CT",
+      "name": "A1近点反清闪",
+      "position": {
+        "x": -554.952026,
+        "y": -2103.722168,
+        "z": -116
+      },
+      "angles": {
+        "pitch": -14.224403,
+        "yaw": 35.800842
+      },
+      "land_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "throw_type": "左键投掷",
+      "flight_time": 0,
+      "distance": 0,
+      "command": "setpos -554.95 -2103.72 -116.00; setang -14.22 35.80 0",
+      "tags": [],
+      "combo_group": null,
+      "notes": "",
+      "screenshots": {
+        "position": "images/de_mirage/flashbang/de_mirage_flashbang_dae20cc5_position.jpg",
+        "crosshair": "images/de_mirage/flashbang/de_mirage_flashbang_dae20cc5_crosshair.jpg",
+        "landing": "images/de_mirage/flashbang/de_mirage_flashbang_dae20cc5_landing.jpg"
+      },
+      "thrower": null,
+      "demo_source": null
     }
   ]
 }
