@@ -1186,6 +1186,42 @@
       },
       "thrower": null,
       "demo_source": null
+    },
+    {
+      "id": "de_mirage_flashbang_a813a9a3",
+      "sort_id": 20048,
+      "hash": "a813a9a34fd59faf",
+      "type": "flashbang",
+      "team": "CT",
+      "name": "A1深点反清闪",
+      "position": {
+        "x": -496.029419,
+        "y": -1524.172607,
+        "z": 24
+      },
+      "angles": {
+        "pitch": 4.334176,
+        "yaw": -2.40027
+      },
+      "land_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "throw_type": "左键投掷",
+      "flight_time": 0,
+      "distance": 0,
+      "command": "setpos -496.03 -1524.17 24.00; setang 4.33 -2.40 0",
+      "tags": [],
+      "combo_group": null,
+      "notes": "",
+      "screenshots": {
+        "position": "images/de_mirage/flashbang/de_mirage_flashbang_a813a9a3_position.jpg",
+        "crosshair": "images/de_mirage/flashbang/de_mirage_flashbang_a813a9a3_crosshair.jpg",
+        "landing": "images/de_mirage/flashbang/de_mirage_flashbang_a813a9a3_landing.jpg"
+      },
+      "thrower": null,
+      "demo_source": null
     }
   ]
 }
