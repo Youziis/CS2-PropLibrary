@@ -49,13 +49,7 @@ async function loadOverviewStats() {
         // 按类型统计
         const typeStatsList = document.getElementById('type-stats-list');
         if (typeStatsList && stats.by_type) {
-            const typeNames = {
-                'smoke': '烟雾弹',
-                'flashbang': '闪光弹',
-                'hegrenade': '手雷',
-                'incendiary': '燃烧弹',
-                'molotov': '燃烧弹'
-            };
+            const typeNames = TYPE_NAMES;
             const typeEntries = Object.entries(stats.by_type).sort((a, b) => b[1] - a[1]);
             if (typeEntries.length > 0) {
                 typeStatsList.innerHTML = typeEntries.map(([type, count]) => `
@@ -154,7 +148,7 @@ async function loadOverviewPendingStats() {
             </div>
         `;
         
-        const typeOrder = ['smoke', 'flashbang', 'hegrenade', 'incendiary'];
+        const typeOrder = TYPE_OPTION_ORDER;
         html += '<div class="type-cards-grid">';
         
         typeOrder.forEach(type => {

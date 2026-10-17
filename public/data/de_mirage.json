@@ -314,8 +314,8 @@
         "z": -179.10791015625
       },
       "angles": {
-        "pitch": -10.309295654296875,
-        "yaw": 58.88226318359375
+        "pitch": -10.31,
+        "yaw": 58.88
       },
       "land_position": {
         "x": 92.14009857177734,
@@ -840,7 +840,7 @@
         "y": -580.2597045898438,
         "z": -269.1018371582031
       },
-      "throw_type": "stand",
+      "throw_type": "左键投掷",
       "flight_time": 3.92,
       "distance": 1086.2,
       "command": "setpos 343.30 -621.62 -162.33; setang -42.80 -150.67 0",
@@ -1077,6 +1077,78 @@
         "landing": "images/de_mirage/smoke/de_mirage_smoke_754c0f16_landing.jpg"
       },
       "thrower": "magixx",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_molotov_2d53bbdc",
+      "sort_id": 20045,
+      "hash": "2d53bbdc74392cf2",
+      "type": "molotov",
+      "team": "T",
+      "name": "B2上下满烧火",
+      "position": {
+        "x": -1169.5894775390625,
+        "y": 668.6038208007812,
+        "z": -79.96875
+      },
+      "angles": {
+        "pitch": -8.08489990234375,
+        "yaw": 173.1846923828125
+      },
+      "land_position": {
+        "x": -2080.474853515625,
+        "y": 777.2008666992188,
+        "z": -45.96875
+      },
+      "throw_type": "左键投掷",
+      "flight_time": 1.48,
+      "distance": 918.0,
+      "command": "setpos -1169.59 668.60 -79.97; setang -8.08 173.18 0",
+      "tags": [],
+      "combo_group": null,
+      "notes": "走出厨房墙壁后，左键投掷。",
+      "screenshots": {
+        "position": "images/de_mirage/molotov/de_mirage_molotov_2d53bbdc_position.jpg",
+        "crosshair": "images/de_mirage/molotov/de_mirage_molotov_2d53bbdc_crosshair.jpg",
+        "landing": "images/de_mirage/molotov/de_mirage_molotov_2d53bbdc_landing.jpg"
+      },
+      "thrower": "poiii",
+      "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
+    },
+    {
+      "id": "de_mirage_molotov_1f9e641d",
+      "sort_id": 20046,
+      "hash": "1f9e641d8f1f29a5",
+      "type": "molotov",
+      "team": "T",
+      "name": "沙发凹槽火",
+      "position": {
+        "x": -1336.2706298828125,
+        "y": 806.1793823242188,
+        "z": -79.96875
+      },
+      "angles": {
+        "pitch": -7.09063720703125,
+        "yaw": -161.41766357421875
+      },
+      "land_position": {
+        "x": -2594.1357421875,
+        "y": 341.7342834472656,
+        "z": -165.97142028808594
+      },
+      "throw_type": "蹲下左键投掷",
+      "flight_time": 1.92,
+      "distance": 1343.6,
+      "command": "setpos -1336.27 806.18 -79.97; setang -7.09 -161.42 0",
+      "tags": [],
+      "combo_group": null,
+      "notes": "站在楼梯下拐角处，蹲下左键投掷。",
+      "screenshots": {
+        "position": "images/de_mirage/molotov/de_mirage_molotov_1f9e641d_position.jpg",
+        "crosshair": "images/de_mirage/molotov/de_mirage_molotov_1f9e641d_crosshair.jpg",
+        "landing": "images/de_mirage/molotov/de_mirage_molotov_1f9e641d_landing.jpg"
+      },
+      "thrower": "sirah",
       "demo_source": "100-thieves-vs-spirit-m2-mirage.dem"
     }
   ]

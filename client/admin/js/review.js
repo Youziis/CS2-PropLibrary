@@ -211,10 +211,7 @@ function renderUtilityCard(u) {
                 <div class="form-group">
                     <label>类型</label>
                     <select class="util-type">
-                        <option value="smoke" ${type === 'smoke' ? 'selected' : ''}>烟雾弹</option>
-                        <option value="flashbang" ${type === 'flashbang' ? 'selected' : ''}>闪光弹</option>
-                        <option value="hegrenade" ${type === 'hegrenade' ? 'selected' : ''}>手雷</option>
-                        <option value="incendiary" ${type === 'incendiary' ? 'selected' : ''}>燃烧弹</option>
+                        ${typeOptionsHtml(type)}
                     </select>
                 </div>
                 

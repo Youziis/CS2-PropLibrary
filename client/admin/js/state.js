@@ -14,6 +14,26 @@ const TYPE_NAMES = {
     'smoke': '烟雾弹',
     'flashbang': '闪光弹',
     'hegrenade': '手雷',
-    'incendiary': '燃烧弹',
-    'molotov': '燃烧弹'
+    'molotov': '燃烧弹 (T)',
+    'incendiary': '燃烧弹 (CT)',
+    'decoy': '诱饵弹'
 };
+
+// 类型下拉的展示顺序（与 TYPE_NAMES 对应）
+const TYPE_OPTION_ORDER = ['smoke', 'flashbang', 'hegrenade', 'molotov', 'incendiary', 'decoy'];
+
+/**
+ * 生成类型下拉的 <option> 列表
+ *
+ * 若数据库里出现清单之外的类型，会把它原样补进选项，
+ * 避免下拉框没有匹配项时静默回落到第一项（烟雾弹）而被改错类型。
+ */
+function typeOptionsHtml(currentType) {
+    const types = TYPE_OPTION_ORDER.slice();
+    if (currentType && types.indexOf(currentType) === -1) {
+        types.push(currentType);
+    }
+    return types.map(t =>
+        `<option value="${t}"${t === currentType ? ' selected' : ''}>${TYPE_NAMES[t] || t}</option>`
+    ).join('');
+}

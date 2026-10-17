@@ -565,7 +565,8 @@ function getUtilityTypeName(type) {
         'flashbang': '闪光弹',
         'hegrenade': '手雷',
         'molotov': '燃烧弹 (T)',
-        'incendiary': '燃烧弹 (CT)'
+        'incendiary': '燃烧弹 (CT)',
+        'decoy': '诱饵弹'
     };
     return names[type] || type;
 }
